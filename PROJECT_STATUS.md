@@ -1,7 +1,8 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-11-28  
-**Version:** 1.2
+**Version:** 1.3  
+**Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
@@ -54,6 +55,21 @@
   - Purpose: Structure for personal reflections and journal entries
   - Status: Defined and documented
   - Features: Raw Input preservation, emotional tagging, friend sharing metadata
+
+### Repository & Distribution
+
+- [x] **GitHub Repository** — Public open-source release
+  - URL: https://github.com/brentyJ/EhkoForge
+  - License: MIT
+  - Status: Live as of 2025-11-28
+  - Initial commit: 33 files, 9084 lines
+
+- [x] **Repository Infrastructure**
+  - `README.md` — Complete project documentation
+  - `LICENSE` — MIT License
+  - `.gitignore` — Configured for Python, Obsidian, user data
+  - `_mirrorwell_template/` — Empty vault scaffold for users to fork
+    - Includes folder structure, `Start Here.md`, `reflection_template.md`
 
 - [x] **UI-MDV Specification v1.0**
   - Location: `EhkoForge/2.0 Modules/UI-MDV-Specification.md`
@@ -244,6 +260,8 @@
 
 ## RECENTLY COMPLETED
 
+- **2025-11-28 (evening):** GitHub repository published — https://github.com/brentyJ/EhkoForge
+- **2025-11-28 (evening):** Repository infrastructure completed — README.md, LICENSE (MIT), .gitignore, _mirrorwell_template scaffold
 - **2025-11-28:** PROJECT_STATUS.md updated to v1.2, journal count corrected, transcription processing documented
 - **2025-11-27 (late):** ehko_refresh.py upgraded to v2.0 — transcription processing pipeline added
 - **2025-11-27 (late):** Utility scripts created (fix_regex.py, fix_theme_headers.py, fix_transcription_extraction.py, run_process_transcriptions.bat)
@@ -311,6 +329,7 @@
 ---
 
 **Changelog:**
+- v1.3 — 2025-11-28 — GitHub repository published, repository infrastructure section added, _mirrorwell_template documented
 - v1.2 — 2025-11-28 — Updated ehko_refresh.py to v2.0, documented utility scripts, corrected journal count (9→13), added Script Inventory table, updated testing status
 - v1.1 — 2025-11-27 Session 2 — Added misalignments section, Mirrorwell content status, expanded gaps, updated priorities for frontend focus
 - v1.0 — 2025-11-27 — Initial PROJECT_STATUS.md created
