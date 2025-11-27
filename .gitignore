@@ -1,0 +1,47 @@
+# User-specific database (generated file, not source material)
+_data/ehko_index.db
+
+# Obsidian workspace settings (user-specific preferences)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments (if created)
+venv/
+env/
+.venv/
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and temporary files
+5.0 Scripts/System Logs/*.log
+*.tmp
+*.temp
+
+# User content (keep private)
+# Note: Mirrorwell is outside this repo, but listing for clarity
+../Mirrorwell/
+
+# Dormant vaults (scoped out of current project)
+../MonsterGarden/
+../ManaCore/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+backups/
