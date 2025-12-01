@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EhkoForge — The Forge</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">
+                    <span class="logo-icon">◈</span>
+                    <span class="logo-text">EhkoForge</span>
+                </h1>
+            </div>
+            
+            <div class="llm-status" id="llm-status" title="LLM Connection Status">
+                <span class="status-dot"></span>
+                <span class="status-text">Checking...</span>
+            </div>
+            
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <button class="mode-btn is-active" data-mode="chat" id="mode-chat">
+                    <span class="mode-icon">💬</span>
+                    <span>Chat</span>
+                </button>
+                <button class="mode-btn" data-mode="forge" id="mode-forge">
+                    <span class="mode-icon">🔥</span>
+                    <span>Forge</span>
+                    <span class="ingot-badge" id="ingot-badge" style="display: none;">0</span>
+                </button>
+            </div>
+            
+            <!-- Chat Mode: Sessions -->
+            <div class="sidebar-section" id="chat-sidebar">
+                <div class="sessions-header">
+                    <span>Forging Sessions</span>
+                </div>
+                
+                <div class="sessions-list" id="sessions-list">
+                    <!-- Sessions populated by JS -->
+                </div>
+                
+                <button class="new-session-btn" id="new-session-btn">
+                    <span class="btn-icon">+</span>
+                    <span>New Session</span>
+                </button>
+            </div>
+            
+            <!-- Forge Mode: Ingot Queue -->
+            <div class="sidebar-section" id="forge-sidebar" style="display: none;">
+                <div class="sessions-header">
+                    <span>Surfaced Ingots</span>
+                    <button class="refresh-btn" id="refresh-ingots" title="Refresh">↻</button>
+                </div>
+                
+                <div class="ingot-filters">
+                    <select id="ingot-filter-tier">
+                        <option value="">All Tiers</option>
+                        <option value="mythic">Mythic</option>
+                        <option value="gold">Gold</option>
+                        <option value="silver">Silver</option>
+                        <option value="iron">Iron</option>
+                        <option value="copper">Copper</option>
+                    </select>
+                </div>
+                
+                <div class="ingot-list" id="ingot-list">
+                    <!-- Ingots populated by JS -->
+                </div>
+                
+                <div class="smelt-status" id="smelt-status">
+                    <div class="smelt-header">
+                        <span>Smelt Queue</span>
+                    </div>
+                    <div class="smelt-info">
+                        <span id="smelt-pending">0 pending</span>
+                        <button class="smelt-btn" id="run-smelt" title="Run Smelt">⚒️ Smelt</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="version-info">
+                    <span class="version-label">Forge UI</span>
+                    <span class="version-number">v1.2</span>
+                </div>
+                <div class="ehko-state" id="ehko-state" title="Ehko's current state">
+                    <span class="state-icon">◇</span>
+                    <span class="state-text">Nascent</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Panel -->
+        <main class="main-panel">
+            <!-- Stats Ribbon -->
+            <div class="stats-ribbon" id="stats-ribbon">
+                <div class="stat" data-stat="identity_depth" title="Identity Depth">
+                    <span class="stat-icon">◇</span>
+                    <span class="stat-label">Depth</span>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat" data-stat="clarity" title="Clarity">
+                    <span class="stat-icon">✦</span>
+                    <span class="stat-label">Clarity</span>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat" data-stat="resonance" title="Resonance">
+                    <span class="stat-icon">◎</span>
+                    <span class="stat-label">Resonance</span>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat" data-stat="anchors" title="Anchors">
+                    <span class="stat-icon">⚓</span>
+                    <span class="stat-label">Anchors</span>
+                    <div class="stat-glow"></div>
+                </div>
+            </div>
+            
+            <!-- Avatar Zone -->
+            <div class="avatar-zone" id="avatar-zone">
+                <div class="avatar" id="avatar">
+                    <div class="avatar-core"></div>
+                    <div class="avatar-ring avatar-ring-1"></div>
+                    <div class="avatar-ring avatar-ring-2"></div>
+                    <div class="avatar-particle p1"></div>
+                    <div class="avatar-particle p2"></div>
+                    <div class="avatar-particle p3"></div>
+                </div>
+                <div class="avatar-status" id="avatar-status">Ready</div>
+            </div>
+            
+            <!-- Chat Area (Chat Mode) -->
+            <div class="chat-area" id="chat-area">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages populated by JS -->
+                </div>
+            </div>
+            
+            <!-- Ingot Review Area (Forge Mode) -->
+            <div class="ingot-area" id="ingot-area" style="display: none;">
+                <div class="ingot-detail" id="ingot-detail">
+                    <div class="ingot-empty">
+                        <p>Select an ingot from the queue to review.</p>
+                        <p class="subtle">Accept valuable insights to forge them into your Ehko.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Bar (Chat Mode only) -->
+            <div class="input-bar" id="input-bar">
+                <div class="input-glow"></div>
+                <textarea 
+                    id="message-input" 
+                    placeholder="Share your thoughts..."
+                    rows="1"
+                ></textarea>
+                <button class="send-btn" id="send-btn" title="Send">
+                    <span class="send-icon">↵</span>
+                </button>
+            </div>
+        </main>
+        
+        <!-- Settings Panel (Hidden by default) -->
+        <div class="settings-overlay" id="settings-overlay">
+            <div class="settings-panel">
+                <div class="settings-header">
+                    <h2>Settings</h2>
+                    <button class="close-settings" id="close-settings">×</button>
+                </div>
+                <div class="settings-content">
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="setting-avatar" checked>
+                            Show Ehko Avatar
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="setting-motion">
+                            Low Motion Mode
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="setting-contrast">
+                            High Contrast Mode
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Theme</label>
+                        <select id="setting-theme">
+                            <option value="forge-dark">Forge Dark</option>
+                            <option value="arcane-blue">Arcane Blue</option>
+                            <option value="ember-gold">Ember Gold</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Forge Modal -->
+        <div class="forge-overlay" id="forge-overlay">
+            <div class="forge-modal">
+                <div class="forge-header">
+                    <h2>Forge to Vault</h2>
+                    <button class="close-forge" id="close-forge">×</button>
+                </div>
+                <div class="forge-content">
+                    <div class="forge-field">
+                        <label for="forge-title">Title</label>
+                        <input type="text" id="forge-title" placeholder="Name this reflection...">
+                    </div>
+                    <div class="forge-field">
+                        <label for="forge-tags">Tags (comma-separated)</label>
+                        <input type="text" id="forge-tags" placeholder="identity, memory, reflection">
+                    </div>
+                    <div class="forge-field">
+                        <label for="forge-emotional">Emotional Tags (comma-separated)</label>
+                        <input type="text" id="forge-emotional" placeholder="contemplative, hopeful">
+                    </div>
+                    <div class="forge-selection">
+                        <p>Messages to forge: <span id="forge-count">0</span></p>
+                    </div>
+                </div>
+                <div class="forge-actions">
+                    <button class="forge-cancel" id="forge-cancel">Cancel</button>
+                    <button class="forge-confirm" id="forge-confirm">
+                        <span class="forge-icon">◈</span>
+                        Forge
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ingot Detail Modal -->
+        <div class="ingot-overlay" id="ingot-overlay">
+            <div class="ingot-modal">
+                <div class="ingot-modal-header">
+                    <h2>Ingot Details</h2>
+                    <button class="close-ingot-modal" id="close-ingot-modal">×</button>
+                </div>
+                <div class="ingot-modal-content" id="ingot-modal-content">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="ingot-modal-actions">
+                    <button class="ingot-reject" id="ingot-reject">
+                        <span>✗</span> Reject
+                    </button>
+                    <button class="ingot-defer" id="ingot-defer">
+                        <span>⏸</span> Defer
+                    </button>
+                    <button class="ingot-accept" id="ingot-accept">
+                        <span>◈</span> Forge into Ehko
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Toggle (Fixed) -->
+    <button class="settings-toggle" id="settings-toggle" title="Settings">
+        ⚙
+    </button>
+    
+    <script src="app.js"></script>
+</body>
+</html>

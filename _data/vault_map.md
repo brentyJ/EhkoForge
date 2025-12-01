@@ -1,0 +1,335 @@
+---
+title: "EhkoForge Vault Map"
+vault: "EhkoForge"
+type: "system"
+category: "_data"
+status: "active"
+version: "1.8"
+created: 2025-11-29
+updated: 2025-12-01
+tags: [system, reference, navigation]
+---
+
+# EHKOFORGE VAULT MAP
+
+**Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
+**Update frequency:** After major structural changes or weekly.
+**Generated:** 2025-12-01 (Session 10)
+
+---
+
+## ROOT STRUCTURE
+
+```
+G:\Other computers\Ehko\Obsidian\
+├── EhkoForge/          [System framework vault]
+├── Mirrorwell/         [Personal content vault]
+├── MonsterGarden/      [DORMANT - Future plant tracking]
+└── ManaCore/           [DORMANT - Fiction worldbuilding]
+```
+
+---
+
+## EHKOFORGE VAULT
+
+### 1.0 System Architecture/
+**Purpose:** Core specifications and canonical modules
+
+```
+1_0_Ehko_Manifest.md                              [canonical, v2.1]
+1_0a_Ehko_Manifesto_Personal.md                   [essay, v1.0]
+1_1_Overview_v1_0.md                              [module, v1.1]
+1_2_Components_v1_0.md                            [module, v1.1]
+1_3_Security_Ownership.md                         [module, v1.0]
+1_4_Data_Model_v1_3.md                            [module, v1.3]
+1_5_Behaviour_Engine_v1_1.md                      [module, v1.1]
+1_6_Identity_Pillars_Scientific_Basis_v1_0.md     [module, v1.0]
+1_7_Core_Memory_Index_Framework_v1_0.md           [module, v1.0]
+_Index.md                                         [navigation, v1.0]
+```
+
+### 2.0 Modules/
+**Purpose:** Feature specifications and extensions
+
+```
+Frontend_Implementation_Spec_v1_0.md              [module, v1.0]
+UI-MDV-Specification.md                           [module, v1.0]
+SPINOFF_IDEAS.md                                  [planning, v1.0]
+Ideas for road mapping - Proko & Evolution Concept Scaffold.md  [concept, draft]
+
+# Ingot System Specs (2025-12-01)
+Ingot_System_Schema_v0_1.md                       [module, v0.1] — DB tables
+Tier0_PreAnnotation_Spec_v0_1.md                  [module, v0.1] — Signal extraction
+Smelt_Processor_Spec_v0_1.md                      [module, v0.1] — Batch processing
+Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
+```
+
+### 3.0 Templates/
+**Purpose:** Universal templates and frameworks
+
+```
+Universal/
+  └── universal_template.md                       [framework, v1.2]
+```
+
+### 4.0 Lexicon/
+**Purpose:** Controlled vocabularies and taxonomies
+
+```
+4_0_Lexicon_v1_0.md                               [reference, v1.0]
+```
+
+### 5.0 Scripts/
+**Purpose:** Automation, server, and utilities
+
+#### Root Scripts
+```
+ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
+forge_server.py                   [v1.2, working] — Flask server + API + LLM + Ingot endpoints
+ehko_control.py                   [v1.0, working] — GUI control panel (tkinter)
+run_ingot_migration.py            [v1.0, working] — DB migration runner
+seed_test_ingots.py               [v1.0, utility]  — Test data generator
+
+# Utility scripts
+fix_regex.py                      [applied] — Patch theme extraction
+fix_theme_headers.py              [applied] — Header level fix
+fix_transcription_extraction.py   [applied] — Section boundary fix
+run_process_transcriptions.bat    [working] — Batch runner
+```
+
+#### ehkoforge/ Module
+```
+ehkoforge/
+├── __init__.py
+├── llm/                          [v1.0, working] — LLM integration
+│   ├── __init__.py
+│   ├── base.py                   — Abstract provider interface
+│   ├── claude_provider.py        — Anthropic API wrapper
+│   ├── context_builder.py        — Reflection corpus search
+│   ├── system_prompt.py          — Forging/visitor/archived prompts
+│   ├── config.py                 — API key management
+│   └── forge_integration.py      — Server integration helpers
+├── preprocessing/                [v0.1, working] — Tier 0 processing
+│   ├── __init__.py
+│   └── tier0.py                  — Signal extraction (no LLM)
+└── processing/                   [v0.1, working] — Smelt processing
+    ├── __init__.py
+    └── smelt.py                  — Batch ingot extraction
+```
+
+#### migrations/
+```
+migrations/
+└── ingot_migration_v0_1.sql      [applied] — Ingot system tables
+```
+
+#### Documentation (in 5.0 Scripts/)
+```
+ehko_refresh.py.md                [specification, v1.0]
+indexing scripts.md               [overview, v1.0]
+misc utilities.md                 [utilities, draft]
+
+System Logs/
+  └── vault_actions.md            [log, v1.0]
+```
+
+### 6.0 Frontend/
+**Purpose:** Web UI for The Forge
+
+```
+static/
+├── index.html                    [v1.2, working] — Main UI with mode toggle
+├── styles.css                    [v1.2, working] — MDV aesthetic + ingot styles
+└── app.js                        [v1.2, working] — Frontend logic + ingot handlers
+```
+
+**Features (v1.2):**
+- Chat mode: Sessions, messages, Claude API responses
+- Forge mode: Ingot queue, detail panel, accept/reject
+- Smelt status + manual trigger
+- Ehko state indicator (nascent/forming/emerging/present)
+- Stats ribbon, settings panel, forge-to-vault
+
+### Config/
+**Purpose:** Configuration files
+
+```
+ui-preferences.json               [user settings]
+```
+
+### _data/
+**Purpose:** Database and system files
+
+```
+ehko_index.db                     [SQLite, ~200KB]
+vault_map.md                      [this file]
+```
+
+### PROJECT_STATUS.md
+**Purpose:** Current implementation state and priorities
+**Location:** `EhkoForge/PROJECT_STATUS.md`
+**Version:** 1.13
+
+---
+
+## DATABASE SCHEMA
+
+### Core Tables (existing)
+- `reflection_objects` — Indexed vault entries
+- `tags` — General tags (object_id, tag)
+- `emotional_tags` — Emotional tags (object_id, emotion)
+- `cross_references` — Links between entries
+- `changelog_entries` — Version history
+- `mirrorwell_extensions` — Personal metadata (core_memory, pillar, shared_with)
+
+### Friend/Auth Tables (existing)
+- `friend_registry` — Known people
+- `shared_with_friends` — Sharing permissions
+- `shared_memories` — Shared content
+- `authentication_tokens` — Active sessions
+- `authentication_logs` — Auth history
+- `custodians` — Posthumous access
+- `prepared_messages` — Time-capsule messages
+- `message_deliveries` — Delivery tracking
+
+### Forge Session Tables (existing)
+- `forge_sessions` — Chat sessions
+- `forge_messages` — Session messages
+
+### Ingot System Tables (NEW — created 2025-12-01)
+- `smelt_queue` — Pending content for analysis
+- `transcript_segments` — Chunked transcripts
+- `annotations` — User hints on content
+- `ingots` — Core insight objects
+- `ingot_sources` — Links ingots to sources
+- `ingot_history` — Audit trail
+- `ehko_personality_layers` — Forged personality components
+
+---
+
+## MIRRORWELL VAULT
+
+### Templates/
+```
+reflection_template.md            [v1.2]
+```
+
+### 1_Core Identity/
+**Status:** First curation pass complete (2025-11-29)
+
+```
+1.1 Pillars/                      [populated - 6 documents]
+    ├── web_relationships.md
+    ├── thread_continuity.md
+    ├── mirror_self_perception.md
+    ├── compass_values.md
+    ├── anchor_grounding.md
+    └── flame_drive.md
+1.2 Values & Beliefs/             [empty]
+1.3 Narrative Arcs/               [empty]
+1.4 Core Memory Index/
+    └── core_memory_index.md      [v1.1 - 10 memories indexed]
+```
+
+### 2_Reflection Library/
+
+#### 2.1 Journals/
+**Total:** 15 entries
+
+```
+2025-11-28_structuring_manacore_as_an_ai_text_adventure.md
+2025-11-28_first-ui-forge.md
+2025-11-27_building_the_echo_forge_framework.md
+2025-11-26_isolation-family-dynamics-seeking-validation.md
+2025-11-22 — Growing Up in the 90s.md
+2025-11-16_navigating-family-conflict-sister.md
+2025-11-14_family-trauma-sisterly-silence.md
+2025-09-09_unjust_police_resignation_after_drug_test.md
+2025-09-08_unpacking_control_and_self_perception.md
+2025-09-08_control_anxiety_relationships.md
+2025-08-02_evolving-beliefs-societal-views.md
+2025-08-01_ai-childhood-trauma-reflection.md
+2025-08-01_lasting-bonds-childhood-friendships.md
+2025-08-01_toxic-mother-son-dynamics.md
+2025-07-31_childhood-trauma-family-reflection.md
+```
+
+#### 2.2 Transcripts/
+```
+_processed/                       [archived originals]
+```
+
+---
+
+## DORMANT VAULTS
+
+### MonsterGarden/
+**Status:** Dormant (VAULT_STATUS.md created 2025-11-29)
+**Purpose:** Future plant tracking project
+
+### ManaCore/
+**Status:** Dormant (VAULT_STATUS.md created 2025-11-29)
+**Purpose:** Fiction worldbuilding
+
+---
+
+## QUICK REFERENCE
+
+### Key Files
+| File | Purpose | Location |
+|------|---------|----------|
+| PROJECT_STATUS.md | Implementation state | EhkoForge/ |
+| vault_map.md | This file | EhkoForge/_data/ |
+| ehko_index.db | SQLite database | EhkoForge/_data/ |
+| forge_server.py | Flask server | EhkoForge/5.0 Scripts/ |
+| reflection_template.md | Personal template | Mirrorwell/Templates/ |
+
+### Run Commands
+```bash
+# Start server
+cd "G:\Other computers\Ehko\Obsidian\EhkoForge\5.0 Scripts"
+python forge_server.py
+
+# Refresh index
+python ehko_refresh.py
+
+# Run ingot migration (one-time)
+python run_ingot_migration.py
+
+# Seed test ingots
+python seed_test_ingots.py
+
+# GUI control panel
+python ehko_control.py
+```
+
+### Access Points
+- **Forge UI:** http://localhost:5000
+- **API Base:** http://localhost:5000/api/
+
+---
+
+## UPDATE PROTOCOL
+
+**When to update this map:**
+1. After adding/removing top-level folders
+2. After creating new modules or scripts
+3. After major version bumps
+4. At end of significant work sessions
+
+**How to update:**
+- Manual: Edit this file directly
+- Session end: Ask Claude to regenerate
+
+---
+
+**Changelog:**
+- v1.8 — 2025-12-01 Session 10 — Ingot system complete: Added tier0.py, smelt.py to ehkoforge module. Added migrations/ folder. Added run_ingot_migration.py, seed_test_ingots.py. Updated frontend to v1.2. Moved ingot tables from "specified" to "created". Added quick reference section.
+- v1.7 — 2025-12-01 — Added Forge_UI_Update_Spec_v0_1.md to 2.0 Modules.
+- v1.6 — 2025-12-01 — Added Ingot System specs to 2.0 Modules (Schema, Tier0, Smelt Processor). Added future DB tables list.
+- v1.5 — 2025-11-30 — Added 6.0 Frontend section, LLM module details, updated forge_server.py to v1.1
+- v1.4 — 2025-11-29 — Identity Pillars folder populated (6 documents)
+- v1.3 — 2025-11-29 — Data Model filename corrected; dormant vaults marked
+- v1.2 — 2025-11-29 — Core Memory Index first curation pass complete
+- v1.1 — 2025-11-29 — Added Core Memory Index Framework
+- v1.0 — 2025-11-29 — Initial vault map created

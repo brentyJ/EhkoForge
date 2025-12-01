@@ -70,10 +70,13 @@ Markdown files are truth. SQLite is derived. The index can always be rebuilt fro
 │  1.3 Security          │ Auth, access control, veiled content   │
 │  1.4 Data Model        │ Schemas, SQLite, packet processing     │
 │  1.5 Behaviour Engine  │ AI interaction rules, reflection logic │
-│  2.0 Templates         │ Universal + specialised templates      │
-│  3.0 Lexicon           │ Terminology, tag taxonomies            │
-│  4.0 Scripts           │ ehko_refresh.py, inbox processing      │
-│  5.0 Recovery          │ Handoff protocols, export formats      │
+│  1.6 Identity Pillars  │ Scientific basis for identity          │
+│  2.0 Modules           │ Feature specifications                 │
+│  3.0 Templates         │ Universal + specialised templates      │
+│  4.0 Lexicon           │ Terminology, tag taxonomies            │
+│  5.0 Scripts           │ ehko_refresh.py, inbox processing      │
+│  6.0 Frontend          │ UI implementation                      │
+│  7.0 Recovery          │ Handoff protocols, export formats      │
 └─────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
@@ -113,10 +116,13 @@ Markdown files are truth. SQLite is derived. The index can always be rebuilt fro
 | **1.3 Security & Ownership** | Authentication, access control, veiled content, custodians | Active v1.0 |
 | **1.4 Data Model** | YAML schemas, SQLite tables, packet processing, versioning | Active v1.2 |
 | **1.5 Behaviour Engine** | AI interaction rules, reflection prompts, tone calibration | Active v1.1 |
-| **2.0 Templates** | Universal Template Framework, Mirrorwell specialisation | Active v1.1 |
-| **3.0 Lexicon** | Terminology definitions, tag taxonomies | Planned |
-| **4.0 Scripts** | Python tooling (ehko_refresh.py, inbox processor) | Planned |
-| **5.0 Recovery** | Export formats, handoff protocols, durability strategies | Planned |
+| **1.6 Identity Pillars** | Scientific basis for identity framework | Active v1.0 |
+| **2.0 Modules** | Feature specifications (UI-MDV, Frontend Implementation) | Active |
+| **3.0 Templates** | Universal Template Framework, Mirrorwell specialisation | Active v1.2 |
+| **4.0 Lexicon** | Terminology definitions, tag taxonomies | Active v1.0 |
+| **5.0 Scripts** | Python tooling (ehko_refresh.py, inbox processor) | Active |
+| **6.0 Frontend** | UI implementation, static site | In Progress |
+| **7.0 Recovery** | Export formats, handoff protocols, durability strategies | Planned |
 
 ### 3.3 Vault Definitions
 
@@ -381,6 +387,31 @@ Every module must include:
 
 - [ ] **Obsidian sync:** How to handle sync conflicts between mobile/desktop?
 - [ ] **AI provider switching:** Define handoff protocol when switching Claude → GPT → local
+
+---
+
+## 8. Cross-References
+
+**Core Architecture:**
+- [[1_0_Ehko_Manifest|Manifest]] — Philosophical foundation, design principles
+- [[1_2_Components_v1_0|Components]] — Detailed component specifications
+- [[1_3_Security_Ownership|Security & Ownership]] — Authentication, access control
+- [[1_4_Data_Model_v1_1|Data Model]] — Schemas, SQLite, packet processing
+- [[1_5_Behaviour_Engine_v1_1|Behaviour Engine]] — AI interaction, voice, personality
+- [[1_6_Identity_Pillars_Scientific_Basis_v1_0|Identity Pillars]] — Scientific basis
+
+**Supporting Modules:**
+- [[4_0_Lexicon_v1_0|Lexicon]] — Terminology and tag taxonomies
+- [[universal_template|Universal Template]] — Base reflection object structure
+
+**Implementation:**
+- [[ehko_refresh.py|ehko_refresh.py]] — Vault indexer script
+- [[PROJECT_STATUS|Project Status]] — Current implementation state
+
+**Navigation:**
+- [[_Index|← Back to Index]]
+- [[1_0_Ehko_Manifest|← Previous: Manifest]]
+- [[1_2_Components_v1_0|Next: Components →]]
 
 ---
 

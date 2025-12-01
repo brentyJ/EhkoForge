@@ -1039,6 +1039,27 @@ dependencies:
 
 ---
 
+## 8. Cross-References
+
+**Depends on:**
+- [[1_0_Ehko_Manifest|Manifest]] — Design principles this implements
+- [[1_1_Overview_v1_0|Overview]] — Architecture context
+
+**Specifies interfaces for:**
+- [[1_4_Data_Model_v1_1|Data Model]] — Schema definitions used by components
+- [[1_5_Behaviour_Engine_v1_1|Behaviour Engine]] — AI Wrapper component
+- [[1_3_Security_Ownership|Security & Ownership]] — Auth Engine component
+
+**Implementation:**
+- [[ehko_refresh.py|ehko_refresh.py]] — Implements Vault Scanner, Index Builder
+
+**Navigation:**
+- [[_Index|← Back to Index]]
+- [[1_1_Overview_v1_0|← Previous: Overview]]
+- [[1_3_Security_Ownership|Next: Security →]]
+
+---
+
 **Changelog**
 - v1.1 — 2025-11-26 — Scope reduction: removed MonsterGarden and ManaCore references; simplified to single-vault model (Mirrorwell only); updated component interfaces, data contracts, and directory structures; removed multi-vault enum values
 - v1.0 — 2025-11-25 — Initial specification: component definitions, interfaces, data contracts, interaction flows, dependency mapping

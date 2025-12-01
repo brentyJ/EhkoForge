@@ -666,5 +666,26 @@ When custodianship transfers (e.g., from spouse to adult child):
 
 ---
 
+## 8. Cross-References
+
+**Depends on:**
+- [[1_0_Ehko_Manifest|Manifest]] — Ownership & sovereignty principles (§4.1)
+- [[1_4_Data_Model_v1_1|Data Model]] — friend_registry, authentication_logs tables
+
+**Used by:**
+- [[1_5_Behaviour_Engine_v1_1|Behaviour Engine]] — Access level determines conversation mode
+- [[1_2_Components_v1_0|Components]] — Auth Engine component spec
+
+**Related concepts:**
+- [[4_0_Lexicon_v1_0#5.3 Relationship Types|Relationship Types]] — Controlled vocabulary
+- [[4_0_Lexicon_v1_0#5.4 Access Levels|Access Levels]] — elevated/standard/restricted/blacklisted
+
+**Navigation:**
+- [[_Index|← Back to Index]]
+- [[1_2_Components_v1_0|← Previous: Components]]
+- [[1_4_Data_Model_v1_1|Next: Data Model →]]
+
+---
+
 **Changelog**
 - v1.0 — 2025-11-25 — Initial specification: contextual authentication, email fallback, friend registry, custodian system, veiled content protocols
