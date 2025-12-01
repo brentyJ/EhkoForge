@@ -45,3 +45,6 @@ desktop.ini
 *.bak
 *.backup
 backups/
+
+# Local utility scripts (not part of framework)
+git_push.bat
