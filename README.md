@@ -24,6 +24,27 @@ This is the **framework and architecture** — the system specifications, templa
 
 ---
 
+## Terminology: The Forge Metaphor
+
+EhkoForge uses metallurgy as its central metaphor. This maps directly to the technical architecture:
+
+| Term | Meaning |
+|------|---------|
+| **Raw Ore** | Unprocessed input — conversations, journals, voice transcriptions |
+| **Smelting** | Batch processing that extracts insights from raw material (code-based analysis + LLM extraction) |
+| **Ingot** | A single distilled insight — one value, belief, memory, or pattern. The atomic unit of identity data |
+| **Forging** | Human curation — reviewing an ingot and accepting it into the Ehko's personality |
+| **The Forge** | The web interface where smelting and forging happen |
+| **Tiers** | Quality grades (Copper → Iron → Silver → Gold → Mythic) based on confidence and corroboration |
+| **The Smith** | You — the human shaping the Ehko through deliberate reflection |
+| **Ehko** | The finished artifact — a durable digital echo built from forged ingots |
+
+This isn't decorative language. The metaphor reflects how the system works: raw material is processed, refined into standardised units, and shaped by human hands into something meant to last centuries.
+
+See [Section 3.5 of the Manifest](1.0%20System%20Architecture/1_0_Ehko_Manifest.md) for the full explanation.
+
+---
+
 ## Who Is This For?
 
 This framework is built for people who:

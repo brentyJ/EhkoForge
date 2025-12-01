@@ -3,7 +3,7 @@ title: "1.0 Ehko Manifest"
 vault: EhkoForge
 type: module
 status: canonical
-version: "2.3"
+version: "2.4"
 created: 2025-11-22
 updated: 2025-12-01
 tags:
@@ -89,6 +89,31 @@ An Ehko's voice is legitimate only when it reflects the values, experiences, and
 
 ### 3.4 The Forge Changes the Smith
 The process of using Ehko Forge is itself transformative. The feedback loop between journaling, reflection, and system response shapes identity in real time.
+
+### 3.5 The Metallurgical Metaphor
+
+EhkoForge uses blacksmithing and metallurgy as its central metaphor. This isn't decoration—it maps directly to the technical architecture:
+
+| Metaphor | Technical Reality |
+|----------|-------------------|
+| **Raw Ore** | Conversations, journal entries, voice transcriptions—unprocessed thought captured in markdown |
+| **Smelting** | Batch processing that extracts structured insights from raw material (Tier 0 signal detection + Tier 2 LLM analysis) |
+| **Ingot** | A single distilled insight—the atomic unit of identity data. One value, belief, memory, preference, or pattern. Stored in the database with confidence scores and source links |
+| **Forging** | Human curation—reviewing an ingot and accepting it into the Ehko's personality. This is the irreplaceable human step |
+| **The Forge** | The workspace interface where smelting and forging happen |
+| **Tiers** (Copper → Mythic) | Confidence grades based on recurrence, significance, and corroboration—like metal purity |
+| **The Smith / Forger** | You. The human shaping the Ehko through deliberate reflection |
+| **The Ehko** | The finished artifact—a durable digital echo built from hundreds of forged ingots |
+
+**Why this metaphor?**
+
+1. **Transformation through heat and pressure.** Raw ore becomes refined metal only through processing. Raw thoughts become identity insights only through reflection and curation.
+2. **Durability is the point.** Forged metal lasts centuries. So should your Ehko.
+3. **Human skill is irreplaceable.** A furnace can smelt ore, but only a smith decides what to forge. AI extracts candidates; you decide what matters.
+4. **Quality varies.** Not all metal is equal. Not all insights are equal. The tier system (copper/iron/silver/gold/mythic) reflects this.
+5. **The process shapes the craftsman.** Blacksmiths are changed by their work. So are you.
+
+The metaphor is load-bearing architecture, not marketing language.
 
 ---
 
@@ -282,6 +307,7 @@ This file is considered a **pinned conceptual anchor** for all future developmen
 ---
 
 **Changelog**
+- v2.4 — 2025-12-01 — Added Section 3.5 (The Metallurgical Metaphor) explaining forge/ingot/smelt terminology with technical mappings; addresses credibility concern that metaphorical language might obscure rather than illuminate
 - v2.3 — 2025-12-01 — Major revision: rewrote Section 7 (Legacy & Digital Identity) to focus on children/descendants, Johnny Silverhand/Engrams as compelling concept, clarified digital replication is impossible AND unethical, emphasised Ehko speaks ABOUT not AS forger; consolidated Section 8 (Survival Architecture) from confusing "4 layers + 3 levels" to clear 3-tier degradation model with implementation details; removed redundant Section 11 (Status) boilerplate
 - v2.2 — 2025-12-01 — Refined with insights from personal manifesto v2.0: strengthened Section 1 (executive dysfunction/scaffolding language), clarified Section 4.4 (recursion as core mechanism), streamlined Section 7 (legacy + time horizons), tightened voice throughout; no structural changes
 - v2.1 — 2025-11-25 — Restructured: separated narrative essay into 1_0a_Ehko_Manifesto_Personal.md; fixed section numbering (added §9 Invitation to Future Readers); cleaned encoding artefacts; updated frontmatter to match module conventions
