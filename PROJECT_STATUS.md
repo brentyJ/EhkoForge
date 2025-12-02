@@ -369,6 +369,7 @@
 
 | Spec | Version | Purpose | Status |
 |------|---------|---------|--------|
+| UI_Redesign_Spec_v0_1.md | v0.1 | Three-area UI restructure | 📋 Specified |
 | ReCog_Engine_Spec_v0_1.md | v0.1 | Recursive cognition orchestration | 📋 Specified |
 | Ingot_System_Schema_v0_1.md | v0.1 | Ingot database schema | ✅ Implemented |
 | Tier0_PreAnnotation_Spec_v0_1.md | v0.1 | Code-based signal extraction | ✅ Implemented |
@@ -388,6 +389,7 @@
 ---
 
 **Changelog:**
+- v1.19 — 2025-12-02 Session 14 — UI Redesign Specification v0.1 created. Three-area structure (Reflections, Forge, Terminal) with distinct aesthetics. Journal mode with calendar, Terminal with model selector, Upload for bulk ore.
 - v1.18 — 2025-12-02 Session 11 (end) — OpenAI integration tested and verified. Both providers working. Dual-provider mode operational. Updated git_push.bat.
 - v1.17 — 2025-12-02 Session 13 — Token efficiency improvements: STACKWRIGHT_INSTRUCTIONS v2.2 with edit_file strategy; created script_registry.md and db_schema_summary.md compressed references. Expected 50-70% token reduction.
 - v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.1 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
