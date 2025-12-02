@@ -18,7 +18,7 @@ from uuid import uuid4
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from ehkoforge.llm import ClaudeProvider, create_default_config
+from ehkoforge.llm import create_default_config, get_provider_for_processing
 from ehkoforge.preprocessing.tier0 import preprocess_text, summarise_for_prompt
 
 logger = logging.getLogger(__name__)
@@ -121,18 +121,13 @@ class SmeltProcessor:
         self.db_path = db_path
         self.mirrorwell_path = mirrorwell_path
         
-        # LLM setup
+        # LLM setup via provider factory
         self.llm_config = create_default_config(config_path)
-        provider_config = self.llm_config.get_provider("claude")
+        self.llm = get_provider_for_processing(self.llm_config)
         
-        if provider_config and provider_config.api_key:
-            self.llm = ClaudeProvider(
-                api_key=provider_config.api_key,
-                model="claude-sonnet-4-20250514",  # Tier 2
-            )
-            logger.info(f"Smelt processor initialised with {self.llm.model}")
+        if self.llm:
+            logger.info(f"Smelt processor initialised with {self.llm.PROVIDER_NAME}:{self.llm.model}")
         else:
-            self.llm = None
             logger.warning("No LLM configured — smelt processor disabled")
     
     def get_db(self) -> sqlite3.Connection:

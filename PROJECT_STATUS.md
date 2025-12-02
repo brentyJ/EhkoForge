@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-01  
-**Version:** 1.14  
+**Last Updated:** 2025-12-02  
+**Version:** 1.16  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -36,21 +36,36 @@
   - Status: All tables deployed and tested
   - **Note:** Foreign keys use `object_id` (not `reflection_id`), emotional_tags uses `emotion` column
 
-- [x] **LLM Integration Module v1.0** — Claude API provider with context building
+- [x] **LLM Integration Module v1.1** — Multi-provider support with role-based routing
   - Location: `EhkoForge/5.0 Scripts/ehkoforge/llm/`
-  - Status: **WORKING** — Tested 2025-11-30
+  - Status: **WORKING** — Updated 2025-12-02
   - Components:
-    - `claude_provider.py` — Anthropic API wrapper (claude-sonnet-4-20250514)
+    - `base.py` — Abstract `LLMProvider` interface
+    - `claude_provider.py` — Anthropic API wrapper
+    - `openai_provider.py` — OpenAI API wrapper
+    - `provider_factory.py` — Role-based provider instantiation
     - `context_builder.py` — Queries reflection corpus for relevant context
     - `system_prompt.py` — Three modes: forging, visitor, archived
-    - `config.py` — API key management (Windows env vars)
-  - API Key: Set via `ANTHROPIC_API_KEY` environment variable
+    - `config.py` — API key + role-based model routing
+  - API Keys: Set via environment variables:
+    - `ANTHROPIC_API_KEY` — Claude access
+    - `OPENAI_API_KEY` — OpenAI access
+  - Role-Based Routing:
+    - `processing` — Smelt, tier ops (default: OpenAI gpt-4o-mini)
+    - `conversation` — Chat responses (default: Claude Sonnet)
+    - `ehko` — Ehko personality (default: Claude Sonnet, future: user-selectable)
+  - Environment Overrides:
+    - `EHKO_PROCESSING_PROVIDER`, `EHKO_PROCESSING_MODEL`
+    - `EHKO_CONVERSATION_PROVIDER`, `EHKO_CONVERSATION_MODEL`
+    - `EHKO_EHKO_PROVIDER`, `EHKO_EHKO_MODEL`
   - Features:
+    - Provider fallback chain if primary unavailable
     - Context injection from indexed reflections
     - Keyword-based search across titles, tags, emotional tags
     - Forging mode prompt (Ehko learning from forger)
     - Visitor mode prompt (Ehko speaking about forger) — defined, not exposed
     - Archived mode prompt (time capsule) — defined, not exposed
+  - **Testing Status:** Backend integration complete, needs end-to-end testing
 
 - [x] **Ingot System v0.1** — Complete ingot extraction and forging pipeline
   - Status: **WORKING** — Migration run, endpoints verified, UI complete
@@ -58,7 +73,7 @@
   - Migration Runner: `EhkoForge/5.0 Scripts/run_ingot_migration.py`
   - Components:
     - `ehkoforge/preprocessing/tier0.py` — Tier 0 signal extraction (no LLM cost)
-    - `ehkoforge/processing/smelt.py` — Tier 2 batch ingot extraction (Claude Sonnet)
+    - `ehkoforge/processing/smelt.py` — Tier 2 batch ingot extraction
     - `forge_server.py v1.2` — Smelt/ingot/Ehko API endpoints
   - Pipeline: Chat → Smelt Queue → Tier 0 Pre-Annotation → Tier 2 Extraction → Surface → Review → Forge/Reject
   - Surfacing threshold: `(significance >= 0.4 AND pass_count >= 2) OR source_count >= 3`
@@ -83,6 +98,18 @@
   - `Tier0_PreAnnotation_Spec_v0_1.md` — Code-based signal extraction
   - `Smelt_Processor_Spec_v0_1.md` — Batch job for ingot extraction
   - `Forge_UI_Update_Spec_v0_1.md` — Chat/Forge mode UI design
+
+- [x] **ReCog Engine Specification v0.1** — NEW
+  - Location: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_1.md`
+  - Purpose: Recursive Cognition Engine — orchestration layer for iterative meaning-making
+  - Status: **SPECIFIED** — Design complete, captures emergent insight processing pattern
+  - Defines:
+    - Three processing loops: Extraction, Correlation, Integration
+    - Termination conditions for each loop
+    - Processing stages (Tier 0 → Extraction → Correlation → Surfacing → Integration)
+    - Coherence anchoring via Identity Pillars and Core Memory
+    - Configuration parameters
+  - Note: Implementation deferred until ingot pipeline has real data flowing
 
 - [x] **Universal Template Framework v1.2**
   - Location: `EhkoForge/3.0 Templates/Universal/universal_template.md`
@@ -170,6 +197,12 @@
 ## SPECIFIED (Design Complete, No Implementation)
 
 ### Processing & Automation
+- [ ] **ReCog Engine** — Recursive cognition orchestration layer
+  - Spec: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_1.md`
+  - Status: Architecture designed, implementation deferred until ingot pipeline tested
+  - Purpose: Make iterative insight refinement deliberate instead of accidental
+  - Blocker: Needs real data flowing through ingot system first
+
 - [ ] **Mobile Input Processor** — Convert _inbox JSON packets to structured reflections
   - Spec: Defined in `1_4_Data_Model_v1_3.md` Section 4.2
   - Status: Architecture designed, no code written
@@ -191,7 +224,7 @@
 
 ## IN PROGRESS
 
-*Nothing currently in progress — ingot system complete, ready for real-world testing*
+*Nothing currently in progress — ready for real-world testing*
 
 ---
 
@@ -212,6 +245,11 @@
 - [x] **ehko_refresh.py transcription processing** — Tested 2025-11-27, working
 - [x] **Ingot System backend endpoints** — Tested 2025-12-01, working
 - [x] **Ingot System UI** — Tested 2025-12-01 with seed data, working
+
+- [ ] **OpenAI Provider Integration**
+  - Code complete, needs verification
+  - Test: Run smelt with OpenAI as processing provider
+  - Verify: Correct model routing per role
 
 - [ ] **End-to-End Ingot Flow** — Real conversation → smelt → review → forge
   - Have substantive chat conversation
@@ -261,21 +299,25 @@
 ## NEXT PRIORITIES (Recommended Order)
 
 ### Immediate (Testing)
-1. **End-to-End Test with Real Content** — Substantive chat → smelt → review → forge
-2. **Bug Fixes** — Address any issues discovered
+1. **OpenAI Provider Test** — Verify multi-provider routing works
+2. **End-to-End Test with Real Content** — Substantive chat → smelt → review → forge
+3. **Bug Fixes** — Address any issues discovered
 
 ### Short Term (Polish)
-3. **Smelt Scheduling** — Add APScheduler for automatic processing
-4. **Export System** — Portable archive generation
+4. **Smelt Scheduling** — Add APScheduler for automatic processing
+5. **Export System** — Portable archive generation
 
 ### Medium Term
-5. **Friend Registry Population** — Entry mechanism
-6. **Visitor Mode** — UI exposure + authentication gate
+6. **ReCog Engine Implementation** — After real data validates the need
+7. **Friend Registry Population** — Entry mechanism
+8. **Visitor Mode** — UI exposure + authentication gate
 
 ---
 
 ## RECENTLY COMPLETED
 
+- **2025-12-02 Session 12:** ReCog Engine Specification v0.1 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
+- **2025-12-02 Session 11:** OpenAI integration complete — Added `openai_provider.py`, `provider_factory.py`. Updated `config.py` with role-based routing (processing/conversation/ehko). Smelt now uses factory for provider selection. Chat uses conversation role. LLM status endpoint shows role config.
 - **2025-12-01 Session 10:** Ingot System complete — Migration run successfully (7 tables created). Backend verified (tier0.py, smelt.py, forge_server.py v1.2). Frontend v1.2 with mode toggle, ingot queue, detail panel, accept/reject, smelt status, Ehko state indicator. Test ingots seeded and verified. Full pipeline operational.
 - **2025-12-01 Session 9:** Ingot System architecture + backend — Four specs created. Backend implemented: tier0.py, smelt.py, forge_server.py v1.2, run_ingot_migration.py.
 - **2025-11-30 Session 8:** LLM Integration complete — Claude API working, context builder fixed, forge-to-vault auto-indexing working
@@ -307,7 +349,7 @@
 | ehko_control.py | v1.0 | GUI control panel | ✅ Working |
 | run_ingot_migration.py | v1.0 | Database migration runner | ✅ Applied |
 | seed_test_ingots.py | v1.0 | Test data generator | ✅ Working |
-| ehkoforge/llm/ | v1.0 | LLM integration module | ✅ Working |
+| ehkoforge/llm/ | v1.1 | LLM integration module (multi-provider) | ✅ Working |
 | ehkoforge/preprocessing/tier0.py | v0.1 | Tier 0 signal extraction | ✅ Working |
 | ehkoforge/processing/smelt.py | v0.1 | Smelt batch processor | ✅ Working |
 | index.html | v1.2 | Frontend UI (Chat + Forge modes) | ✅ Working |
@@ -317,6 +359,18 @@
 | fix_theme_headers.py | — | Correct header level detection | ✅ Applied |
 | fix_transcription_extraction.py | — | Fix section boundary regex | ✅ Applied |
 | run_process_transcriptions.bat | — | Batch runner for all fixes | ✅ Working |
+
+---
+
+## SPECIFICATION INVENTORY
+
+| Spec | Version | Purpose | Status |
+|------|---------|---------|--------|
+| ReCog_Engine_Spec_v0_1.md | v0.1 | Recursive cognition orchestration | 📋 Specified |
+| Ingot_System_Schema_v0_1.md | v0.1 | Ingot database schema | ✅ Implemented |
+| Tier0_PreAnnotation_Spec_v0_1.md | v0.1 | Code-based signal extraction | ✅ Implemented |
+| Smelt_Processor_Spec_v0_1.md | v0.1 | Batch ingot extraction | ✅ Implemented |
+| Forge_UI_Update_Spec_v0_1.md | v0.1 | Chat/Forge UI design | ✅ Implemented |
 
 ---
 
@@ -331,6 +385,8 @@
 ---
 
 **Changelog:**
+- v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.1 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
+- v1.15 — 2025-12-02 Session 11 — OpenAI provider integration complete. LLM module updated to v1.1 with multi-provider support.
 - v1.14 — 2025-12-01 Session 10 (end) — Moved Ingot System from SPECIFIED to IMPLEMENTED. Updated script inventory with all new scripts. Consolidated GAPS section. Simplified RECENTLY COMPLETED. Session cleanup.
 - v1.13 — 2025-12-01 Session 10 — Ingot System UI complete.
 - v1.12 — 2025-12-01 Session 9 — Ingot System specs and backend.

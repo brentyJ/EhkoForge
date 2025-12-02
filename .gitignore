@@ -48,3 +48,12 @@ backups/
 
 # Local utility scripts (not part of framework)
 git_push.bat
+
+# Documents folder (images, PDFs, local files)
+documents/
+
+# Attachments
+attachments/
+
+# Obsidian config (entire folder)
+.obsidian/

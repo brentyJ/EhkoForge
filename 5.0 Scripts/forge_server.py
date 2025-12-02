@@ -23,10 +23,11 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 
 from ehkoforge.llm import (
-    ClaudeProvider,
     EhkoContextBuilder,
     create_default_config,
     get_system_prompt,
+    get_provider_for_conversation,
+    ProviderFactory,
 )
 from ehkoforge.preprocessing import preprocess_text
 from ehkoforge.processing import SmeltProcessor, queue_for_smelt, get_queue_stats, should_auto_smelt
@@ -59,22 +60,18 @@ _llm_provider = None
 
 
 def get_llm_provider():
-    """Get or create the LLM provider instance."""
+    """Get or create the LLM provider instance for conversation."""
     global _llm_provider
     
     if _llm_provider is None:
-        provider_config = LLM_CONFIG.get_provider("claude")
-        if provider_config and provider_config.api_key:
-            try:
-                _llm_provider = ClaudeProvider(
-                    api_key=provider_config.api_key,
-                    model=provider_config.model,
-                )
-                print(f"[OK] Claude provider initialised: {_llm_provider.model}")
-            except ImportError as e:
-                print(f"[WARN] Could not initialise Claude provider: {e}")
-        else:
-            print("[WARN] No Claude API key configured. Using templated responses.")
+        try:
+            _llm_provider = get_provider_for_conversation(LLM_CONFIG)
+            if _llm_provider:
+                print(f"[OK] Conversation provider initialised: {_llm_provider.PROVIDER_NAME}:{_llm_provider.model}")
+            else:
+                print("[WARN] No conversation provider configured. Using templated responses.")
+        except Exception as e:
+            print(f"[WARN] Could not initialise conversation provider: {e}")
     
     return _llm_provider
 
@@ -1312,11 +1309,22 @@ def llm_status():
             "message": "No LLM provider configured. Using templated responses.",
         })
     
+    # Get available and configured providers
+    available = ProviderFactory.list_available()
+    configured = ProviderFactory.list_configured(LLM_CONFIG)
+    
     return jsonify({
         "status": "online",
         "provider": provider.PROVIDER_NAME,
         "model": provider.model,
         "message": "LLM provider active.",
+        "role_config": {
+            "conversation": f"{LLM_CONFIG.conversation_provider}:{LLM_CONFIG.conversation_model}",
+            "processing": f"{LLM_CONFIG.processing_provider}:{LLM_CONFIG.processing_model}",
+            "ehko": f"{LLM_CONFIG.ehko_provider}:{LLM_CONFIG.ehko_model}",
+        },
+        "available_providers": available,
+        "configured_providers": configured,
     })
 
 

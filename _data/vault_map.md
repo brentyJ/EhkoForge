@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "1.8"
+version: "2.0"
 created: 2025-11-29
-updated: 2025-12-01
+updated: 2025-12-02
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-01 (Session 10)
+**Generated:** 2025-12-02 (Session 12)
 
 ---
 
@@ -62,6 +62,9 @@ Ingot_System_Schema_v0_1.md                       [module, v0.1] — DB tables
 Tier0_PreAnnotation_Spec_v0_1.md                  [module, v0.1] — Signal extraction
 Smelt_Processor_Spec_v0_1.md                      [module, v0.1] — Batch processing
 Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
+
+# ReCog Engine (2025-12-02)
+ReCog_Engine_Spec_v0_1.md                         [module, v0.1] — Recursive cognition orchestration
 ```
 
 ### 3.0 Templates/
@@ -101,13 +104,15 @@ run_process_transcriptions.bat    [working] — Batch runner
 ```
 ehkoforge/
 ├── __init__.py
-├── llm/                          [v1.0, working] — LLM integration
+├── llm/                          [v1.1, working] — Multi-provider LLM integration
 │   ├── __init__.py
 │   ├── base.py                   — Abstract provider interface
 │   ├── claude_provider.py        — Anthropic API wrapper
+│   ├── openai_provider.py        — OpenAI API wrapper (NEW)
+│   ├── provider_factory.py       — Role-based provider instantiation (NEW)
 │   ├── context_builder.py        — Reflection corpus search
 │   ├── system_prompt.py          — Forging/visitor/archived prompts
-│   ├── config.py                 — API key management
+│   ├── config.py                 — API key + role routing
 │   └── forge_integration.py      — Server integration helpers
 ├── preprocessing/                [v0.1, working] — Tier 0 processing
 │   ├── __init__.py
@@ -324,6 +329,8 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.0 — 2025-12-02 Session 12 — Added ReCog_Engine_Spec_v0_1.md to 2.0 Modules.
+- v1.9 — 2025-12-02 Session 11 — Added openai_provider.py, provider_factory.py to LLM module. Updated llm/ to v1.1.
 - v1.8 — 2025-12-01 Session 10 — Ingot system complete: Added tier0.py, smelt.py to ehkoforge module. Added migrations/ folder. Added run_ingot_migration.py, seed_test_ingots.py. Updated frontend to v1.2. Moved ingot tables from "specified" to "created". Added quick reference section.
 - v1.7 — 2025-12-01 — Added Forge_UI_Update_Spec_v0_1.md to 2.0 Modules.
 - v1.6 — 2025-12-01 — Added Ingot System specs to 2.0 Modules (Schema, Tier0, Smelt Processor). Added future DB tables list.

@@ -2,7 +2,7 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.0  
+Version: 2.1  
 Status: Active Development  
 License: MIT
 
@@ -59,7 +59,7 @@ This framework is built for people who:
 
 ---
 
-## Current State (2025-12-01)
+## Current State (2025-12-02)
 
 ### ✅ Working
 
@@ -70,28 +70,37 @@ This framework is built for people who:
 - **SQLite schema** — 20+ tables for indexing, authentication, sessions, and ingot processing
 
 **Frontend (The Forge)**
-- **Chat Mode** — Session management, real Claude API responses, context injection from reflection corpus
+- **Chat Mode** — Session management, real LLM API responses, context injection from reflection corpus
 - **Forge Mode** — Ingot queue, detail panel, accept/reject workflow, Ehko state tracking
 - **MDV Aesthetic** — Dark, glowing, arcane-tech visual design
 
 **Ingot System**
 - **Tier 0 Pre-Annotation** — Code-based signal extraction (no LLM cost)
-- **Tier 2 Smelt Processing** — Claude-powered insight extraction
+- **Tier 2 Smelt Processing** — LLM-powered insight extraction
 - **Forging Pipeline** — Chat → Smelt → Review → Accept/Reject → Ehko personality
 
-**LLM Integration**
-- **Claude API** — Anthropic integration with context building
+**LLM Integration v1.1 (Multi-Provider)**
+- **Claude API** — Anthropic integration (conversation, Ehko personality)
+- **OpenAI API** — GPT integration (processing tasks, cheaper operations)
+- **Role-Based Routing** — Different providers/models for different tasks:
+  - `processing` — Smelt, batch ops (default: OpenAI gpt-4o-mini)
+  - `conversation` — Chat responses (default: Claude Sonnet)
+  - `ehko` — Ehko personality (default: Claude Sonnet)
+- **Environment Overrides** — Full control via environment variables
 - **System Prompts** — Forging, visitor, and archived modes defined
 - **Reflection Context** — Automatic injection of relevant past reflections
 
 **Documentation**
 - Complete system architecture (7 modules)
 - Ingot system specifications (4 docs)
+- **ReCog Engine Specification v0.1** — Recursive cognition orchestration design
 - UI/Frontend specifications
 - Lexicon and tag taxonomies
 - Identity Pillars framework with scientific basis
 
 ### 📋 Specified (Design Complete, No Implementation)
+
+- **ReCog Engine** — Recursive cognition orchestration (implementation deferred until real data testing)
 - Mobile input processor (JSON packets → structured reflections)
 - Authentication engine (memory-based challenges, custodian overrides)
 - Export system (text-only, JSON, static site formats)
@@ -124,6 +133,7 @@ EhkoForge/
 │   ├── Tier0_PreAnnotation_Spec_v0_1.md
 │   ├── Smelt_Processor_Spec_v0_1.md
 │   ├── Forge_UI_Update_Spec_v0_1.md
+│   ├── ReCog_Engine_Spec_v0_1.md          # NEW: Recursive cognition
 │   └── SPINOFF_IDEAS.md
 │
 ├── 3.0 Templates/              # Entry templates
@@ -140,8 +150,11 @@ EhkoForge/
 │   ├── run_ingot_migration.py             # Database migration
 │   ├── seed_test_ingots.py                # Test data generator
 │   ├── ehkoforge/                         # Python modules
-│   │   ├── llm/                           # LLM integration
-│   │   │   ├── claude_provider.py
+│   │   ├── llm/                           # LLM integration (v1.1)
+│   │   │   ├── base.py                    # Abstract provider interface
+│   │   │   ├── claude_provider.py         # Anthropic wrapper
+│   │   │   ├── openai_provider.py         # OpenAI wrapper (NEW)
+│   │   │   ├── provider_factory.py        # Role-based routing (NEW)
 │   │   │   ├── context_builder.py
 │   │   │   ├── system_prompt.py
 │   │   │   └── config.py
@@ -182,7 +195,9 @@ EhkoForge/
 ### Prerequisites
 - Python 3.8+
 - Obsidian (recommended for vault management)
-- Anthropic API key (for LLM features)
+- API keys for LLM providers (at least one):
+  - Anthropic API key (for Claude)
+  - OpenAI API key (for GPT models)
 
 ### Installation
 
@@ -194,12 +209,13 @@ cd EhkoForge
 
 2. Install Python dependencies:
 ```bash
-pip install pyyaml flask anthropic
+pip install pyyaml flask anthropic openai
 ```
 
-3. Set your API key (Windows):
+3. Set your API keys (Windows):
 ```powershell
-setx ANTHROPIC_API_KEY "your-key-here"
+setx ANTHROPIC_API_KEY "your-anthropic-key"
+setx OPENAI_API_KEY "your-openai-key"
 ```
 
 4. Run the database migration:
@@ -222,6 +238,22 @@ Double-click `5.0 Scripts/ehko_control.py` for a GUI that manages:
 - Vault indexing
 - Transcription processing
 - Opening The Forge UI
+
+### LLM Provider Configuration
+
+EhkoForge uses role-based LLM routing. Defaults:
+
+| Role | Default Provider | Default Model | Purpose |
+|------|------------------|---------------|---------|
+| `processing` | OpenAI | gpt-4o-mini | Smelt, batch operations (cheaper) |
+| `conversation` | Anthropic | claude-sonnet-4-20250514 | Chat responses |
+| `ehko` | Anthropic | claude-sonnet-4-20250514 | Ehko personality |
+
+Override via environment variables:
+```powershell
+setx EHKO_PROCESSING_PROVIDER "anthropic"
+setx EHKO_PROCESSING_MODEL "claude-sonnet-4-20250514"
+```
 
 ---
 
@@ -269,9 +301,17 @@ Use `_mirrorwell_template/` as a starting point for your own personal vault.
 1. **Chat** — Conversations with your Ehko
 2. **Queue** — Sessions marked for processing
 3. **Tier 0** — Code-based signal extraction (free)
-4. **Tier 2** — LLM-powered insight extraction (Claude Sonnet)
+4. **Tier 2** — LLM-powered insight extraction
 5. **Surface** — High-confidence ingots appear for review
 6. **Forge** — Accept/reject to shape your Ehko
+
+### ReCog Engine (Specified, Not Yet Implemented)
+The **Recursive Cognition Engine** is a designed orchestration layer for iterative meaning-making:
+- **Extraction Loop** — Extract ingots from raw content with multiple passes
+- **Correlation Loop** — Find patterns across ingots, link to Identity Pillars
+- **Integration Loop** — Convert accepted ingots to personality layers
+
+This captures the "emergent insight" phenomenon observed during development — making deliberate what was previously accidental. See [ReCog_Engine_Spec_v0_1.md](2.0%20Modules/ReCog_Engine_Spec_v0_1.md).
 
 ### Export-First Architecture
 Three levels of degradation guarantee your Ehko survives:
@@ -350,17 +390,21 @@ The architecture is intentionally designed to be forkable and customisable.
 
 ### Immediate
 - End-to-end testing with real content
+- OpenAI provider verification
 - Bug fixes from real-world usage
+
+### Short Term
 - Smelt scheduling (auto-process)
+- Export system implementation
 
 ### Medium Term
-- Export system implementation
+- ReCog Engine implementation (after testing validates the need)
 - Friend registry population UI
 - Visitor mode UI exposure
 - Mobile input processor
 
 ### Long Term
-- Multi-API support (GPT, Gemini)
+- Additional LLM providers (Gemini, local models)
 - Ehko Vault Server (hosted service)
 - Browser extension for capture
 
@@ -396,6 +440,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.1 — 2025-12-02 — Multi-provider LLM support (OpenAI + Claude), ReCog Engine specification, role-based routing
 - v2.0 — 2025-12-01 — Major update: Frontend v1.2, Ingot System, LLM integration, Control Panel, complete rewrite
 - v1.1 — 2025-11-28 — Added MIT license, completed _mirrorwell_template
 - v1.0 — 2025-11-28 — Initial README created for GitHub preparation

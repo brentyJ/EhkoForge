@@ -3,6 +3,7 @@ Configuration management for LLM providers.
 
 Handles API key storage, loading, and provider selection.
 Supports environment variables, config files, and runtime configuration.
+Includes role-based model routing for different use cases.
 """
 
 import json
@@ -37,7 +38,12 @@ class LLMConfig:
     """
     Central configuration for all LLM providers.
     
-    Supports multiple providers with automatic fallback.
+    Supports multiple providers with automatic fallback and role-based routing.
+    
+    Roles:
+        - processing: Smelt, tier ops, batch jobs (cost-optimised)
+        - conversation: Chat responses (quality-optimised)
+        - ehko: Ehko personality generation (customisable)
     """
     
     providers: dict[str, ProviderConfig] = field(default_factory=dict)
@@ -52,18 +58,47 @@ class LLMConfig:
     temperature: float = 0.7
     """Default temperature for generation."""
     
+    # Role-based provider routing
+    processing_provider: str = "openai"
+    """Provider for processing tasks (smelt, tier ops). Cost-optimised."""
+    
+    processing_model: str = "gpt-4o-mini"
+    """Model for processing tasks. GPT-4o-mini recommended for cost."""
+    
+    conversation_provider: str = "claude"
+    """Provider for chat conversations. Quality-optimised."""
+    
+    conversation_model: str = "claude-sonnet-4-20250514"
+    """Model for conversations. Claude Sonnet recommended for quality."""
+    
+    ehko_provider: str = "claude"
+    """Provider for Ehko personality generation. Customisable by user."""
+    
+    ehko_model: str = "claude-sonnet-4-20250514"
+    """Model for Ehko personality. User-selectable in future."""
+    
     @classmethod
     def from_env(cls) -> "LLMConfig":
         """
         Load configuration from environment variables.
         
-        Looks for:
+        Provider keys:
             - ANTHROPIC_API_KEY / CLAUDE_API_KEY
             - OPENAI_API_KEY
             - GEMINI_API_KEY / GOOGLE_API_KEY
+        
+        Global settings:
             - EHKO_DEFAULT_PROVIDER
             - EHKO_MAX_TOKENS
             - EHKO_TEMPERATURE
+        
+        Role-based settings:
+            - EHKO_PROCESSING_PROVIDER
+            - EHKO_PROCESSING_MODEL
+            - EHKO_CONVERSATION_PROVIDER
+            - EHKO_CONVERSATION_MODEL
+            - EHKO_EHKO_PROVIDER (Ehko personality provider)
+            - EHKO_EHKO_MODEL (Ehko personality model)
         """
         config = cls()
         
@@ -103,6 +138,21 @@ class LLMConfig:
         if os.environ.get("EHKO_TEMPERATURE"):
             config.temperature = float(os.environ["EHKO_TEMPERATURE"])
         
+        # Role-based settings
+        config.processing_provider = os.environ.get("EHKO_PROCESSING_PROVIDER", "openai")
+        config.processing_model = os.environ.get("EHKO_PROCESSING_MODEL", "gpt-4o-mini")
+        
+        config.conversation_provider = os.environ.get("EHKO_CONVERSATION_PROVIDER", "claude")
+        config.conversation_model = os.environ.get("EHKO_CONVERSATION_MODEL", "claude-sonnet-4-20250514")
+        
+        config.ehko_provider = os.environ.get("EHKO_EHKO_PROVIDER", "claude")
+        config.ehko_model = os.environ.get("EHKO_EHKO_MODEL", "claude-sonnet-4-20250514")
+        
+        # Fallback: If OpenAI not available for processing, use Claude
+        if config.processing_provider == "openai" and "openai" not in config.providers:
+            config.processing_provider = "claude"
+            config.processing_model = "claude-sonnet-4-20250514"
+        
         return config
     
     @classmethod
@@ -115,12 +165,24 @@ class LLMConfig:
             "default_provider": "claude",
             "max_tokens": 1024,
             "temperature": 0.7,
+            "processing_provider": "openai",
+            "processing_model": "gpt-4o-mini",
+            "conversation_provider": "claude",
+            "conversation_model": "claude-sonnet-4-20250514",
+            "ehko_provider": "claude",
+            "ehko_model": "claude-sonnet-4-20250514",
             "providers": {
                 "claude": {
                     "api_key": "sk-ant-...",
                     "model": "claude-sonnet-4-20250514",
                     "enabled": true,
                     "priority": 0
+                },
+                "openai": {
+                    "api_key": "sk-...",
+                    "model": "gpt-4o-mini",
+                    "enabled": true,
+                    "priority": 1
                 }
             }
         }
@@ -133,10 +195,20 @@ class LLMConfig:
         with open(config_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         
+        # Global settings
         config.default_provider = data.get("default_provider", "claude")
         config.max_tokens = data.get("max_tokens", 1024)
         config.temperature = data.get("temperature", 0.7)
         
+        # Role-based settings
+        config.processing_provider = data.get("processing_provider", "openai")
+        config.processing_model = data.get("processing_model", "gpt-4o-mini")
+        config.conversation_provider = data.get("conversation_provider", "claude")
+        config.conversation_model = data.get("conversation_model", "claude-sonnet-4-20250514")
+        config.ehko_provider = data.get("ehko_provider", "claude")
+        config.ehko_model = data.get("ehko_model", "claude-sonnet-4-20250514")
+        
+        # Provider configs
         for name, provider_data in data.get("providers", {}).items():
             config.providers[name] = ProviderConfig(
                 name=name,
@@ -154,6 +226,12 @@ class LLMConfig:
             "default_provider": self.default_provider,
             "max_tokens": self.max_tokens,
             "temperature": self.temperature,
+            "processing_provider": self.processing_provider,
+            "processing_model": self.processing_model,
+            "conversation_provider": self.conversation_provider,
+            "conversation_model": self.conversation_model,
+            "ehko_provider": self.ehko_provider,
+            "ehko_model": self.ehko_model,
             "providers": {}
         }
         
@@ -220,6 +298,34 @@ class LLMConfig:
             self.providers[provider_name].api_key = api_key
             return True
         return False
+    
+    def set_role_provider(self, role: str, provider: str, model: Optional[str] = None) -> bool:
+        """
+        Set provider and model for a specific role.
+        
+        Args:
+            role: Role name ('processing', 'conversation', 'ehko')
+            provider: Provider name
+            model: Optional model override
+        
+        Returns:
+            True if role was updated.
+        """
+        if role == "processing":
+            self.processing_provider = provider
+            if model:
+                self.processing_model = model
+        elif role == "conversation":
+            self.conversation_provider = provider
+            if model:
+                self.conversation_model = model
+        elif role == "ehko":
+            self.ehko_provider = provider
+            if model:
+                self.ehko_model = model
+        else:
+            return False
+        return True
 
 
 def create_default_config(config_dir: Path) -> LLMConfig:
@@ -244,6 +350,21 @@ def create_default_config(config_dir: Path) -> LLMConfig:
                     config.providers[name].api_key = env_provider.api_key
                 else:
                     config.providers[name] = env_provider
+        
+        # Also merge role settings from env if explicitly set
+        if os.environ.get("EHKO_PROCESSING_PROVIDER"):
+            config.processing_provider = env_config.processing_provider
+        if os.environ.get("EHKO_PROCESSING_MODEL"):
+            config.processing_model = env_config.processing_model
+        if os.environ.get("EHKO_CONVERSATION_PROVIDER"):
+            config.conversation_provider = env_config.conversation_provider
+        if os.environ.get("EHKO_CONVERSATION_MODEL"):
+            config.conversation_model = env_config.conversation_model
+        if os.environ.get("EHKO_EHKO_PROVIDER"):
+            config.ehko_provider = env_config.ehko_provider
+        if os.environ.get("EHKO_EHKO_MODEL"):
+            config.ehko_model = env_config.ehko_model
+        
         return config
     
     # Fall back to environment only
