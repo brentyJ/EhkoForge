@@ -2,7 +2,7 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.1  
+Version: 2.2  
 Status: Active Development  
 License: MIT
 
@@ -175,16 +175,18 @@ EhkoForge/
 │   ├── llm_config.json
 │   └── ui-preferences.json
 │
-├── _data/                      # Generated files (not in git)
-│   ├── ehko_index.db
-│   └── vault_map.md
+├── _data/                      # System reference files
+│   ├── ehko_index.db                      # SQLite database (not in git)
+│   ├── vault_map.md                       # Vault structure reference
+│   ├── script_registry.md                 # Compressed script reference
+│   └── db_schema_summary.md               # Compressed DB schema reference
 │
 ├── _mirrorwell_template/       # Empty vault scaffold for users
 │
 ├── .gitignore
 ├── LICENSE
 ├── PROJECT_STATUS.md
-├── STACKWRIGHT_INSTRUCTIONS_v2.1.md
+├── STACKWRIGHT_INSTRUCTIONS_v2.2.md
 └── README.md
 ```
 
@@ -440,6 +442,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.2 — 2025-12-02 — Token efficiency improvements: STACKWRIGHT v2.2 with edit_file strategy, compressed reference files (script_registry.md, db_schema_summary.md)
 - v2.1 — 2025-12-02 — Multi-provider LLM support (OpenAI + Claude), ReCog Engine specification, role-based routing
 - v2.0 — 2025-12-01 — Major update: Frontend v1.2, Ingot System, LLM integration, Control Panel, complete rewrite
 - v1.1 — 2025-11-28 — Added MIT license, completed _mirrorwell_template
