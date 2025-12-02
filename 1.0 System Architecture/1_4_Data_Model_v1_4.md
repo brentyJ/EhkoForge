@@ -3,14 +3,31 @@ title: 1.4 Data Model
 vault: EhkoForge
 type: module
 status: active
-version: "1.3"
+version: "1.4"
 created: 2025-11-22
-updated: 2025-11-29
+updated: 2025-12-03
 tags:
   - ehkoforge
   - pinned
 ---
 # {{title}}
+
+## 1a. License Split
+
+**Important:** The EhkoForge data model is split across two licenses:
+
+| License | Scope | Document |
+|---------|-------|----------|
+| **MIT** | Core tables (reflection_objects, tags, sessions, authentication) | [[Data_Model_Core_Tables_v1_0]] |
+| **AGPLv3** | ReCog Engine tables (ingots, smelt_queue, personality_layers) | [[2.0 Modules/ReCog/Ingot_System_Schema_v0_1]] |
+
+**Core tables (MIT)** are free to use, modify, and distribute. Any identity preservation system can adopt this schema.
+
+**ReCog tables (AGPLv3)** implement the cognitive processing pipeline. Commercial use requires either open-sourcing your implementation or obtaining a commercial license from brent@ehkolabs.io.
+
+This document provides the overview. For implementation details, see the linked schema specifications.
+
+---
 
 ## 1. Purpose & Scope
 
@@ -722,6 +739,7 @@ When friend registry or authentication tables change:
 ---
 
 **Changelog**
+- v1.4 — 2025-12-03 — Added license split documentation (Section 1a); referenced Data_Model_Core_Tables_v1_0.md (MIT) and 2.0 Modules/ReCog/Ingot_System_Schema_v0_1.md (AGPL)
 - v1.3 — 2025-11-29 — Integrated Core Memory Index framework: added core_memory_status, core_memory_themes, pillar_links, index_priority, last_reviewed fields to mirrorwell_extensions; see [[1_7_Core_Memory_Index_Framework_v1_0]]
 - v1.2 — 2025-11-26 — Scope reduction: removed MonsterGarden and ManaCore vault references, plant_extensions and lore_extensions tables; simplified to Mirrorwell-only model; integrated prepared_messages tables from v1.2 patch; merged all query examples; cleaned up tag taxonomies
 - v1.1 — 2025-11-25 — Integrated authentication schema from 1.3 Security & Ownership: added friend_registry, shared_memories, authentication_tokens, authentication_logs, custodians tables; added shared_with frontmatter field; added shared_with_friends table; updated cross-vault query examples

@@ -16,14 +16,8 @@ from .provider_factory import (
     get_provider_for_conversation,
     get_provider_for_ehko,
 )
-from .system_prompt import (
-    FORGING_MODE_PROMPT,
-    VISITOR_MODE_PROMPT,
-    ARCHIVED_MODE_PROMPT,
-    get_system_prompt,
-    get_forging_prompt,
-    get_visitor_prompt,
-)
+# NOTE: System prompts moved to recog_engine.prompts (AGPL)
+# Import from there instead: from recog_engine.prompts import get_system_prompt
 
 __all__ = [
     # Base classes
@@ -43,11 +37,5 @@ __all__ = [
     "LLMConfig",
     "ProviderConfig",
     "create_default_config",
-    # System prompts
-    "FORGING_MODE_PROMPT",
-    "VISITOR_MODE_PROMPT",
-    "ARCHIVED_MODE_PROMPT",
-    "get_system_prompt",
-    "get_forging_prompt",
-    "get_visitor_prompt",
+    # NOTE: System prompts moved to recog_engine.prompts (AGPL)
 ]

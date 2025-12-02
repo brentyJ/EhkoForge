@@ -2,9 +2,9 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.5  
+Version: 2.6  
 Status: Active Development  
-License: MIT
+License: MIT + AGPLv3 (split)
 
 ---
 
@@ -143,11 +143,13 @@ EhkoForge/
 ├── 2.0 Modules/                # Feature specifications
 │   ├── Frontend_Implementation_Spec_v1_0.md
 │   ├── UI-MDV-Specification.md
-│   ├── Ingot_System_Schema_v0_1.md
-│   ├── Tier0_PreAnnotation_Spec_v0_1.md
-│   ├── Smelt_Processor_Spec_v0_1.md
+│   ├── ReCog/                             # AGPL-licensed ReCog Engine
+│   │   ├── LICENSE                        # AGPLv3
+│   │   ├── ReCog_Engine_Spec_v0_2.md
+│   │   ├── Ingot_System_Schema_v0_1.md
+│   │   ├── Tier0_PreAnnotation_Spec_v0_1.md
+│   │   └── Smelt_Processor_Spec_v0_1.md
 │   ├── Forge_UI_Update_Spec_v0_1.md
-│   ├── ReCog_Engine_Spec_v0_1.md          # NEW: Recursive cognition
 │   └── SPINOFF_IDEAS.md
 │
 ├── 3.0 Templates/              # Entry templates
@@ -163,19 +165,23 @@ EhkoForge/
 │   ├── ehko_control.py                    # GUI control panel
 │   ├── run_ingot_migration.py             # Database migration
 │   ├── seed_test_ingots.py                # Test data generator
-│   ├── ehkoforge/                         # Python modules
+│   ├── recog_engine/                      # AGPL-licensed ReCog Engine
+│   │   ├── LICENSE                        # AGPLv3
+│   │   ├── __init__.py
+│   │   ├── tier0.py                       # Signal extraction
+│   │   ├── smelt.py                       # Batch processing
+│   │   ├── prompts.py                     # Ehko behaviour prompts
+│   │   └── forge_integration.py           # Server integration
+│   ├── ehkoforge/                         # MIT-licensed modules
 │   │   ├── llm/                           # LLM integration (v1.1)
 │   │   │   ├── base.py                    # Abstract provider interface
 │   │   │   ├── claude_provider.py         # Anthropic wrapper
-│   │   │   ├── openai_provider.py         # OpenAI wrapper (NEW)
-│   │   │   ├── provider_factory.py        # Role-based routing (NEW)
+│   │   │   ├── openai_provider.py         # OpenAI wrapper
+│   │   │   ├── provider_factory.py        # Role-based routing
 │   │   │   ├── context_builder.py
-│   │   │   ├── system_prompt.py
 │   │   │   └── config.py
-│   │   ├── preprocessing/                 # Tier 0 processing
-│   │   │   └── tier0.py
-│   │   └── processing/                    # Smelt processing
-│   │       └── smelt.py
+│   │   ├── preprocessing/                 # (redirects to recog_engine)
+│   │   └── processing/                    # (redirects to recog_engine)
 │   └── migrations/
 │       └── ingot_migration_v0_1.sql
 │
@@ -442,7 +448,44 @@ Read the manifestos:
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for full text.
+EhkoForge uses a **split licensing model**:
+
+### MIT License (Framework)
+
+The core framework is MIT-licensed — free to use, modify, and distribute:
+- Vault structure, templates, indexing scripts
+- LLM provider infrastructure (`ehkoforge/llm/`)
+- Core database schema (reflection_objects, tags, sessions, authentication)
+- Frontend UI shell
+- Universal Template Framework
+
+See [LICENSE](LICENSE) for full MIT text.
+
+### AGPLv3 (ReCog Engine)
+
+The **ReCog Engine** — the cognitive processing pipeline — is AGPLv3-licensed:
+- Tier 0 signal extraction (`recog_engine/tier0.py`)
+- Smelt batch processing (`recog_engine/smelt.py`)
+- Ehko behaviour prompts (`recog_engine/prompts.py`)
+- Ingot system tables and specifications
+- Personality layer integration
+
+See [5.0 Scripts/recog_engine/LICENSE](5.0%20Scripts/recog_engine/LICENSE) for full AGPLv3 text.
+
+### What This Means
+
+**If you're building your own Ehko:** Use freely. Both licenses allow personal use.
+
+**If you're building a commercial product:**
+- MIT components: Use freely, no obligations
+- ReCog components: Either open-source your entire system under AGPL, or contact brent@ehkolabs.io for a commercial license
+
+### Why Split?
+
+- **MIT for framework:** Encourages adoption, lets anyone build identity preservation systems
+- **AGPL for ReCog:** Protects the cognitive architecture research from being absorbed by big tech without contributing back
+
+The AGPL specifically closes the "SaaS loophole" — if you run ReCog as a network service, you must make your source available.
 
 ---
 
@@ -460,6 +503,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.6 — 2025-12-03 — License split: MIT (framework) + AGPLv3 (ReCog Engine). Reorganised code into recog_engine/ module. Updated imports and documentation.
 - v2.5 — 2025-12-02 — Control Panel v2.0 (touch-optimized, Forge/Smelt controls, CLI). VBS launcher. OpenAI integration verified with .env loading. Speaker attribution fix in smelt.
 - v2.4 — 2025-12-02 — Expanded terminology section to acknowledge mixed metaphors; separated forge metaphor (primary) from architectural terms; clarified Identity Pillars as organizational framework not psychological claims
 - v2.3 — 2025-12-02 — OpenAI integration tested and verified; changed ReCog "meaning-making" to "insight processing"; minor README cleanup

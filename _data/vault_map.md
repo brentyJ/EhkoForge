@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.3"
+version: "2.4"
 created: 2025-11-29
-updated: 2025-12-02
+updated: 2025-12-03
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-02 (Session 12)
+**Generated:** 2025-12-03 (Session 16 - License Split)
 
 ---
 
@@ -30,6 +30,18 @@ G:\Other computers\Ehko\Obsidian\
 
 ---
 
+## LICENSE STRUCTURE
+
+EhkoForge uses split licensing:
+
+| Component | License | Location |
+|-----------|---------|----------|
+| Framework (core) | MIT | `EhkoForge/LICENSE` |
+| ReCog Engine (code) | AGPLv3 | `5.0 Scripts/recog_engine/LICENSE` |
+| ReCog Engine (specs) | AGPLv3 | `2.0 Modules/ReCog/LICENSE` |
+
+---
+
 ## EHKOFORGE VAULT
 
 ### 1.0 System Architecture/
@@ -41,10 +53,11 @@ G:\Other computers\Ehko\Obsidian\
 1_1_Overview_v1_0.md                              [module, v1.1]
 1_2_Components_v1_0.md                            [module, v1.1]
 1_3_Security_Ownership.md                         [module, v1.0]
-1_4_Data_Model_v1_3.md                            [module, v1.3]
+1_4_Data_Model_v1_4.md                            [module, v1.4]
 1_5_Behaviour_Engine_v1_1.md                      [module, v1.1]
 1_6_Identity_Pillars_Scientific_Basis_v1_0.md     [module, v1.0]
 1_7_Core_Memory_Index_Framework_v1_0.md           [module, v1.0]
+Data_Model_Core_Tables_v1_0.md                    [module, v1.0] — MIT schema
 _Index.md                                         [navigation, v1.0]
 ```
 
@@ -56,15 +69,15 @@ Frontend_Implementation_Spec_v1_0.md              [module, v1.0]
 UI-MDV-Specification.md                           [module, v1.0]
 SPINOFF_IDEAS.md                                  [planning, v1.0]
 Ideas for road mapping - Proko & Evolution Concept Scaffold.md  [concept, draft]
-
-# Ingot System Specs (2025-12-01)
-Ingot_System_Schema_v0_1.md                       [module, v0.1] — DB tables
-Tier0_PreAnnotation_Spec_v0_1.md                  [module, v0.1] — Signal extraction
-Smelt_Processor_Spec_v0_1.md                      [module, v0.1] — Batch processing
 Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
 
-# ReCog Engine (2025-12-02)
-ReCog_Engine_Spec_v0_2.md                         [module, v0.2] — Recursive cognition orchestration
+# ReCog Engine (AGPL-licensed)
+ReCog/
+├── LICENSE                                       [AGPLv3]
+├── ReCog_Engine_Spec_v0_2.md                     [module, v0.2] — Recursive cognition
+├── Ingot_System_Schema_v0_1.md                   [module, v0.1] — DB tables
+├── Tier0_PreAnnotation_Spec_v0_1.md              [module, v0.1] — Signal extraction
+└── Smelt_Processor_Spec_v0_1.md                  [module, v0.1] — Batch processing
 ```
 
 ### 3.0 Templates/
@@ -102,7 +115,18 @@ fix_transcription_extraction.py   [applied] — Section boundary fix
 run_process_transcriptions.bat    [working] — Batch runner
 ```
 
-#### ehkoforge/ Module
+#### recog_engine/ Module (AGPL-licensed)
+```
+recog_engine/
+├── LICENSE                       [AGPLv3]
+├── __init__.py
+├── tier0.py                      [v0.1, working] — Signal extraction (no LLM)
+├── smelt.py                      [v0.1, working] — Batch ingot extraction
+├── prompts.py                    [v0.1, working] — Ehko behaviour prompts
+└── forge_integration.py          [v0.1, guide]   — Server integration helpers
+```
+
+#### ehkoforge/ Module (MIT-licensed)
 ```
 ehkoforge/
 ├── __init__.py
@@ -110,18 +134,14 @@ ehkoforge/
 │   ├── __init__.py
 │   ├── base.py                   — Abstract provider interface
 │   ├── claude_provider.py        — Anthropic API wrapper
-│   ├── openai_provider.py        — OpenAI API wrapper (NEW)
-│   ├── provider_factory.py       — Role-based provider instantiation (NEW)
+│   ├── openai_provider.py        — OpenAI API wrapper
+│   ├── provider_factory.py       — Role-based provider instantiation
 │   ├── context_builder.py        — Reflection corpus search
-│   ├── system_prompt.py          — Forging/visitor/archived prompts
-│   ├── config.py                 — API key + role routing
-│   └── forge_integration.py      — Server integration helpers
-├── preprocessing/                [v0.1, working] — Tier 0 processing
-│   ├── __init__.py
-│   └── tier0.py                  — Signal extraction (no LLM)
-└── processing/                   [v0.1, working] — Smelt processing
-    ├── __init__.py
-    └── smelt.py                  — Batch ingot extraction
+│   └── config.py                 — API key + role routing
+├── preprocessing/                [redirects to recog_engine]
+│   └── __init__.py               — Import redirect notice
+└── processing/                   [redirects to recog_engine]
+    └── __init__.py               — Import redirect notice
 ```
 
 #### migrations/
@@ -144,19 +164,19 @@ System Logs/
 **Purpose:** Three-area Web UI (Reflect, Forge, Terminal)
 
 ```
-templates/                        [v2.0, NEW]
+templates/                        [v2.0]
 ├── base.html                     — Shared layout + nav bar
 ├── reflect.html                  — Reflect area (chat, journal, upload)
 ├── forge.html                    — Forge area (ingot review)
 └── terminal.html                 — Terminal area (general AI chat)
 
 static/
-├── css/                          [v2.0, NEW]
+├── css/                          [v2.0]
 │   ├── base.css                  — Shared styles (nav, layout, modals)
 │   ├── reflect.css               — Reflect area (teal palette)
 │   ├── forge.css                 — Forge area (gold/violet palette)
 │   └── terminal.css              — Terminal area (blue retro palette)
-├── js/                           [v2.0, NEW]
+├── js/                           [v2.0]
 │   ├── common.js                 — Shared utilities (config, stats, API)
 │   ├── reflect.js                — Reflect chat logic
 │   ├── forge.js                  — Ingot review logic
@@ -207,7 +227,14 @@ db_schema_summary.md              [v1.0] — Compressed DB schema reference
 
 ## DATABASE SCHEMA
 
-### Core Tables (existing)
+### License Split
+
+| License | Tables |
+|---------|--------|
+| **MIT** | reflection_objects, tags, emotional_tags, cross_references, changelog_entries, mirrorwell_extensions, forge_sessions, forge_messages, friend_registry, shared_with_friends, shared_memories, authentication_tokens, authentication_logs, custodians, prepared_messages, message_deliveries |
+| **AGPLv3** | smelt_queue, transcript_segments, annotations, ingots, ingot_sources, ingot_history, ehko_personality_layers |
+
+### Core Tables (MIT)
 - `reflection_objects` — Indexed vault entries
 - `tags` — General tags (object_id, tag)
 - `emotional_tags` — Emotional tags (object_id, emotion)
@@ -215,7 +242,7 @@ db_schema_summary.md              [v1.0] — Compressed DB schema reference
 - `changelog_entries` — Version history
 - `mirrorwell_extensions` — Personal metadata (core_memory, pillar, shared_with)
 
-### Friend/Auth Tables (existing)
+### Friend/Auth Tables (MIT)
 - `friend_registry` — Known people
 - `shared_with_friends` — Sharing permissions
 - `shared_memories` — Shared content
@@ -225,11 +252,11 @@ db_schema_summary.md              [v1.0] — Compressed DB schema reference
 - `prepared_messages` — Time-capsule messages
 - `message_deliveries` — Delivery tracking
 
-### Forge Session Tables (existing)
+### Forge Session Tables (MIT)
 - `forge_sessions` — Chat sessions
 - `forge_messages` — Session messages
 
-### Ingot System Tables (NEW — created 2025-12-01)
+### Ingot System Tables (AGPLv3)
 - `smelt_queue` — Pending content for analysis
 - `transcript_segments` — Chunked transcripts
 - `annotations` — User hints on content
@@ -357,6 +384,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.4 — 2025-12-03 Session 16 — License split reorganisation: Added recog_engine/ module (AGPL). Moved ReCog specs to 2.0 Modules/ReCog/. Added Data_Model_Core_Tables_v1_0.md. Updated ehkoforge/ to redirect preprocessing/processing to recog_engine. Updated Data Model to v1.4. Added license structure section.
 - v2.3 — 2025-12-02 Session 15 — Updated ehko_control.py to v2.0. Added EhkoForge Control Panel.vbs launcher. Added .env to scripts listing.
 - v2.2 — 2025-12-02 Session 14 — UI Redesign Phase 1: Added templates/, css/, js/ directories. Updated forge_server.py to v2.0 with route-based navigation.
 - v2.1 — 2025-12-02 Session 13 — Updated ReCog_Engine_Spec to v0.2 (framing clarifications).

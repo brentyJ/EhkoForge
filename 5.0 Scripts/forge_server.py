@@ -39,12 +39,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 from ehkoforge.llm import (
     EhkoContextBuilder,
     create_default_config,
-    get_system_prompt,
     get_provider_for_conversation,
     ProviderFactory,
 )
-from ehkoforge.preprocessing import preprocess_text
-from ehkoforge.processing import SmeltProcessor, queue_for_smelt, get_queue_stats, should_auto_smelt
+
+# ReCog Engine (AGPL-licensed)
+from recog_engine.prompts import get_system_prompt
+from recog_engine.tier0 import preprocess_text
+from recog_engine.smelt import SmeltProcessor, queue_for_smelt, get_queue_stats, should_auto_smelt
 
 # =============================================================================
 # CONFIGURATION

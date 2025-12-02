@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-02  
-**Version:** 1.21  
+**Last Updated:** 2025-12-03  
+**Version:** 1.22  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -45,7 +45,7 @@
     - `openai_provider.py` — OpenAI API wrapper
     - `provider_factory.py` — Role-based provider instantiation
     - `context_builder.py` — Queries reflection corpus for relevant context
-    - `system_prompt.py` — Three modes: forging, visitor, archived
+    - ~~`system_prompt.py`~~ — Moved to `recog_engine/prompts.py` (AGPL)
     - `config.py` — API key + role-based model routing
   - API Keys: Set via environment variables:
     - `ANTHROPIC_API_KEY` — Claude access
@@ -74,9 +74,11 @@
   - Status: **WORKING** — Migration run, endpoints verified, UI complete
   - Database Migration: `EhkoForge/5.0 Scripts/migrations/ingot_migration_v0_1.sql`
   - Migration Runner: `EhkoForge/5.0 Scripts/run_ingot_migration.py`
-  - Components:
-    - `ehkoforge/preprocessing/tier0.py` — Tier 0 signal extraction (no LLM cost)
-    - `ehkoforge/processing/smelt.py` — Tier 2 batch ingot extraction
+  - Components (moved to `recog_engine/` — AGPL licensed):
+    - `recog_engine/tier0.py` — Tier 0 signal extraction (no LLM cost)
+    - `recog_engine/smelt.py` — Tier 2 batch ingot extraction
+    - `recog_engine/prompts.py` — Ehko behaviour prompts
+    - `recog_engine/forge_integration.py` — Server integration helpers
     - `forge_server.py v1.2` — Smelt/ingot/Ehko API endpoints
   - Pipeline: Chat → Smelt Queue → Tier 0 Pre-Annotation → Tier 2 Extraction → Surface → Review → Forge/Reject
   - Surfacing threshold: `(significance >= 0.4 AND pass_count >= 2) OR source_count >= 3`
@@ -371,8 +373,10 @@
 | run_ingot_migration.py | v1.0 | Database migration runner | ✅ Applied |
 | seed_test_ingots.py | v1.0 | Test data generator | ✅ Working |
 | ehkoforge/llm/ | v1.1 | LLM integration module (multi-provider) | ✅ Working |
-| ehkoforge/preprocessing/tier0.py | v0.1 | Tier 0 signal extraction | ✅ Working |
-| ehkoforge/processing/smelt.py | v0.1 | Smelt batch processor | ✅ Working |
+| recog_engine/tier0.py | v0.1 | Tier 0 signal extraction (AGPL) | ✅ Working |
+| recog_engine/smelt.py | v0.1 | Smelt batch processor (AGPL) | ✅ Working |
+| recog_engine/prompts.py | v0.1 | Ehko behaviour prompts (AGPL) | ✅ Working |
+| recog_engine/forge_integration.py | v0.1 | Server integration (AGPL) | ✅ Working |
 | index.html | v1.2 | Frontend UI (Chat + Forge modes) | ✅ Working |
 | app.js | v1.2 | Frontend logic + ingot handlers | ✅ Working |
 | styles.css | v1.2 | MDV aesthetic + ingot styles | ✅ Working |
@@ -407,6 +411,7 @@
 ---
 
 **Changelog:**
+- v1.22 — 2025-12-03 Session 16 — License split: MIT (framework) + AGPL (ReCog Engine). Created recog_engine/ module. Moved tier0, smelt, prompts, forge_integration to AGPL module. Updated imports in forge_server.py. Added LICENSE files. Created Data_Model_Core_Tables_v1_0.md (MIT schema). Updated Data Model to v1.4 with license split.
 - v1.21 — 2025-12-02 Session 15 — Control Panel v2.0 (touch UI, Forge/Smelt controls, CLI). VBS launcher. OpenAI .env loading verified. Speaker attribution fix (XML tags). Surfacing criteria fix.
 - v1.20 — 2025-12-02 Session 14 — UI Redesign Phase 1 complete.
 - v1.19 — 2025-12-02 Session 14 — UI Redesign Specification v0.1 created. Three-area structure (Reflections, Forge, Terminal) with distinct aesthetics. Journal mode with calendar, Terminal with model selector, Upload for bulk ore.

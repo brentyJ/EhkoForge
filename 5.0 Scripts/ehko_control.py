@@ -344,6 +344,29 @@ def run_transcription_batch(text_widget):
     )
 
 
+def run_git_push(text_widget):
+    """Run git_push.bat to commit and push to GitHub."""
+    git_script = EHKOFORGE_ROOT / "git_push.bat"
+    
+    if not git_script.exists():
+        log(text_widget, f"✗ Script not found: {git_script}", "error")
+        return
+    
+    log(text_widget, "Opening git push script...", "info")
+    
+    # Run in new terminal so user can enter commit message
+    if os.name == 'nt':
+        subprocess.Popen(
+            ['cmd', '/c', 'start', 'cmd', '/k', str(git_script)],
+            cwd=str(EHKOFORGE_ROOT)
+        )
+    else:
+        subprocess.Popen(
+            ['x-terminal-emulator', '-e', str(git_script)],
+            cwd=str(EHKOFORGE_ROOT)
+        )
+
+
 # =============================================================================
 # FILE OPERATIONS
 # =============================================================================
@@ -548,6 +571,8 @@ def create_gui():
                        lambda: run_refresh_full(log_text), "Action.TButton").pack(fill=X, pady=3)
     create_touch_button(scripts_frame, "📝 Transcripts",
                        lambda: run_transcription_batch(log_text), "Action.TButton").pack(fill=X, pady=3)
+    create_touch_button(scripts_frame, "🚀 Git Push",
+                       lambda: run_git_push(log_text), "Action.TButton").pack(fill=X, pady=3)
     
     # Row 0: Folders & Maintenance
     misc_frame = ttk.LabelFrame(buttons_frame, text="Folders / Maint.", padding="8")
