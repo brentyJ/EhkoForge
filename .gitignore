@@ -57,3 +57,7 @@ attachments/
 
 # Obsidian config (entire folder)
 .obsidian/
+
+# Environment variables (API keys)
+.env
+*.env

@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-02  
-**Version:** 1.17  
+**Version:** 1.18  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -65,7 +65,10 @@
     - Forging mode prompt (Ehko learning from forger)
     - Visitor mode prompt (Ehko speaking about forger) — defined, not exposed
     - Archived mode prompt (time capsule) — defined, not exposed
-  - **Testing Status:** Backend integration complete, needs end-to-end testing
+  - **Testing Status:** ✅ Fully tested and verified (Session 11, 2025-12-02)
+    - Both providers initialized successfully
+    - Role-based routing confirmed (OpenAI for processing, Claude for conversation)
+    - Live API calls successful for both Claude and OpenAI
 
 - [x] **Ingot System v0.1** — Complete ingot extraction and forging pipeline
   - Status: **WORKING** — Migration run, endpoints verified, UI complete
@@ -385,6 +388,7 @@
 ---
 
 **Changelog:**
+- v1.18 — 2025-12-02 Session 11 (end) — OpenAI integration tested and verified. Both providers working. Dual-provider mode operational. Updated git_push.bat.
 - v1.17 — 2025-12-02 Session 13 — Token efficiency improvements: STACKWRIGHT_INSTRUCTIONS v2.2 with edit_file strategy; created script_registry.md and db_schema_summary.md compressed references. Expected 50-70% token reduction.
 - v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.1 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
 - v1.15 — 2025-12-02 Session 11 — OpenAI provider integration complete. LLM module updated to v1.1 with multi-provider support.
