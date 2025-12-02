@@ -144,29 +144,43 @@
 }
 
 .smelt-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.smelt-info span {
     font-size: 0.85rem;
     color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.smelt-actions {
+    display: flex;
+    gap: 8px;
 }
 
 .smelt-btn {
-    background: linear-gradient(135deg, var(--accent-primary), #b8944f);
-    border: none;
+    flex: 1;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    padding: 6px 12px;
-    color: var(--bg-primary);
+    padding: 8px 10px;
+    color: var(--text-secondary);
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
 .smelt-btn:hover {
+    background: var(--accent-secondary);
+    border-color: var(--accent-secondary);
+    color: var(--bg-primary);
+}
+
+.smelt-btn.run-btn {
+    background: linear-gradient(135deg, var(--accent-primary), #b8944f);
+    border: none;
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+.smelt-btn.run-btn:hover {
     box-shadow: 0 0 15px var(--accent-glow);
 }
 

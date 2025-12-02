@@ -277,6 +277,35 @@ async function handleRejectIngot(ingotId) {
     }
 }
 
+async function handleQueueAll() {
+    const btn = document.getElementById('queue-all');
+    if (!btn) return;
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ Queuing...';
+    
+    try {
+        const result = await fetchAPI('/api/smelt/queue-all', { method: 'POST' });
+        
+        console.log('Queue all result:', result);
+        
+        // Refresh smelt status
+        await fetchSmeltStatus();
+        renderSmeltStatus();
+        
+        if (result.count > 0) {
+            alert(`Queued ${result.count} session(s) for smelting.`);
+        } else {
+            alert('No new sessions to queue.');
+        }
+    } catch (error) {
+        alert('Failed to queue sessions: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '📥 Queue All';
+    }
+}
+
 async function handleRunSmelt() {
     const btn = document.getElementById('run-smelt');
     if (!btn) return;
@@ -341,6 +370,10 @@ function setupForgeUI() {
         await fetchSmeltStatus();
         renderSmeltStatus();
     });
+    
+    // Queue All button
+    const queueAllBtn = document.getElementById('queue-all');
+    queueAllBtn?.addEventListener('click', handleQueueAll);
     
     // Smelt button
     const smeltBtn = document.getElementById('run-smelt');

@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.2"
+version: "2.3"
 created: 2025-11-29
 updated: 2025-12-02
 tags: [system, reference, navigation]
@@ -89,9 +89,11 @@ Universal/
 ```
 ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
 forge_server.py                   [v1.2, working] — Flask server + API + LLM + Ingot endpoints
-ehko_control.py                   [v1.0, working] — GUI control panel (tkinter)
+ehko_control.py                   [v2.0, working] — GUI control panel (tkinter, touch-optimized)
+EhkoForge Control Panel.vbs       [v1.0, working] — Silent launcher (no console window)
 run_ingot_migration.py            [v1.0, working] — DB migration runner
 seed_test_ingots.py               [v1.0, utility]  — Test data generator
+.env                              [config]        — API keys (not in git)
 
 # Utility scripts
 fix_regex.py                      [applied] — Patch theme extraction
@@ -355,6 +357,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.3 — 2025-12-02 Session 15 — Updated ehko_control.py to v2.0. Added EhkoForge Control Panel.vbs launcher. Added .env to scripts listing.
 - v2.2 — 2025-12-02 Session 14 — UI Redesign Phase 1: Added templates/, css/, js/ directories. Updated forge_server.py to v2.0 with route-based navigation.
 - v2.1 — 2025-12-02 Session 13 — Updated ReCog_Engine_Spec to v0.2 (framing clarifications).
 - v2.1 — 2025-12-02 Session 13 — Added script_registry.md and db_schema_summary.md to _data.

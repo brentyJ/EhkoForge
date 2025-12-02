@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-02  
-**Version:** 1.20  
+**Version:** 1.21  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -156,10 +156,10 @@
   - Status: **WORKING** — 10 memories curated, organised by pillar and theme
   - Results: 7 existing flagged entries confirmed, 3 new nominations added
 
-- [x] **Control Panel v1.0** — Python/tkinter GUI for managing EhkoForge
+- [x] **Control Panel v2.0** — Python/tkinter GUI for managing EhkoForge
   - Location: `EhkoForge/5.0 Scripts/ehko_control.py`
-  - Launcher: `EhkoForge_Control.vbs` (silent launch, no console)
-  - Status: **WORKING**
+  - Launcher: `EhkoForge Control Panel.vbs` (silent launch, no console)
+  - Status: **WORKING** — Updated 2025-12-02
   - Features:
     - Start/Stop server (embedded or terminal)
     - Open Forge UI in browser
@@ -168,7 +168,10 @@
     - Open vault folders in Explorer
     - Clear backups with confirmation
     - Live output log panel
-  - Run: Double-click `EhkoForge_Control.vbs` or `py ehko_control.py`
+    - **NEW:** Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status)
+    - **NEW:** Touch-optimized layout for Surface Pro
+    - **NEW:** Integrated command line
+  - Run: Double-click `EhkoForge Control Panel.vbs` or `py ehko_control.py`
 
 - [x] **Frontend Implementation v2.0** — Three-area route-based UI
   - Location: `EhkoForge/5.0 Scripts/forge_server.py` + `EhkoForge/6.0 Frontend/`
@@ -255,10 +258,10 @@
 - [x] **Ingot System backend endpoints** — Tested 2025-12-01, working
 - [x] **Ingot System UI** — Tested 2025-12-01 with seed data, working
 
-- [ ] **OpenAI Provider Integration**
-  - Code complete, needs verification
-  - Test: Run smelt with OpenAI as processing provider
-  - Verify: Correct model routing per role
+- [x] **OpenAI Provider Integration** — Tested 2025-12-02
+  - `.env` file loading via python-dotenv
+  - Role-based routing verified (processing → OpenAI, conversation → Claude)
+  - Smelt runs successfully with gpt-4o-mini
 
 - [ ] **End-to-End Ingot Flow** — Real conversation → smelt → review → forge
   - Have substantive chat conversation
@@ -333,6 +336,7 @@
 
 ## RECENTLY COMPLETED
 
+- **2025-12-02 Session 15:** Control Panel v2.0 — Touch-optimized layout for Surface Pro. Added Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status). Integrated command line. VBS launcher for console-less operation. Fixed OpenAI .env loading (python-dotenv). Fixed speaker attribution in smelt (XML tags for USER_MESSAGE/EHKO_MESSAGE). Fixed surfacing criteria for immediate high-significance ingots.
 - **2025-12-02 Session 12:** ReCog Engine Specification v0.1 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
 - **2025-12-02 Session 11:** OpenAI integration complete — Added `openai_provider.py`, `provider_factory.py`. Updated `config.py` with role-based routing (processing/conversation/ehko). Smelt now uses factory for provider selection. Chat uses conversation role. LLM status endpoint shows role config.
 - **2025-12-01 Session 10:** Ingot System complete — Migration run successfully (7 tables created). Backend verified (tier0.py, smelt.py, forge_server.py v1.2). Frontend v1.2 with mode toggle, ingot queue, detail panel, accept/reject, smelt status, Ehko state indicator. Test ingots seeded and verified. Full pipeline operational.
@@ -363,7 +367,7 @@
 |--------|---------|---------|--------|
 | ehko_refresh.py | v2.0 | Index vaults + process transcriptions | ✅ Working |
 | forge_server.py | v1.2 | Flask server + API + LLM + Ingot endpoints | ✅ Working |
-| ehko_control.py | v1.0 | GUI control panel | ✅ Working |
+| ehko_control.py | v2.0 | GUI control panel (touch-optimized) | ✅ Working |
 | run_ingot_migration.py | v1.0 | Database migration runner | ✅ Applied |
 | seed_test_ingots.py | v1.0 | Test data generator | ✅ Working |
 | ehkoforge/llm/ | v1.1 | LLM integration module (multi-provider) | ✅ Working |
@@ -403,6 +407,8 @@
 ---
 
 **Changelog:**
+- v1.21 — 2025-12-02 Session 15 — Control Panel v2.0 (touch UI, Forge/Smelt controls, CLI). VBS launcher. OpenAI .env loading verified. Speaker attribution fix (XML tags). Surfacing criteria fix.
+- v1.20 — 2025-12-02 Session 14 — UI Redesign Phase 1 complete.
 - v1.19 — 2025-12-02 Session 14 — UI Redesign Specification v0.1 created. Three-area structure (Reflections, Forge, Terminal) with distinct aesthetics. Journal mode with calendar, Terminal with model selector, Upload for bulk ore.
 - v1.18 — 2025-12-02 Session 11 (end) — OpenAI integration tested and verified. Both providers working. Dual-provider mode operational. Updated git_push.bat.
 - v1.17 — 2025-12-02 Session 13 — Token efficiency improvements: STACKWRIGHT_INSTRUCTIONS v2.2 with edit_file strategy; created script_registry.md and db_schema_summary.md compressed references. Expected 50-70% token reduction.

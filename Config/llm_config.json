@@ -9,8 +9,8 @@
       "priority": 0
     },
     "openai": {
-      "model": "gpt-4o",
-      "enabled": false,
+      "model": "gpt-4o-mini",
+      "enabled": true,
       "priority": 1
     },
     "gemini": {

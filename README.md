@@ -2,7 +2,7 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.4  
+Version: 2.5  
 Status: Active Development  
 License: MIT
 
@@ -249,11 +249,15 @@ python forge_server.py
 
 ### Alternative: Use the Control Panel
 
-Double-click `5.0 Scripts/ehko_control.py` for a GUI that manages:
+Double-click `5.0 Scripts/EhkoForge Control Panel.vbs` for a GUI that manages:
 - Server start/stop
 - Vault indexing
 - Transcription processing
 - Opening The Forge UI
+- Forge/Smelt operations (Queue, Run, Resurface, Status)
+- Integrated command line
+
+Optimized for touch (Surface Pro).
 
 ### LLM Provider Configuration
 
@@ -384,7 +388,7 @@ Three levels of degradation guarantee your Ehko survives:
 |--------|---------|
 | `ehko_refresh.py` | Index vaults, process transcriptions |
 | `forge_server.py` | Flask server + API + LLM |
-| `ehko_control.py` | GUI control panel |
+| `ehko_control.py` | GUI control panel (v2.0, touch-optimized) |
 | `run_ingot_migration.py` | Database setup |
 | `seed_test_ingots.py` | Generate test data |
 
@@ -456,6 +460,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.5 — 2025-12-02 — Control Panel v2.0 (touch-optimized, Forge/Smelt controls, CLI). VBS launcher. OpenAI integration verified with .env loading. Speaker attribution fix in smelt.
 - v2.4 — 2025-12-02 — Expanded terminology section to acknowledge mixed metaphors; separated forge metaphor (primary) from architectural terms; clarified Identity Pillars as organizational framework not psychological claims
 - v2.3 — 2025-12-02 — OpenAI integration tested and verified; changed ReCog "meaning-making" to "insight processing"; minor README cleanup
 - v2.2 — 2025-12-02 — Token efficiency improvements: STACKWRIGHT v2.2 with edit_file strategy, compressed reference files (script_registry.md, db_schema_summary.md)

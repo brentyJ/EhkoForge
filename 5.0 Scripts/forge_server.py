@@ -14,6 +14,14 @@ Routes:
     /terminal
 """
 
+# Load environment variables FIRST, before any other imports
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("[OK] Loaded .env file")
+except ImportError:
+    pass  # python-dotenv not installed, rely on system env vars
+
 import json
 import random
 import sqlite3
@@ -546,10 +554,23 @@ Forged from Forge UI session on {now.strftime("%Y-%m-%d at %H:%M")}.
         
         conn.commit()
         
+        # Queue session for smelting (extracts ingots from the conversation)
+        try:
+            queue_for_smelt(
+                db_path=DATABASE_PATH,
+                source_type="chat_session",
+                source_id=session_id,
+                priority=5,
+            )
+            print(f"[FORGE] Queued session {session_id} for smelting", flush=True)
+        except Exception as e:
+            print(f"[FORGE] Failed to queue for smelt: {e}", flush=True)
+        
         return {
             "success": True,
             "reflection_path": str(filepath.relative_to(MIRRORWELL_ROOT.parent)),
-            "forged_count": len(messages)
+            "forged_count": len(messages),
+            "queued_for_smelt": True
         }
         
     except Exception as e:
@@ -919,6 +940,33 @@ def smelt_status():
     })
 
 
+@app.route("/api/smelt/resurface", methods=["POST"])
+def resurface_ingots():
+    """Re-check surfacing criteria for existing ingots."""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    now = datetime.utcnow().isoformat() + "Z"
+    
+    # Apply same surfacing criteria as in smelt.py
+    cursor.execute("""
+        UPDATE ingots SET status = 'surfaced', updated_at = ?
+        WHERE status IN ('raw', 'refined')
+        AND (
+            significance >= 0.4
+            OR (significance >= 0.3 AND analysis_pass >= 2)
+            OR source_count >= 3
+        )
+    """, (now,))
+    
+    surfaced_count = cursor.rowcount
+    
+    conn.commit()
+    conn.close()
+    
+    return jsonify({"surfaced": surfaced_count, "success": True})
+
+
 @app.route("/api/smelt/run", methods=["POST"])
 def run_smelt():
     """Manually trigger smelt processing."""
@@ -953,6 +1001,41 @@ def add_to_smelt_queue():
     entry_id = queue_for_smelt(DATABASE_PATH, source_type, source_id, priority)
     
     return jsonify({"entry_id": entry_id, "success": True}), 201
+
+
+@app.route("/api/smelt/queue-all", methods=["POST"])
+def queue_all_sessions_for_smelt():
+    """Queue all sessions that have forged messages but aren't in smelt queue."""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Find sessions with forged messages not yet in queue
+    cursor.execute("""
+        SELECT DISTINCT fm.session_id 
+        FROM forge_messages fm
+        WHERE fm.forged = 1
+        AND fm.session_id NOT IN (
+            SELECT source_id FROM smelt_queue WHERE source_type = 'chat_session'
+        )
+    """)
+    
+    sessions = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    
+    queued = []
+    for session_id in sessions:
+        try:
+            entry_id = queue_for_smelt(
+                db_path=DATABASE_PATH,
+                source_type="chat_session",
+                source_id=session_id,
+                priority=5,
+            )
+            queued.append({"session_id": session_id, "entry_id": entry_id})
+        except Exception as e:
+            print(f"[SMELT] Failed to queue {session_id}: {e}")
+    
+    return jsonify({"queued": queued, "count": len(queued)})
 
 
 @app.route("/api/sessions/<session_id>/smelt", methods=["POST"])
@@ -1016,6 +1099,34 @@ def get_source_title(cursor, source_type: str, source_id: str) -> str:
         row = cursor.fetchone()
         return row["title"] if row else source_id
     return source_id
+
+
+@app.route("/api/ingots/debug", methods=["GET"])
+def debug_ingots():
+    """Debug endpoint - show ALL ingots regardless of status."""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT id, status, significance, confidence, summary, analysis_pass, source_count
+        FROM ingots
+        ORDER BY created_at DESC
+    """)
+    
+    ingots = []
+    for row in cursor.fetchall():
+        ingots.append({
+            "id": row["id"],
+            "status": row["status"],
+            "significance": row["significance"],
+            "confidence": row["confidence"],
+            "summary": row["summary"][:100] if row["summary"] else None,
+            "analysis_pass": row["analysis_pass"],
+            "source_count": row["source_count"],
+        })
+    
+    conn.close()
+    return jsonify({"ingots": ingots, "total": len(ingots)})
 
 
 @app.route("/api/ingots", methods=["GET"])

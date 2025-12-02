@@ -34,6 +34,13 @@ SMELT_EXTRACTION_PROMPT = """You are analysing reflective content to extract mea
 This content comes from {source_type}: {source_description}
 Word count: {word_count}
 
+## CRITICAL: Speaker Attribution
+The content below contains messages from TWO speakers:
+- <USER_MESSAGE> tags contain what the USER (the person whose identity we're preserving) said
+- <EHKO_MESSAGE> tags contain what the AI ASSISTANT said
+
+**ONLY extract insights from USER_MESSAGE content.** The Ehko/assistant messages are context only — never attribute the assistant's words or ideas to the user.
+
 ## Pre-Annotation Signals
 {pre_annotation_summary}
 
@@ -48,6 +55,8 @@ Extract 0-5 ingots from this content. An ingot is a distilled insight worth pres
 
 NOT every piece of content yields ingots. Mundane chat, logistics, or surface-level content should yield 0 ingots.
 
+**IMPORTANT:** Only extract insights based on what the USER said (inside <USER_MESSAGE> tags). Do not extract insights from EHKO_MESSAGE content.
+
 For each ingot, provide:
 1. **summary**: 1-3 sentences capturing the insight (not a quote — a distillation)
 2. **themes**: 2-5 theme tags (lowercase, hyphenated)
@@ -58,7 +67,7 @@ For each ingot, provide:
    - Theme recurrence potential (weight: 0.3)
    - Self-insight depth (weight: 0.4)
 6. **confidence**: 0.0-1.0 how certain you are this is a valid insight
-7. **excerpt**: The most relevant 1-2 sentences from the source (for UI display)
+7. **excerpt**: The most relevant 1-2 sentences FROM THE USER'S WORDS (from <USER_MESSAGE> only)
 8. **layer_type**: What kind of personality component is this? One of: trait, memory, pattern, value, voice
 
 ## Output Format
@@ -312,8 +321,11 @@ class SmeltProcessor:
             
             parts = []
             for msg in messages:
-                prefix = "**Me:**" if msg["role"] == "user" else "**Ehko:**"
-                parts.append(f"{prefix} {msg['content']}")
+                # Use clear XML-style markers to distinguish speakers
+                if msg["role"] == "user":
+                    parts.append(f"<USER_MESSAGE>\n{msg['content']}\n</USER_MESSAGE>")
+                else:
+                    parts.append(f"<EHKO_MESSAGE>\n{msg['content']}\n</EHKO_MESSAGE>")
             
             return "\n\n".join(parts)
         
@@ -616,7 +628,11 @@ class SmeltProcessor:
     def _check_surfacing(self) -> int:
         """
         Check all raw/refined ingots against surfacing threshold.
-        Threshold: (significance >= 0.4 AND pass_count >= 2) OR source_count >= 3
+        
+        Surfacing criteria:
+        - significance >= 0.4 on first pass (immediate surface for high-quality)
+        - OR (significance >= 0.3 AND pass_count >= 2)
+        - OR source_count >= 3
         
         Returns count of newly surfaced ingots.
         """
@@ -625,14 +641,16 @@ class SmeltProcessor:
         
         now = datetime.utcnow().isoformat() + "Z"
         
+        # Surface ingots that meet any threshold
         cursor.execute("""
             UPDATE ingots SET status = 'surfaced', updated_at = ?
             WHERE status IN ('raw', 'refined')
             AND (
-                (significance >= ? AND analysis_pass >= ?)
+                significance >= 0.4
+                OR (significance >= 0.3 AND analysis_pass >= 2)
                 OR source_count >= 3
             )
-        """, (now, SURFACING_SIGNIFICANCE_THRESHOLD, SURFACING_PASS_THRESHOLD))
+        """, (now,))
         
         surfaced_count = cursor.rowcount
         
