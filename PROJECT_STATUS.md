@@ -102,8 +102,8 @@
   - `Smelt_Processor_Spec_v0_1.md` — Batch job for ingot extraction
   - `Forge_UI_Update_Spec_v0_1.md` — Chat/Forge mode UI design
 
-- [x] **ReCog Engine Specification v0.1** — NEW
-  - Location: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_1.md`
+- [x] **ReCog Engine Specification v0.2** — NEW
+  - Location: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_2.md`
   - Purpose: Recursive Cognition Engine — orchestration layer for iterative meaning-making
   - Status: **SPECIFIED** — Design complete, captures emergent insight processing pattern
   - Defines:
@@ -210,7 +210,7 @@
 
 ### Processing & Automation
 - [ ] **ReCog Engine** — Recursive cognition orchestration layer
-  - Spec: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_1.md`
+  - Spec: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_2.md`
   - Status: Architecture designed, implementation deferred until ingot pipeline tested
   - Purpose: Make iterative insight refinement deliberate instead of accidental
   - Blocker: Needs real data flowing through ingot system first
@@ -337,7 +337,7 @@
 ## RECENTLY COMPLETED
 
 - **2025-12-02 Session 15:** Control Panel v2.0 — Touch-optimized layout for Surface Pro. Added Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status). Integrated command line. VBS launcher for console-less operation. Fixed OpenAI .env loading (python-dotenv). Fixed speaker attribution in smelt (XML tags for USER_MESSAGE/EHKO_MESSAGE). Fixed surfacing criteria for immediate high-significance ingots.
-- **2025-12-02 Session 12:** ReCog Engine Specification v0.1 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
+- **2025-12-02 Session 12:** ReCog Engine Specification v0.2 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
 - **2025-12-02 Session 11:** OpenAI integration complete — Added `openai_provider.py`, `provider_factory.py`. Updated `config.py` with role-based routing (processing/conversation/ehko). Smelt now uses factory for provider selection. Chat uses conversation role. LLM status endpoint shows role config.
 - **2025-12-01 Session 10:** Ingot System complete — Migration run successfully (7 tables created). Backend verified (tier0.py, smelt.py, forge_server.py v1.2). Frontend v1.2 with mode toggle, ingot queue, detail panel, accept/reject, smelt status, Ehko state indicator. Test ingots seeded and verified. Full pipeline operational.
 - **2025-12-01 Session 9:** Ingot System architecture + backend — Four specs created. Backend implemented: tier0.py, smelt.py, forge_server.py v1.2, run_ingot_migration.py.
@@ -387,8 +387,8 @@
 
 | Spec | Version | Purpose | Status |
 |------|---------|---------|--------|
-| UI_Redesign_Spec_v0_1.md | v0.1 | Three-area UI restructure | 📋 Specified |
-| ReCog_Engine_Spec_v0_1.md | v0.1 | Recursive cognition orchestration | 📋 Specified |
+| UI_Redesign_Spec_v0_1.md | v0.1 | Three-area UI restructure | ✅ Implemented |
+| ReCog_Engine_Spec_v0_2.md | v0.2 | Recursive cognition orchestration | 📋 Specified |
 | Ingot_System_Schema_v0_1.md | v0.1 | Ingot database schema | ✅ Implemented |
 | Tier0_PreAnnotation_Spec_v0_1.md | v0.1 | Code-based signal extraction | ✅ Implemented |
 | Smelt_Processor_Spec_v0_1.md | v0.1 | Batch ingot extraction | ✅ Implemented |
@@ -412,7 +412,7 @@
 - v1.19 — 2025-12-02 Session 14 — UI Redesign Specification v0.1 created. Three-area structure (Reflections, Forge, Terminal) with distinct aesthetics. Journal mode with calendar, Terminal with model selector, Upload for bulk ore.
 - v1.18 — 2025-12-02 Session 11 (end) — OpenAI integration tested and verified. Both providers working. Dual-provider mode operational. Updated git_push.bat.
 - v1.17 — 2025-12-02 Session 13 — Token efficiency improvements: STACKWRIGHT_INSTRUCTIONS v2.2 with edit_file strategy; created script_registry.md and db_schema_summary.md compressed references. Expected 50-70% token reduction.
-- v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.1 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
+- v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.2 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
 - v1.15 — 2025-12-02 Session 11 — OpenAI provider integration complete. LLM module updated to v1.1 with multi-provider support.
 - v1.14 — 2025-12-01 Session 10 (end) — Moved Ingot System from SPECIFIED to IMPLEMENTED. Updated script inventory with all new scripts. Consolidated GAPS section. Simplified RECENTLY COMPLETED. Session cleanup.
 - v1.13 — 2025-12-01 Session 10 — Ingot System UI complete.
