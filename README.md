@@ -2,7 +2,7 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.2  
+Version: 2.3  
 Status: Active Development  
 License: MIT
 
@@ -308,7 +308,7 @@ Use `_mirrorwell_template/` as a starting point for your own personal vault.
 6. **Forge** — Accept/reject to shape your Ehko
 
 ### ReCog Engine (Specified, Not Yet Implemented)
-The **Recursive Cognition Engine** is a designed orchestration layer for iterative meaning-making:
+The **Recursive Cognition Engine** is a designed orchestration layer for iterative insight processing:
 - **Extraction Loop** — Extract ingots from raw content with multiple passes
 - **Correlation Loop** — Find patterns across ingots, link to Identity Pillars
 - **Integration Loop** — Convert accepted ingots to personality layers
@@ -442,6 +442,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.3 — 2025-12-02 — OpenAI integration tested and verified; changed ReCog "meaning-making" to "insight processing"; minor README cleanup
 - v2.2 — 2025-12-02 — Token efficiency improvements: STACKWRIGHT v2.2 with edit_file strategy, compressed reference files (script_registry.md, db_schema_summary.md)
 - v2.1 — 2025-12-02 — Multi-provider LLM support (OpenAI + Claude), ReCog Engine specification, role-based routing
 - v2.0 — 2025-12-01 — Major update: Frontend v1.2, Ingot System, LLM integration, Control Panel, complete rewrite
