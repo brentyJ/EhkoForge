@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.0"
+version: "2.1"
 created: 2025-11-29
 updated: 2025-12-02
 tags: [system, reference, navigation]
@@ -64,7 +64,7 @@ Smelt_Processor_Spec_v0_1.md                      [module, v0.1] — Batch proce
 Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
 
 # ReCog Engine (2025-12-02)
-ReCog_Engine_Spec_v0_1.md                         [module, v0.1] — Recursive cognition orchestration
+ReCog_Engine_Spec_v0_2.md                         [module, v0.2] — Recursive cognition orchestration
 ```
 
 ### 3.0 Templates/
@@ -168,6 +168,8 @@ ui-preferences.json               [user settings]
 ```
 ehko_index.db                     [SQLite, ~200KB]
 vault_map.md                      [this file]
+script_registry.md                [v1.0] — Compressed script reference
+db_schema_summary.md              [v1.0] — Compressed DB schema reference
 ```
 
 ### PROJECT_STATUS.md
@@ -329,6 +331,8 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.1 — 2025-12-02 Session 13 — Updated ReCog_Engine_Spec to v0.2 (framing clarifications).
+- v2.1 — 2025-12-02 Session 13 — Added script_registry.md and db_schema_summary.md to _data.
 - v2.0 — 2025-12-02 Session 12 — Added ReCog_Engine_Spec_v0_1.md to 2.0 Modules.
 - v1.9 — 2025-12-02 Session 11 — Added openai_provider.py, provider_factory.py to LLM module. Updated llm/ to v1.1.
 - v1.8 — 2025-12-01 Session 10 — Ingot system complete: Added tier0.py, smelt.py to ehkoforge module. Added migrations/ folder. Added run_ingot_migration.py, seed_test_ingots.py. Updated frontend to v1.2. Moved ingot tables from "specified" to "created". Added quick reference section.

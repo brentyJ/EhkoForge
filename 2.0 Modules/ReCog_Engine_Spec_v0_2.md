@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "module"
 category: "Core Architecture"
 status: draft
-version: "0.1"
+version: "0.2"
 created: 2025-12-02
 updated: 2025-12-02
 tags: [ehkoforge, recog, recursion, cognition, architecture]
@@ -15,13 +15,19 @@ related:
   - "1_7_Core_Memory_Index_Framework_v1_0.md"
 ---
 
-# RECOG ENGINE SPECIFICATION v0.1
+# RECOG ENGINE SPECIFICATION v0.2
 
 ## 1. Purpose & Scope
 
+### 1.0 Technical Framing Note
+
+**ReCog is a data processing pipeline, not a cognitive model.** Any functional parallels to human cognition emerge from the recursive structure, not from explicit neurological simulation. The term "cognition" in the name is metaphorical, referring to iterative refinement processes, not brain modelling.
+
+This is software engineering, not neuroscience.
+
 ### 1.1 What ReCog Is
 
-**ReCog Engine** (Recursive Cognition Engine) is the processing orchestration layer that drives iterative meaning-making within EhkoForge.
+**ReCog Engine** (Recursive Cognition Engine) is the processing orchestration layer that drives iterative content refinement within EhkoForge.
 
 It transforms:
 - **Raw input** (chats, transcripts, reflections) → **Distilled insights** (ingots)
@@ -71,7 +77,7 @@ ReCog is the answer to: *"How do we make the insight refinement process reliable
 
 ## 2. Core Concepts
 
-### 2.1 Operational Definition of "Recursion"
+### 2.1 How Recursion Is Implemented
 
 In ReCog, recursion means: **iterative passes over accumulated content, where each pass refines and correlates insights from previous passes**.
 
@@ -489,4 +495,5 @@ Explicitly out of scope for v0.1:
 ---
 
 **Changelog**
+- v0.2 — 2025-12-02 — Framing clarification: Added technical disclaimer (Section 1.0), replaced "meaning-making" with "refinement", renamed Section 2.1 to emphasize implementation over metaphor. No functional changes.
 - v0.1 — 2025-12-02 — Initial specification. Defines purpose, processing stages, loops, termination conditions, coherence anchoring, configuration. Scoped for batch processing only.

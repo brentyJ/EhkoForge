@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-02  
-**Version:** 1.16  
+**Version:** 1.17  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -385,6 +385,7 @@
 ---
 
 **Changelog:**
+- v1.17 — 2025-12-02 Session 13 — Token efficiency improvements: STACKWRIGHT_INSTRUCTIONS v2.2 with edit_file strategy; created script_registry.md and db_schema_summary.md compressed references. Expected 50-70% token reduction.
 - v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.1 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
 - v1.15 — 2025-12-02 Session 11 — OpenAI provider integration complete. LLM module updated to v1.1 with multi-provider support.
 - v1.14 — 2025-12-01 Session 10 (end) — Moved Ingot System from SPECIFIED to IMPLEMENTED. Updated script inventory with all new scripts. Consolidated GAPS section. Simplified RECENTLY COMPLETED. Session cleanup.
