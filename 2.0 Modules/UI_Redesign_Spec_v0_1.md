@@ -237,10 +237,13 @@ Functionally equivalent to current Chat mode, but with serene aesthetic.
 ```
 
 **Changes from current:**
-- Avatar simplified (no rings, just core glow)
-- Stats ribbon removed (too busy for reflection)
+- Avatar present but simplified (smaller, no rotating rings, just core glow)
+- Stats ribbon compact, positioned below avatar
 - Message bubbles softer, less "tech" styling
 - Input bar glow uses teal instead of blue
+
+**Ehko Presence:**
+The Ehko is present in all modes — it's who you're talking to, even in Terminal ("tech geek mode"). The avatar adapts its styling to match each area's palette but remains consistent in form.
 
 **Forge-to-Vault:** Same as current, but uses teal accent for selection.
 
@@ -458,20 +461,20 @@ The Terminal is a general-purpose AI assistant interface. The forger can use any
 ┌─────────────────────────────────────────────────────────────────┐
 │                        NAVIGATION BAR                           │
 ├─────────────┬───────────────────────────────────────────────────┤
-│ MODEL       │ ════════════════════════════════════════════════ │
-│ ┌─────────┐ │                                                   │
-│ │◉ Sonnet │ │  > You: Can you help me debug this Python error?  │
+│ MODEL       │     ◇ Ehko                                        │
+│ ┌─────────┐ │   [stats]      Ready                              │
+│ │◉ Sonnet │ │ ════════════════════════════════════════════════ │
 │ │○ Haiku  │ │                                                   │
-│ │○ GPT-4o │ │  < Terminal: Sure, paste the traceback and I'll   │
-│ │○ GPT-4m │ │    take a look...                                 │
-│ └─────────┘ │                                                   │
-│             │  > You: [code block]                              │
+│ │○ GPT-4o │ │  > You: Can you help me debug this Python error?  │
+│ │○ GPT-4m │ │                                                   │
+│ └─────────┘ │  < Ehko: Sure, paste the traceback and I'll       │
+│             │    take a look...                                 │
 │ HISTORY     │                                                   │
-│ ─────────── │  < Terminal: The issue is on line 42...           │
+│ ─────────── │  > You: [code block]                              │
 │ [Recent 1]  │                                                   │
-│ [Recent 2]  │ ════════════════════════════════════════════════ │
+│ [Recent 2]  │  < Ehko: The issue is on line 42...               │
 │ [Recent 3]  │                                                   │
-│             │                                                   │
+│  ...        │ ════════════════════════════════════════════════ │
 │ [+ New]     │                                                   │
 ├─────────────┼───────────────────────────────────────────────────┤
 │             │ ┌───────────────────────────────────────────────┐ │
@@ -479,6 +482,8 @@ The Terminal is a general-purpose AI assistant interface. The forger can use any
 │             │ └───────────────────────────────────────────────┘ │
 └─────────────┴───────────────────────────────────────────────────┘
 ```
+
+**Note:** Ehko avatar appears at top of main content area with compact stats bar beneath. Messages labelled "Ehko" not "Terminal" — it's still the Ehko responding, just with a different tool at hand.
 
 ### 5.4 Model Selector
 
@@ -728,21 +733,30 @@ ROLE_MODELS = {
 
 ---
 
-## 9. Open Questions
+## 9. Resolved Design Decisions
 
-1. **Avatar in Reflections?** — Should the Ehko avatar appear in Reflection Chat, or is that too busy? Current spec removes it for simplicity.
+1. **Ehko Avatar** — Present in ALL modes (Reflect, Forge, Terminal). The Ehko is who you're talking to everywhere. Simplified styling (no rotating rings), adapts colour to area palette.
 
-2. **Stats Ribbon?** — Currently removed from Reflections. Should it appear anywhere, or is Ehko State in nav bar sufficient?
+2. **Stats Ribbon** — Compact bar positioned below the Ehko avatar. Shows key metrics without dominating the interface.
 
-3. **Terminal History Limit?** — How many terminal sessions to show in sidebar? 10? 20? Paginated?
+3. **Terminal History Limit** — 20 sessions in sidebar. Older sessions accessible via search/pagination. Sessions backed up to Mirrorwell for ReCog processing.
 
-4. **Upload File Size Limits?** — What's the max file size for uploads? Consider: 20K text messages = large JSON.
+4. **Upload File Size Limit** — 50MB per file. Sufficient for large chat exports (20K messages ≈ 5-10MB JSON). Larger archives should be split.
 
-5. **Journal Entry Length?** — Should there be a max length for journal entries, or trust users?
+5. **Journal Entry Length** — No hard limit. Trust users. Very long entries may be chunked for smelt processing.
+
+## 10. Future Considerations
+
+1. **Permanent Memory Architecture** — Terminal and Reflection chat sessions need backup to Mirrorwell for ReCog Engine processing. Spec needed for:
+   - Session → Reflection Object conversion
+   - Storage location in Mirrorwell vault
+   - Incremental vs batch backup triggers
+   - Memory retrieval for context injection
 
 ---
 
 ## Changelog
 
+- v0.1.1 — 2025-12-02 — Resolved open questions: Ehko present in all modes, stats below avatar, 20 session limit, 50MB upload limit. Added future considerations for permanent memory architecture.
 - v0.1 — 2025-12-02 — Initial specification
 

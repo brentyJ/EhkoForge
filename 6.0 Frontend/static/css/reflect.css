@@ -1,0 +1,934 @@
+/*
+ * EhkoForge Reflect Styles v2.0
+ * Serene, contemplative aesthetic for reflection work
+ */
+
+/* =============================================================================
+   REFLECT PALETTE OVERRIDE
+   ============================================================================= */
+
+.area-reflect {
+    --accent-primary: #5fb3a1;
+    --accent-secondary: #7bc4b5;
+    --accent-glow: rgba(95, 179, 161, 0.4);
+    --bg-primary: #0a1214;
+    --bg-secondary: #0f1a1d;
+    --bg-tertiary: #152226;
+    --bg-elevated: #1a2a2f;
+    --border-focus: rgba(95, 179, 161, 0.5);
+}
+
+/* =============================================================================
+   REFLECT SIDEBAR
+   ============================================================================= */
+
+.reflect-sidebar {
+    background: var(--bg-secondary);
+}
+
+/* Sub-mode Tabs */
+.submode-tabs {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.submode-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+}
+
+.submode-tab:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.submode-tab.is-active {
+    background: var(--bg-elevated);
+    color: var(--accent-primary);
+    box-shadow: inset 3px 0 0 var(--accent-primary);
+}
+
+.submode-icon {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Sessions List */
+.sessions-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.session-item {
+    padding: 12px 15px;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    position: relative;
+}
+
+.session-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.session-item.is-active {
+    background: var(--bg-elevated);
+    box-shadow: inset 0 0 0 1px var(--border-focus);
+}
+
+.session-item.is-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: var(--accent-primary);
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.session-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.session-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* New Session Button */
+.new-session-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 15px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border-subtle);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.new-session-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    font-weight: 300;
+}
+
+/* =============================================================================
+   JOURNAL CALENDAR
+   ============================================================================= */
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+}
+
+.cal-nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+}
+
+.cal-nav-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.cal-month-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding: 0 10px 10px;
+}
+
+.cal-day-header {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    padding: 4px;
+    text-transform: uppercase;
+}
+
+.cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.cal-day:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.cal-day.is-today {
+    background: var(--bg-elevated);
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.cal-day.has-entry::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+}
+
+.cal-day.is-selected {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.cal-day.other-month {
+    opacity: 0.3;
+}
+
+/* Journal Entries List */
+.journal-entries-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.journal-entry-item {
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.journal-entry-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.journal-entry-item .entry-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.journal-entry-item .entry-title {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+/* =============================================================================
+   UPLOAD SIDEBAR
+   ============================================================================= */
+
+.upload-queue-list,
+.upload-recent-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.empty-queue {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.upload-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    background: var(--bg-tertiary);
+}
+
+.upload-item .upload-icon {
+    font-size: 1rem;
+}
+
+.upload-item .upload-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.upload-item .upload-status {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* =============================================================================
+   REFLECT MAIN PANEL
+   ============================================================================= */
+
+.reflect-main {
+    background: var(--bg-primary);
+}
+
+.reflect-main .avatar-core {
+    background: var(--accent-primary);
+}
+
+/* Mode Content Visibility */
+.mode-content {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+}
+
+.mode-content.is-visible {
+    display: flex;
+    flex-direction: column;
+}
+
+/* =============================================================================
+   CHAT CONTENT
+   ============================================================================= */
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-muted);
+    gap: 8px;
+}
+
+/* Message Bubbles */
+.message {
+    max-width: 70%;
+    padding: 14px 18px;
+    border-radius: 16px;
+    position: relative;
+    animation: message-appear 0.3s ease-out;
+}
+
+@keyframes message-appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message--user {
+    align-self: flex-end;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-bottom-right-radius: 4px;
+}
+
+.message--ehko {
+    align-self: flex-start;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+    border: 1px solid var(--border-subtle);
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.message-content {
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.message-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.message-action {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    transition: all var(--transition-fast);
+}
+
+.message-action:hover {
+    background: var(--bg-primary);
+    color: var(--accent-primary);
+}
+
+/* Forged indicator */
+.message.is-forged::after {
+    content: '◈';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 0.9rem;
+    color: var(--warning);
+    text-shadow: 0 0 8px rgba(201, 169, 98, 0.6);
+}
+
+.message.is-selected {
+    box-shadow: inset 0 0 0 2px var(--accent-primary), 0 0 15px var(--accent-glow);
+}
+
+/* =============================================================================
+   INPUT BAR
+   ============================================================================= */
+
+.input-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 15px 20px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-subtle);
+    position: relative;
+}
+
+.input-bar.is-hidden {
+    display: none;
+}
+
+.input-glow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0.5;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+#message-input {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    resize: none;
+    min-height: 44px;
+    max-height: 200px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#message-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+#message-input::placeholder {
+    color: var(--text-muted);
+}
+
+.send-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 12px;
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-btn:hover {
+    background: var(--accent-secondary);
+    box-shadow: 0 0 20px var(--accent-glow);
+    transform: translateY(-2px);
+}
+
+.send-btn:active {
+    transform: translateY(0);
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =============================================================================
+   JOURNAL CONTENT
+   ============================================================================= */
+
+.journal-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.journal-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: var(--text-muted);
+    gap: 8px;
+}
+
+.journal-entry-view {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.journal-entry-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.journal-date {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.journal-edit-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.journal-edit-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.journal-body {
+    color: var(--text-primary);
+    line-height: 1.8;
+}
+
+.journal-body h1, .journal-body h2, .journal-body h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+/* Journal Editor */
+.journal-editor {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.journal-editor-header {
+    margin-bottom: 20px;
+}
+
+.journal-title-input {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.journal-title-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.journal-content-input {
+    width: 100%;
+    min-height: 400px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.8;
+    resize: vertical;
+}
+
+.journal-content-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.journal-meta-inputs {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.journal-meta-inputs input {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.journal-meta-inputs input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.journal-backdate {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.journal-backdate label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.journal-backdate input[type="date"] {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+}
+
+.journal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.journal-cancel-btn,
+.journal-save-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.journal-cancel-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.journal-cancel-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.journal-save-btn {
+    background: var(--accent-primary);
+    border: none;
+    color: var(--bg-primary);
+    font-weight: 500;
+}
+
+.journal-save-btn:hover {
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* =============================================================================
+   UPLOAD CONTENT
+   ============================================================================= */
+
+.upload-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.upload-zone h2 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.upload-dropzone {
+    width: 100%;
+    max-width: 500px;
+    border: 2px dashed var(--border-subtle);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.is-dragover {
+    border-color: var(--accent-primary);
+    background: rgba(95, 179, 161, 0.05);
+}
+
+.dropzone-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    display: block;
+}
+
+.dropzone-content p {
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.dropzone-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.upload-status {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+/* =============================================================================
+   FORGE MODAL (Reflect version)
+   ============================================================================= */
+
+.forge-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-medium);
+}
+
+.forge-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.forge-modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-primary);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-soft), 0 0 40px var(--accent-glow);
+}
+
+.forge-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.forge-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+.close-forge {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.forge-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.forge-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.forge-field label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.forge-field input {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.forge-field input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.forge-selection {
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.forge-actions {
+    display: flex;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.forge-cancel {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.forge-cancel:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.forge-confirm {
+    flex: 1;
+    padding: 12px;
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 8px;
+    color: var(--bg-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all var(--transition-fast);
+}
+
+.forge-confirm:hover {
+    box-shadow: 0 0 25px var(--accent-glow);
+    transform: translateY(-2px);
+}

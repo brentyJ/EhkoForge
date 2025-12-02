@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-02  
-**Version:** 1.18  
+**Version:** 1.20  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -170,28 +170,34 @@
     - Live output log panel
   - Run: Double-click `EhkoForge_Control.vbs` or `py ehko_control.py`
 
-- [x] **Frontend Implementation v1.2** — Flask + Vanilla HTML/CSS/JS
-  - Location: `EhkoForge/5.0 Scripts/forge_server.py` + `EhkoForge/6.0 Frontend/static/`
-  - Spec: `EhkoForge/2.0 Modules/Frontend_Implementation_Spec_v1_0.md`
-  - Status: **WORKING** — Full ingot system UI complete
-  - Features:
-    - **Chat Mode:**
-      - Session management (create, list, archive)
-      - Message sending with real Claude API responses
-      - Context injection from reflection corpus
-      - Forge-to-vault with auto-indexing
-    - **Forge Mode:**
-      - Mode toggle (Chat ↔ Forge) with Tab key shortcut
-      - Ingot queue sidebar with tier colours and badges
-      - Ingot detail panel with themes/emotions/patterns tags
-      - Sources list with excerpts
-      - Accept/Reject actions with immediate feedback
-      - Smelt status panel with manual trigger button
-      - Ehko state indicator (nascent/forming/emerging/present)
-    - **Common:**
-      - Stats ribbon (derived from reflection corpus)
-      - Settings panel (theme, avatar, motion toggles)
-      - MDV-compliant aesthetic (dark, glowing, arcane-tech)
+- [x] **Frontend Implementation v2.0** — Three-area route-based UI
+  - Location: `EhkoForge/5.0 Scripts/forge_server.py` + `EhkoForge/6.0 Frontend/`
+  - Spec: `EhkoForge/2.0 Modules/UI_Redesign_Spec_v0_1.md`
+  - Status: **WORKING** — Phase 1 complete (Route Infrastructure)
+  - **Architecture:**
+    - Route-based navigation: `/reflect`, `/forge`, `/terminal`
+    - Jinja2 templates with shared base layout
+    - Area-specific CSS palettes and JavaScript
+  - **Reflect Area (`/reflect`):**
+    - Sub-modes: `/reflect/chat`, `/reflect/journal`, `/reflect/upload`
+    - Teal palette (#5fb3a1)
+    - Session management, Ehko chat, forge-to-vault
+    - Journal with calendar navigation and CRUD API
+  - **Forge Area (`/forge`):**
+    - Gold/violet palette (#c9a962, #9b7ed9)
+    - Ingot queue with tier filters and badges
+    - Ingot detail with accept/reject actions
+    - Smelt status with manual trigger
+  - **Terminal Area (`/terminal`):**
+    - Blue retro palette (#6b8cce)
+    - Model selector (Claude Sonnet/Haiku, GPT-4o/mini)
+    - Monospace terminal aesthetic
+    - Model switch warning modal
+  - **Common:**
+    - Global nav bar with area tabs and dropdowns
+    - Ehko avatar + stats bar in all modes
+    - Settings modal (theme, avatar, motion)
+    - Ingot count badge in nav
   - Run: `cd "EhkoForge/5.0 Scripts" && python forge_server.py`
   - Access: http://localhost:5000
 
@@ -271,22 +277,30 @@
 ## GAPS & MISSING PIECES
 
 ### Medium Priority
-1. **Friend Registry Population** — No data entry method
+1. **Permanent Memory Architecture** — Not specified
+   - Terminal and Reflection chat sessions need backup to Mirrorwell
+   - Session → Reflection Object conversion logic needed
+   - Storage location and naming conventions
+   - Incremental vs batch backup triggers
+   - Memory retrieval for context injection across sessions
+   - Reference: UI_Redesign_Spec_v0_1.md Section 10
+
+2. **Friend Registry Population** — No data entry method
    - Tables exist but empty
    - Need: Manual entry script or UI
    - Need: Auto-detection from `shared_with` fields
 
-2. **Recovery & Export Protocols** — Not specified
+3. **Recovery & Export Protocols** — Not specified
    - Need: Export format specification
    - Need: Degradation level definitions (archival, interactive, full)
    - Need: Handoff instructions for custodians
 
 ### Lower Priority
-3. **Smelt Scheduling** — Currently manual only
+4. **Smelt Scheduling** — Currently manual only
    - APScheduler integration specified but not implemented
    - Consider: Auto-smelt after N messages or daily batch
 
-4. **Visitor Mode** — System prompt defined, not exposed
+5. **Visitor Mode** — System prompt defined, not exposed
    - Behaviour Engine has visitor mode logic
    - Needs: Mode selection in UI
    - Needs: Authentication gate

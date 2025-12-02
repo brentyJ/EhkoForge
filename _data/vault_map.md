@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.1"
+version: "2.2"
 created: 2025-11-29
 updated: 2025-12-02
 tags: [system, reference, navigation]
@@ -139,21 +139,45 @@ System Logs/
 ```
 
 ### 6.0 Frontend/
-**Purpose:** Web UI for The Forge
+**Purpose:** Three-area Web UI (Reflect, Forge, Terminal)
 
 ```
+templates/                        [v2.0, NEW]
+├── base.html                     — Shared layout + nav bar
+├── reflect.html                  — Reflect area (chat, journal, upload)
+├── forge.html                    — Forge area (ingot review)
+└── terminal.html                 — Terminal area (general AI chat)
+
 static/
-├── index.html                    [v1.2, working] — Main UI with mode toggle
-├── styles.css                    [v1.2, working] — MDV aesthetic + ingot styles
-└── app.js                        [v1.2, working] — Frontend logic + ingot handlers
+├── css/                          [v2.0, NEW]
+│   ├── base.css                  — Shared styles (nav, layout, modals)
+│   ├── reflect.css               — Reflect area (teal palette)
+│   ├── forge.css                 — Forge area (gold/violet palette)
+│   └── terminal.css              — Terminal area (blue retro palette)
+├── js/                           [v2.0, NEW]
+│   ├── common.js                 — Shared utilities (config, stats, API)
+│   ├── reflect.js                — Reflect chat logic
+│   ├── forge.js                  — Ingot review logic
+│   ├── terminal.js               — Terminal chat logic
+│   └── journal.js                — Journal calendar + CRUD
+├── index.html                    [v1.2, legacy] — Old single-page UI
+├── styles.css                    [v1.2, legacy] — Old combined styles
+└── app.js                        [v1.2, legacy] — Old combined logic
 ```
 
-**Features (v1.2):**
-- Chat mode: Sessions, messages, Claude API responses
-- Forge mode: Ingot queue, detail panel, accept/reject
-- Smelt status + manual trigger
-- Ehko state indicator (nascent/forming/emerging/present)
-- Stats ribbon, settings panel, forge-to-vault
+**Architecture (v2.0):**
+- Route-based navigation: `/reflect`, `/forge`, `/terminal`
+- Jinja2 templates with base inheritance
+- Area-specific palettes:
+  - Reflect: Teal (#5fb3a1)
+  - Forge: Gold/Violet (#c9a962, #9b7ed9)
+  - Terminal: Blue retro (#6b8cce)
+
+**Features:**
+- **Reflect:** Chat, Journal (calendar), Upload (drag-drop)
+- **Forge:** Ingot queue, detail panel, accept/reject, smelt status
+- **Terminal:** Model selector, retro aesthetic, model-switch modal
+- **Common:** Nav bar, Ehko avatar, stats bar, settings modal
 
 ### Config/
 **Purpose:** Configuration files
@@ -331,6 +355,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.2 — 2025-12-02 Session 14 — UI Redesign Phase 1: Added templates/, css/, js/ directories. Updated forge_server.py to v2.0 with route-based navigation.
 - v2.1 — 2025-12-02 Session 13 — Updated ReCog_Engine_Spec to v0.2 (framing clarifications).
 - v2.1 — 2025-12-02 Session 13 — Added script_registry.md and db_schema_summary.md to _data.
 - v2.0 — 2025-12-02 Session 12 — Added ReCog_Engine_Spec_v0_1.md to 2.0 Modules.

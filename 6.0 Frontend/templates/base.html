@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-area="{{ area }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EhkoForge{% endblock %}</title>
+    
+    <!-- Base styles (shared across all areas) -->
+    <link rel="stylesheet" href="/css/base.css">
+    
+    <!-- Area-specific styles -->
+    {% block area_styles %}{% endblock %}
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="area-{{ area }}">
+    <!-- Global Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-left">
+            <a href="/reflect" class="nav-logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">EhkoForge</span>
+            </a>
+        </div>
+        
+        <div class="nav-center">
+            <div class="nav-tabs">
+                <!-- Reflect Tab with Dropdown -->
+                <div class="nav-tab-group">
+                    <a href="/reflect" class="nav-tab {% if area == 'reflect' %}is-active{% endif %}" data-area="reflect">
+                        <span class="tab-icon">◎</span>
+                        <span class="tab-label">Reflect</span>
+                        <span class="tab-dropdown-arrow">▾</span>
+                    </a>
+                    <div class="nav-dropdown">
+                        <a href="/reflect/chat" class="dropdown-item {% if submode == 'chat' %}is-active{% endif %}">
+                            <span class="item-icon">◎</span> Chat
+                        </a>
+                        <a href="/reflect/journal" class="dropdown-item {% if submode == 'journal' %}is-active{% endif %}">
+                            <span class="item-icon">☰</span> Journal
+                        </a>
+                        <a href="/reflect/upload" class="dropdown-item {% if submode == 'upload' %}is-active{% endif %}">
+                            <span class="item-icon">↑</span> Upload
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Forge Tab -->
+                <a href="/forge" class="nav-tab {% if area == 'forge' %}is-active{% endif %}" data-area="forge">
+                    <span class="tab-icon">🔥</span>
+                    <span class="tab-label">Forge</span>
+                    <span class="nav-badge" id="ingot-count-badge" style="display: none;">0</span>
+                </a>
+                
+                <!-- Terminal Tab -->
+                <a href="/terminal" class="nav-tab {% if area == 'terminal' %}is-active{% endif %}" data-area="terminal">
+                    <span class="tab-icon">⌘</span>
+                    <span class="tab-label">Terminal</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="ehko-state-indicator" id="ehko-state-nav" title="Ehko State">
+                <span class="state-icon">◇</span>
+                <span class="state-label">Nascent</span>
+            </div>
+            <button class="nav-settings-btn" id="global-settings-btn" title="Settings">
+                ⚙
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Application Container -->
+    <div class="app-container">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Global Settings Modal -->
+    <div class="settings-overlay" id="settings-overlay">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2>Settings</h2>
+                <button class="close-settings" id="close-settings">×</button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="setting-avatar" checked>
+                        Show Ehko Avatar
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="setting-motion">
+                        Low Motion Mode
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="setting-contrast">
+                        High Contrast Mode
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>Theme</label>
+                    <select id="setting-theme">
+                        <option value="forge-dark">Forge Dark</option>
+                        <option value="arcane-blue">Arcane Blue</option>
+                        <option value="ember-gold">Ember Gold</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Base JavaScript -->
+    <script src="/js/common.js"></script>
+    
+    <!-- Area-specific JavaScript -->
+    {% block area_scripts %}{% endblock %}
+</body>
+</html>

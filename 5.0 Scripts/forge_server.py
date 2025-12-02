@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v1.2
-Flask application serving the Forge UI and API endpoints.
-Includes ingot system endpoints for smelt/forge pipeline.
+EhkoForge Server v2.0
+Flask application serving the three-area UI (Reflect, Forge, Terminal).
+Includes ingot system endpoints, session management, and LLM integration.
 
 Run: python forge_server.py
 Access: http://localhost:5000
+
+Routes:
+    / -> /reflect (redirect)
+    /reflect, /reflect/chat, /reflect/journal, /reflect/upload
+    /forge
+    /terminal
 """
 
 import json
@@ -15,7 +21,7 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template, redirect
 import logging
 
 # LLM Integration
@@ -45,7 +51,10 @@ STATIC_PATH = EHKOFORGE_ROOT / "6.0 Frontend" / "static"
 JOURNALS_PATH = MIRRORWELL_ROOT / "2_Reflection Library" / "2.1 Journals"
 
 # Flask app
-app = Flask(__name__, static_folder=str(STATIC_PATH))
+TEMPLATES_PATH = EHKOFORGE_ROOT / "6.0 Frontend" / "templates"
+app = Flask(__name__, 
+            static_folder=str(STATIC_PATH),
+            template_folder=str(TEMPLATES_PATH))
 app.logger.setLevel(logging.DEBUG)
 logging.basicConfig(level=logging.DEBUG)
 
@@ -1329,18 +1338,244 @@ def llm_status():
 
 
 # =============================================================================
-# STATIC FILE SERVING
+# API ROUTES - JOURNAL
+# =============================================================================
+
+@app.route("/api/journal/entries", methods=["GET"])
+def list_journal_entries():
+    """List journal entries with optional date filters."""
+    start_date = request.args.get("start")
+    end_date = request.args.get("end")
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Check if table exists
+    cursor.execute("""
+        SELECT name FROM sqlite_master 
+        WHERE type='table' AND name='journal_entries'
+    """)
+    if not cursor.fetchone():
+        conn.close()
+        return jsonify({"entries": []})
+    
+    query = "SELECT * FROM journal_entries WHERE 1=1"
+    params = []
+    
+    if start_date:
+        query += " AND entry_date >= ?"
+        params.append(start_date)
+    
+    if end_date:
+        query += " AND entry_date <= ?"
+        params.append(end_date)
+    
+    query += " ORDER BY entry_date DESC"
+    
+    cursor.execute(query, params)
+    
+    entries = []
+    for row in cursor.fetchall():
+        entries.append({
+            "id": row["id"],
+            "title": row["title"],
+            "content": row["content"],
+            "entry_date": row["entry_date"],
+            "original_date": row["original_date"],
+            "tags": json.loads(row["tags"]) if row["tags"] else [],
+            "emotional_tags": json.loads(row["emotional_tags"]) if row["emotional_tags"] else [],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        })
+    
+    conn.close()
+    return jsonify({"entries": entries})
+
+
+@app.route("/api/journal/entries", methods=["POST"])
+def create_journal_entry():
+    """Create a new journal entry."""
+    data = request.get_json() or {}
+    
+    title = data.get("title", "Untitled")
+    content = data.get("content", "")
+    entry_date = data.get("entry_date", datetime.now().strftime("%Y-%m-%d"))
+    original_date = data.get("original_date")
+    tags = json.dumps(data.get("tags", []))
+    emotional_tags = json.dumps(data.get("emotional_tags", []))
+    
+    now = datetime.now().isoformat()
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Create table if not exists
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS journal_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            content TEXT NOT NULL,
+            entry_date DATE NOT NULL,
+            original_date DATE,
+            tags TEXT,
+            emotional_tags TEXT,
+            reflection_object_id TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    cursor.execute("""
+        INSERT INTO journal_entries (title, content, entry_date, original_date, tags, emotional_tags, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (title, content, entry_date, original_date, tags, emotional_tags, now, now))
+    
+    entry_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    
+    return jsonify({
+        "id": entry_id,
+        "title": title,
+        "content": content,
+        "entry_date": entry_date,
+        "original_date": original_date,
+        "tags": data.get("tags", []),
+        "emotional_tags": data.get("emotional_tags", []),
+        "created_at": now,
+        "updated_at": now,
+    }), 201
+
+
+@app.route("/api/journal/entries/<int:entry_id>", methods=["GET"])
+def get_journal_entry(entry_id):
+    """Get a single journal entry."""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM journal_entries WHERE id = ?", (entry_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        return jsonify({"error": "Entry not found"}), 404
+    
+    return jsonify({
+        "id": row["id"],
+        "title": row["title"],
+        "content": row["content"],
+        "entry_date": row["entry_date"],
+        "original_date": row["original_date"],
+        "tags": json.loads(row["tags"]) if row["tags"] else [],
+        "emotional_tags": json.loads(row["emotional_tags"]) if row["emotional_tags"] else [],
+        "created_at": row["created_at"],
+        "updated_at": row["updated_at"],
+    })
+
+
+@app.route("/api/journal/entries/<int:entry_id>", methods=["PUT"])
+def update_journal_entry(entry_id):
+    """Update a journal entry."""
+    data = request.get_json() or {}
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Check exists
+    cursor.execute("SELECT id FROM journal_entries WHERE id = ?", (entry_id,))
+    if not cursor.fetchone():
+        conn.close()
+        return jsonify({"error": "Entry not found"}), 404
+    
+    now = datetime.now().isoformat()
+    
+    cursor.execute("""
+        UPDATE journal_entries 
+        SET title = ?, content = ?, entry_date = ?, original_date = ?, 
+            tags = ?, emotional_tags = ?, updated_at = ?
+        WHERE id = ?
+    """, (
+        data.get("title", "Untitled"),
+        data.get("content", ""),
+        data.get("entry_date"),
+        data.get("original_date"),
+        json.dumps(data.get("tags", [])),
+        json.dumps(data.get("emotional_tags", [])),
+        now,
+        entry_id,
+    ))
+    
+    conn.commit()
+    
+    # Fetch updated
+    cursor.execute("SELECT * FROM journal_entries WHERE id = ?", (entry_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    return jsonify({
+        "id": row["id"],
+        "title": row["title"],
+        "content": row["content"],
+        "entry_date": row["entry_date"],
+        "original_date": row["original_date"],
+        "tags": json.loads(row["tags"]) if row["tags"] else [],
+        "emotional_tags": json.loads(row["emotional_tags"]) if row["emotional_tags"] else [],
+        "created_at": row["created_at"],
+        "updated_at": row["updated_at"],
+    })
+
+
+# =============================================================================
+# PAGE ROUTES
 # =============================================================================
 
 @app.route("/")
 def index():
-    """Serve main UI."""
-    return send_from_directory(str(STATIC_PATH), "index.html")
+    """Redirect to Reflect area."""
+    return redirect("/reflect")
+
+
+@app.route("/reflect")
+@app.route("/reflect/<submode>")
+def reflect(submode="chat"):
+    """Serve Reflect area with sub-modes."""
+    valid_submodes = ["chat", "journal", "upload"]
+    if submode not in valid_submodes:
+        submode = "chat"
+    return render_template("reflect.html", area="reflect", submode=submode)
+
+
+@app.route("/forge")
+def forge_page():
+    """Serve Forge area."""
+    return render_template("forge.html", area="forge", submode=None)
+
+
+@app.route("/terminal")
+def terminal():
+    """Serve Terminal area."""
+    return render_template("terminal.html", area="terminal", submode=None)
+
+
+# =============================================================================
+# STATIC FILE SERVING
+# =============================================================================
+
+@app.route("/css/<path:filename>")
+def serve_css(filename):
+    """Serve CSS files."""
+    return send_from_directory(str(STATIC_PATH / "css"), filename)
+
+
+@app.route("/js/<path:filename>")
+def serve_js(filename):
+    """Serve JS files."""
+    return send_from_directory(str(STATIC_PATH / "js"), filename)
 
 
 @app.route("/<path:filename>")
 def static_files(filename):
-    """Serve static files."""
+    """Serve other static files."""
     return send_from_directory(str(STATIC_PATH), filename)
 
 
@@ -1350,7 +1585,7 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v1.2")
+    print("EHKOFORGE SERVER v2.0")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")
     print(f"Static files: {STATIC_PATH}")
