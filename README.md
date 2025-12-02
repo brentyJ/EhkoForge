@@ -331,7 +331,7 @@ The **Recursive Cognition Engine** is a designed orchestration layer for iterati
 - **Correlation Loop** — Find patterns across ingots, link to Identity Pillars
 - **Integration Loop** — Convert accepted ingots to personality layers
 
-This captures the "emergent insight" phenomenon observed during development — making deliberate what was previously accidental. See [ReCog_Engine_Spec_v0_1.md](2.0%20Modules/ReCog_Engine_Spec_v0_1.md).
+This captures the "emergent insight" phenomenon observed during development — making deliberate what was previously accidental. See [ReCog_Engine_Spec_v0_2.md](2.0%20Modules/ReCog_Engine_Spec_v0_2.md).
 
 ### Export-First Architecture
 Three levels of degradation guarantee your Ehko survives:
