@@ -2,7 +2,7 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.3  
+Version: 2.4  
 Status: Active Development  
 License: MIT
 
@@ -24,9 +24,13 @@ This is the **framework and architecture** — the system specifications, templa
 
 ---
 
-## Terminology: The Forge Metaphor
+## Terminology: Metaphors & Key Concepts
 
-EhkoForge uses metallurgy as its central metaphor. This maps directly to the technical architecture:
+EhkoForge uses **metallurgy as its central metaphor** for the ingot processing pipeline, but other metaphors and terms appear for different architectural components.
+
+### The Forge Metaphor (Primary)
+
+This maps directly to the technical architecture:
 
 | Term | Meaning |
 |------|---------|
@@ -38,6 +42,16 @@ EhkoForge uses metallurgy as its central metaphor. This maps directly to the tec
 | **Tiers** | Quality grades (Copper → Iron → Silver → Gold → Mythic) based on confidence and corroboration |
 | **The Smith** | You — the human shaping the Ehko through deliberate reflection |
 | **Ehko** | The finished artifact — a durable digital echo built from forged ingots |
+
+### Architectural & System Terms
+
+| Term | Meaning |
+|------|---------|
+| **Identity Pillars** | Research-informed categories for organizing identity data (Values, Traits, Patterns, etc.). The structural framework anchoring Ehko coherence |
+| **Core Memory Index** | Curated collection of defining memories that shaped who you are |
+| **Reflection Objects** | Any structured entry in the system — journals, modules, specifications |
+| **Mirrorwell** | Your personal vault — the "mirror" reflecting your inner world back to you |
+| **Ehko State** | Development stages: Nascent → Forming → Emerging → Present |
 
 This isn't decorative language. The metaphor reflects how the system works: raw material is processed, refined into standardised units, and shaped by human hands into something meant to last centuries.
 
@@ -442,6 +456,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.4 — 2025-12-02 — Expanded terminology section to acknowledge mixed metaphors; separated forge metaphor (primary) from architectural terms; clarified Identity Pillars as organizational framework not psychological claims
 - v2.3 — 2025-12-02 — OpenAI integration tested and verified; changed ReCog "meaning-making" to "insight processing"; minor README cleanup
 - v2.2 — 2025-12-02 — Token efficiency improvements: STACKWRIGHT v2.2 with edit_file strategy, compressed reference files (script_registry.md, db_schema_summary.md)
 - v2.1 — 2025-12-02 — Multi-provider LLM support (OpenAI + Claude), ReCog Engine specification, role-based routing
