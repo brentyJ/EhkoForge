@@ -73,14 +73,14 @@ This framework is built for people who:
 
 ---
 
-## Current State (2025-12-02)
+## Current State (2025-12-03)
 
 ### ✅ Working
 
 **Core Infrastructure**
 - **ehko_refresh.py v2.0** — Full vault indexing with hash-based change detection, transcription processing
 - **forge_server.py v1.2** — Flask server with REST API, LLM integration, ingot processing endpoints
-- **ehko_control.py v1.0** — GUI control panel (tkinter) for managing all EhkoForge operations
+- **ehko_control.py v2.0** — GUI control panel (tkinter, touch-optimized) for managing all EhkoForge operations
 - **SQLite schema** — 20+ tables for indexing, authentication, sessions, and ingot processing
 
 **Frontend (The Forge)**
@@ -134,7 +134,7 @@ EhkoForge/
 │   ├── 1_1_Overview_v1_0.md               # System overview
 │   ├── 1_2_Components_v1_0.md             # Component architecture
 │   ├── 1_3_Security_Ownership.md          # Authentication design
-│   ├── 1_4_Data_Model_v1_3.md             # Data structures
+│   ├── 1_4_Data_Model_v1_4.md             # Data structures
 │   ├── 1_5_Behaviour_Engine_v1_1.md       # AI behaviour rules
 │   ├── 1_6_Identity_Pillars_Scientific_Basis_v1_0.md
 │   ├── 1_7_Core_Memory_Index_Framework_v1_0.md

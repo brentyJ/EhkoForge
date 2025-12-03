@@ -2,11 +2,11 @@
 
 **Database:** `EhkoForge/_data/ehko_index.db`
 **Purpose:** Quick reference for table structure. Read this instead of full Data Model spec.
-**Updated:** 2025-12-02
+**Updated:** 2025-12-03
 
 ---
 
-## Core Tables
+## Core Tables (MIT)
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
@@ -17,7 +17,7 @@
 | `changelog_entries` | Version history | object_id, version, date, description |
 | `mirrorwell_extensions` | Personal metadata | object_id, core_memory, identity_pillar, shared_with |
 
-## Auth/Social Tables
+## Auth/Social Tables (MIT)
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
@@ -30,14 +30,14 @@
 | `prepared_messages` | Time-capsule messages | id, recipient_id, trigger_condition, content |
 | `message_deliveries` | Delivery tracking | message_id, delivered_at, status |
 
-## Forge Session Tables
+## Forge Session Tables (MIT)
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
 | `forge_sessions` | Chat sessions | id, created_at, title, ehko_state |
 | `forge_messages` | Session messages | id, session_id, role, content, timestamp |
 
-## Ingot System Tables
+## Ingot System Tables (AGPL)
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
@@ -70,4 +70,5 @@ SELECT * FROM forge_messages WHERE session_id = ? ORDER BY timestamp;
 ---
 
 **Changelog:**
+- v1.1 — 2025-12-03 — Added license annotations (MIT/AGPL split)
 - v1.0 — 2025-12-02 — Initial schema summary created

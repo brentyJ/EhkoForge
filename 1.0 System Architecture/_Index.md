@@ -3,9 +3,9 @@ title: EhkoForge Index
 vault: EhkoForge
 type: index
 status: active
-version: "1.2"
+version: "1.3"
 created: 2025-11-28
-updated: 2025-11-29
+updated: 2025-12-03
 tags:
   - ehkoforge
   - pinned
@@ -27,7 +27,7 @@ tags:
 | [[1_1_Overview_v1_0\|Overview]] | Architecture overview, module index |
 | [[1_2_Components_v1_0\|Components]] | System parts and relationships |
 | [[1_3_Security_Ownership\|Security & Ownership]] | Authentication, access control, custodians |
-| [[1_4_Data_Model_v1_3\|Data Model]] | Schemas, SQLite, packet processing |
+| [[1_4_Data_Model_v1_3\|Data Model]] | Schemas, SQLite, license split |
 | [[1_5_Behaviour_Engine_v1_1\|Behaviour Engine]] | AI interaction rules, voice, personality |
 | [[1_6_Identity_Pillars_Scientific_Basis_v1_0\|Identity Pillars]] | Scientific basis for identity framework |
 | [[1_7_Core_Memory_Index_Framework_v1_0\|Core Memory Index]] | Framework for curating formative memories |
@@ -41,6 +41,15 @@ tags:
 | [[UI-MDV-Specification\|UI-MDV Spec]] | Minimum Durable Version interface design |
 | [[Frontend_Implementation_Spec_v1_0\|Frontend Implementation]] | Technical frontend specification |
 | [[SPINOFF_IDEAS\|Spinoff Ideas]] | Future feature concepts |
+
+### ReCog Engine (2.0 Modules/ReCog/) — AGPL
+
+| Module | Purpose |
+|--------|---------|
+| [[ReCog_Engine_Spec_v0_2\|ReCog Engine]] | Recursive cognition orchestration |
+| [[Ingot_System_Schema_v0_1\|Ingot Schema]] | Database tables for ingot pipeline |
+| [[Tier0_PreAnnotation_Spec_v0_1\|Tier 0 Spec]] | Code-based signal extraction |
+| [[Smelt_Processor_Spec_v0_1\|Smelt Processor]] | Batch ingot extraction |
 
 ---
 
@@ -111,7 +120,9 @@ Located in `6.0 Frontend/static/`:
 | Lexicon | ✅ Complete |
 | Templates | ✅ Complete |
 | Indexing Scripts | ✅ Working |
-| Frontend | 🔄 In Progress |
+| Frontend | ✅ v2.0 Complete |
+| Ingot System | ✅ Complete |
+| ReCog Engine | 📋 Specified |
 | Recovery/Export | 📋 Planned |
 
 ---
@@ -124,6 +135,7 @@ Located in `6.0 Frontend/static/`:
 ---
 
 **Changelog**
+- v1.3 — 2025-12-03 — Added ReCog/Ingot specs section, updated Frontend status
 - v1.2 — 2025-11-29 — Updated Data Model links (v1_1→v1_3)
 - v1.1 — 2025-11-29 — Added 1_7 Core Memory Index Framework
 - v1.0 — 2025-11-28 — Initial index created

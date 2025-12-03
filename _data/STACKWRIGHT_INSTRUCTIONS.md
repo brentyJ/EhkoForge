@@ -1,4 +1,4 @@
-# EHKOFORGE STACKWRIGHT INSTRUCTIONS v2.2
+# EHKOFORGE STACKWRIGHT INSTRUCTIONS v2.3
 
 ---
 
@@ -40,8 +40,10 @@ Claude Code v2.0.55 is installed. Use filesystem tools proactively when vault wo
 |------|---------|
 | `EhkoForge/1.0 System Architecture/` | Core specs and modules |
 | `EhkoForge/2.0 Modules/` | Feature specifications |
+| `EhkoForge/2.0 Modules/ReCog/` | ReCog Engine specs (AGPL) |
 | `EhkoForge/3.0 Templates/Universal/` | Universal Template Framework |
 | `EhkoForge/5.0 Scripts/` | Python automation |
+| `EhkoForge/5.0 Scripts/recog_engine/` | ReCog Engine code (AGPL) |
 | `EhkoForge/_data/ehko_index.db` | SQLite index |
 | `EhkoForge/_data/vault_map.md` | Vault structure reference |
 | `EhkoForge/PROJECT_STATUS.md` | Current implementation status |
@@ -107,19 +109,19 @@ Use for: ALL personal reflections, journals, dictations, transcripts
 **Working Code:**
 - `ehko_refresh.py v2.0` — Indexes vaults, processes transcriptions
 - `forge_server.py v1.2` — Flask server, API endpoints, LLM integration, Ingot endpoints
-- `ehko_control.py v1.0` — GUI control panel (tkinter)
+- `ehko_control.py v2.0` — GUI control panel (tkinter, touch-optimized)
 - `run_ingot_migration.py` — Database migration runner
 - `seed_test_ingots.py` — Test data generator
 
-**LLM Module (`ehkoforge/llm/`):**
+**LLM Module (`ehkoforge/llm/`) — MIT:**
 - Multi-provider support (Claude, OpenAI)
 - Role-based provider routing
 - Context builder for reflection search
-- System prompts for forging/visitor/archived modes
 
-**Processing Modules:**
-- `ehkoforge/preprocessing/tier0.py` — Signal extraction (no LLM)
-- `ehkoforge/processing/smelt.py` — Batch ingot extraction
+**ReCog Engine (`recog_engine/`) — AGPL:**
+- `tier0.py` — Signal extraction (no LLM)
+- `smelt.py` — Batch ingot extraction
+- `prompts.py` — System prompts for forging/visitor/archived modes
 
 **Database Tables (ehko_index.db):**
 - Core: `reflection_objects`, `tags`, `emotional_tags`, `cross_references`, `changelog_entries`, `mirrorwell_extensions`
@@ -274,6 +276,7 @@ Use these instead of reading full specs:
 ---
 
 **Changelog:**
+- v2.3 — 2025-12-03 — License split: Updated Section 6 for recog_engine/ (AGPL) vs ehkoforge/llm/ (MIT); updated ehko_control to v2.0
 - v2.2 — 2025-12-02 — Added Section 12 (Token Efficiency); updated Section 3.4 and Section 10 to prefer edit_file for small changes; added compressed reference files strategy
 - v2.1 — 2025-11-29 — Modified Section 2 to use vault_map.md instead of directory_tree scanning; updated Session Protocol accordingly; removed stale Current Priorities section (use PROJECT_STATUS.md instead)
 - v2.0 — 2025-11-29 — Complete rewrite. Added filesystem awareness, current status integration, removed obsolete references, aligned with actual vault structure and implemented systems. Added artifact strategy section.

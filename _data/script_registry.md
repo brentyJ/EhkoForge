@@ -1,7 +1,7 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-02
+**Updated:** 2025-12-03
 
 ---
 
@@ -11,7 +11,7 @@
 |--------|---------|---------|
 | `ehko_refresh.py` | 2.0 | Vault indexing, transcription processing, DB sync |
 | `forge_server.py` | 1.2 | Flask API, LLM routing, ingot endpoints, chat sessions |
-| `ehko_control.py` | 1.0 | Tkinter GUI for server/refresh control |
+| `ehko_control.py` | 2.0 | Tkinter GUI, touch-optimized, Forge/Smelt controls |
 
 ## Utilities
 
@@ -25,30 +25,25 @@
 
 ---
 
-## Module: ehkoforge/llm/
+## Module: ehkoforge/llm/ (MIT)
 
 | File | Purpose |
 |------|---------|
 | `base.py` | Abstract LLMProvider interface |
 | `claude_provider.py` | Anthropic API wrapper |
 | `openai_provider.py` | OpenAI API wrapper |
-| `provider_factory.py` | Role-based instantiation (quality→Claude, cost→GPT) |
+| `provider_factory.py` | Role-based instantiation (processing/conversation/ehko) |
 | `config.py` | API keys, model names, role routing |
 | `context_builder.py` | Searches reflections for relevant context |
-| `system_prompt.py` | Prompts for forging/visitor/archived modes |
-| `forge_integration.py` | Server integration helpers |
 
-## Module: ehkoforge/preprocessing/
+## Module: recog_engine/ (AGPL)
 
 | File | Purpose |
 |------|---------|
 | `tier0.py` | Signal extraction without LLM (timestamps, speakers, questions) |
-
-## Module: ehkoforge/processing/
-
-| File | Purpose |
-|------|---------|
 | `smelt.py` | Batch ingot extraction from queue |
+| `prompts.py` | System prompts for forging/visitor/archived modes |
+| `forge_integration.py` | Server integration guide (sample code) |
 
 ---
 
@@ -73,4 +68,5 @@
 ---
 
 **Changelog:**
+- v1.1 — 2025-12-03 — License split: moved tier0, smelt, prompts to recog_engine/ (AGPL). Updated ehko_control to v2.0.
 - v1.0 — 2025-12-02 — Initial registry created
