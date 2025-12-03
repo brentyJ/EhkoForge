@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.4"
+version: "2.5"
 created: 2025-11-29
 updated: 2025-12-03
 tags: [system, reference, navigation]
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-03 (Session 16 - License Split)
+**Generated:** 2025-12-03 (Session 17 - Reorientation Phase 1)
 
 ---
 
@@ -101,10 +101,11 @@ Universal/
 #### Root Scripts
 ```
 ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
-forge_server.py                   [v1.2, working] — Flask server + API + LLM + Ingot endpoints
+forge_server.py                   [v2.1, working] — Flask server + Authority/Mana + Insite endpoints
 ehko_control.py                   [v2.0, working] — GUI control panel (tkinter, touch-optimized)
 EhkoForge Control Panel.vbs       [v1.0, working] — Silent launcher (no console window)
 run_ingot_migration.py            [v1.0, working] — DB migration runner
+run_reorientation_migration.py    [v1.0, working] — Reorientation migration runner
 seed_test_ingots.py               [v1.0, utility]  — Test data generator
 .env                              [config]        — API keys (not in git)
 
@@ -122,7 +123,8 @@ recog_engine/
 ├── __init__.py
 ├── tier0.py                      [v0.1, working] — Signal extraction (no LLM)
 ├── smelt.py                      [v0.1, working] — Batch ingot extraction
-├── prompts.py                    [v0.1, working] — Ehko behaviour prompts
+├── prompts.py                    [v0.2, working] — Stage-based personality dampener
+├── authority_mana.py             [v0.1, working] — Authority & Mana systems
 └── forge_integration.py          [v0.1, guide]   — Server integration helpers
 ```
 
@@ -147,7 +149,8 @@ ehkoforge/
 #### migrations/
 ```
 migrations/
-└── ingot_migration_v0_1.sql      [applied] — Ingot system tables
+├── ingot_migration_v0_1.sql      [applied] — Ingot system tables
+└── reorientation_v0_1.sql        [applied] — Authority/Mana/Insite tables
 ```
 
 #### Documentation (in 5.0 Scripts/)
@@ -256,14 +259,22 @@ db_schema_summary.md              [v1.0] — Compressed DB schema reference
 - `forge_sessions` — Chat sessions
 - `forge_messages` — Session messages
 
-### Ingot System Tables (AGPLv3)
+### Ingot/Insite System Tables (AGPLv3)
 - `smelt_queue` — Pending content for analysis
 - `transcript_segments` — Chunked transcripts
 - `annotations` — User hints on content
-- `ingots` — Core insight objects
-- `ingot_sources` — Links ingots to sources
-- `ingot_history` — Audit trail
+- `ingots` — Core insight objects (legacy)
+- `insites` — Core insight objects (new name)
+- `ingot_sources` / `insite_sources` — Links to sources
+- `ingot_history` / `insite_history` — Audit trail
 - `ehko_personality_layers` — Forged personality components
+
+### Authority & Mana Tables (AGPLv3)
+- `ehko_authority` — Ehko advancement state (singleton)
+- `identity_pillars` — Pillar tracking for Identity Clarity
+- `mana_state` — Resource economy state (singleton)
+- `mana_costs` — Operation costs
+- `mana_transactions` — Spending/regen log
 
 ---
 
@@ -384,6 +395,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.5 — 2025-12-03 Session 17 — Reorientation Phase 1: Added authority_mana.py, prompts.py v0.2, reorientation migration. Added Authority/Mana table section. Updated recog_engine module listing.
 - v2.4 — 2025-12-03 Session 16 — License split reorganisation: Added recog_engine/ module (AGPL). Moved ReCog specs to 2.0 Modules/ReCog/. Added Data_Model_Core_Tables_v1_0.md. Updated ehkoforge/ to redirect preprocessing/processing to recog_engine. Updated Data Model to v1.4. Added license structure section.
 - v2.3 — 2025-12-02 Session 15 — Updated ehko_control.py to v2.0. Added EhkoForge Control Panel.vbs launcher. Added .env to scripts listing.
 - v2.2 — 2025-12-02 Session 14 — UI Redesign Phase 1: Added templates/, css/, js/ directories. Updated forge_server.py to v2.0 with route-based navigation.

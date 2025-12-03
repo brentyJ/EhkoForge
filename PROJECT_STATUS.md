@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-03  
-**Version:** 1.22  
+**Version:** 1.23  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -238,7 +238,13 @@
 
 ## IN PROGRESS
 
-*Nothing currently in progress — ready for real-world testing*
+### Reorientation (Creative Direction Shift)
+- [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
+- [ ] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic
+- [ ] **Phase 3: Interaction Refinement** — Tag UI, Forge simplification, typewriter effect
+- [ ] **Phase 4: Personality + Avatar** — Dynamic prompts, avatar progression
+
+See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ---
 
@@ -411,6 +417,7 @@
 ---
 
 **Changelog:**
+- v1.23 — 2025-12-03 Session 17 — Reorientation Phase 1 complete: Added Authority system (ehko_authority table, 5 components). Added Mana system (mana_state, mana_costs, mana_transactions tables). Updated prompts.py v0.2 with stage-based personality dampener. Created authority_mana.py module. Renamed ingot→insite tables. Created Reorientation_Spec_v0_1.md. Added reorientation_v0_1.sql migration.
 - v1.22 — 2025-12-03 Session 16 — License split: MIT (framework) + AGPL (ReCog Engine). Created recog_engine/ module. Moved tier0, smelt, prompts, forge_integration to AGPL module. Updated imports in forge_server.py. Added LICENSE files. Created Data_Model_Core_Tables_v1_0.md (MIT schema). Updated Data Model to v1.4 with license split.
 - v1.21 — 2025-12-02 Session 15 — Control Panel v2.0 (touch UI, Forge/Smelt controls, CLI). VBS launcher. OpenAI .env loading verified. Speaker attribution fix (XML tags). Surfacing criteria fix.
 - v1.20 — 2025-12-02 Session 14 — UI Redesign Phase 1 complete.

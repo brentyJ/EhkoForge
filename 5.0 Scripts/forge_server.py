@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.0
-Flask application serving the three-area UI (Reflect, Forge, Terminal).
-Includes ingot system endpoints, session management, and LLM integration.
+EhkoForge Server v2.1
+Flask application serving the Forge UI.
+Includes Authority/Mana systems, insite processing, and LLM integration.
 
 Run: python forge_server.py
 Access: http://localhost:5000
@@ -44,9 +44,18 @@ from ehkoforge.llm import (
 )
 
 # ReCog Engine (AGPL-licensed)
-from recog_engine.prompts import get_system_prompt
+from recog_engine.prompts import get_system_prompt, get_stage_for_authority
 from recog_engine.tier0 import preprocess_text
 from recog_engine.smelt import SmeltProcessor, queue_for_smelt, get_queue_stats, should_auto_smelt
+from recog_engine.authority_mana import (
+    get_current_authority,
+    update_authority,
+    get_mana_state,
+    spend_mana,
+    check_mana_available,
+    get_dormant_response,
+    refill_mana,
+)
 
 # =============================================================================
 # CONFIGURATION
@@ -244,11 +253,17 @@ def save_config(config):
 # EHKO RESPONSE GENERATION
 # =============================================================================
 
-def generate_ehko_response(user_message: str, session_context: list = None) -> str:
+def generate_ehko_response(user_message: str, session_context: list = None, 
+                           interaction_mode: str = "terminal") -> str:
     """
     Generate an Ehko response to user input.
     
     Uses Claude API if configured, falls back to templates.
+    
+    Args:
+        user_message: The user's message
+        session_context: Recent messages for context
+        interaction_mode: 'terminal' or 'reflection'
     """
     print(f"[EHKO] generate_ehko_response called with: {user_message[:50]}...", flush=True)
     
@@ -261,19 +276,25 @@ def generate_ehko_response(user_message: str, session_context: list = None) -> s
         return _generate_templated_response(user_message)
     
     try:
+        # Get current Authority state for stage-based personality
+        authority = get_current_authority(DATABASE_PATH)
+        advancement_stage = authority.get('advancement_stage', 'nascent')
+        print(f"[EHKO] Authority stage: {advancement_stage} ({authority.get('authority_total', 0):.1%})", flush=True)
+        
         # Search reflections for relevant context
         print("[EHKO] Building context...", flush=True)
         reflection_context = CONTEXT_BUILDER.build_context(
             query=user_message,
-            max_reflections=3,
-            max_tokens_estimate=1500,
+            max_reflections=3 if interaction_mode == 'terminal' else 5,
+            max_tokens_estimate=1500 if interaction_mode == 'terminal' else 2500,
         )
         print(f"[EHKO] Context length: {len(reflection_context)} chars", flush=True)
         
-        # Get Ehko behaviour rules (forging mode - learning from forger)
-        # Context is embedded in the system prompt
+        # Get Ehko behaviour rules with stage-based personality dampener
         system_prompt = get_system_prompt(
             mode="forging",
+            interaction_mode=interaction_mode,
+            advancement_stage=advancement_stage,
             reflection_context=reflection_context,
         )
         
@@ -723,6 +744,7 @@ def send_message(session_id):
     """
     Add a message to session.
     If role is 'user', also generates and adds Ehko response.
+    Checks and spends mana based on interaction mode.
     """
     try:
         print(f"[ROUTE] POST /api/sessions/{session_id}/messages", flush=True)
@@ -730,11 +752,30 @@ def send_message(session_id):
         data = request.get_json() or {}
         content = data.get("content", "").strip()
         role = data.get("role", "user")
+        interaction_mode = data.get("mode", "terminal")  # terminal or reflection
         
-        print(f"[ROUTE] Message content: {content[:50]}... role: {role}", flush=True)
+        print(f"[ROUTE] Message content: {content[:50]}... role: {role} mode: {interaction_mode}", flush=True)
         
         if not content:
             return jsonify({"error": "Empty message"}), 400
+        
+        # Check mana for user messages
+        if role == "user":
+            mana_op = "reflection_message" if interaction_mode == "reflection" else "terminal_message"
+            can_afford, current_mana, cost = check_mana_available(DATABASE_PATH, mana_op)
+            
+            if not can_afford:
+                return jsonify({
+                    "error": "Not enough mana",
+                    "dormant": True,
+                    "current_mana": current_mana,
+                    "required": cost,
+                    "message": get_dormant_response(),
+                }), 429
+            
+            # Spend mana
+            success, msg = spend_mana(DATABASE_PATH, mana_op)
+            print(f"[ROUTE] Mana: {msg}", flush=True)
         
         conn = get_db()
         cursor = conn.cursor()
@@ -769,7 +810,7 @@ def send_message(session_id):
             """, (session_id,))
             context = [row["content"] for row in cursor.fetchall()]
             
-            ehko_response = generate_ehko_response(content, context)
+            ehko_response = generate_ehko_response(content, context, interaction_mode)
             print(f"[ROUTE] Ehko response: {ehko_response[:50]}...", flush=True)
             
             ehko_time = datetime.now().isoformat()
@@ -944,7 +985,21 @@ def smelt_status():
 
 @app.route("/api/smelt/resurface", methods=["POST"])
 def resurface_ingots():
-    """Re-check surfacing criteria for existing ingots."""
+    """Re-check surfacing criteria for existing insites. Costs mana."""
+    # Check mana cost
+    can_afford, current_mana, cost = check_mana_available(DATABASE_PATH, "recog_sweep")
+    if not can_afford:
+        return jsonify({
+            "error": "Not enough mana for ReCog sweep",
+            "dormant": True,
+            "current_mana": current_mana,
+            "required": cost,
+            "message": get_dormant_response(),
+        }), 429
+    
+    # Spend mana
+    spend_mana(DATABASE_PATH, "recog_sweep")
+    
     conn = get_db()
     cursor = conn.cursor()
     
@@ -971,7 +1026,21 @@ def resurface_ingots():
 
 @app.route("/api/smelt/run", methods=["POST"])
 def run_smelt():
-    """Manually trigger smelt processing."""
+    """Manually trigger smelt processing. Costs mana."""
+    # Check mana cost
+    can_afford, current_mana, cost = check_mana_available(DATABASE_PATH, "recog_sweep")
+    if not can_afford:
+        return jsonify({
+            "error": "Not enough mana for ReCog sweep",
+            "dormant": True,
+            "current_mana": current_mana,
+            "required": cost,
+            "message": get_dormant_response(),
+        }), 429
+    
+    # Spend mana
+    spend_mana(DATABASE_PATH, "recog_sweep")
+    
     data = request.get_json() or {}
     limit = data.get("limit", 10)
     
@@ -1335,21 +1404,74 @@ def reject_ingot(ingot_id):
 
 
 # =============================================================================
+# API ROUTES - AUTHORITY & MANA
+# =============================================================================
+
+@app.route("/api/authority", methods=["GET"])
+def get_authority():
+    """Get current Authority state (Ehko advancement metric)."""
+    authority = get_current_authority(DATABASE_PATH)
+    return jsonify(authority)
+
+
+@app.route("/api/authority/refresh", methods=["POST"])
+def refresh_authority():
+    """Recalculate Authority from current database state."""
+    authority = update_authority(DATABASE_PATH)
+    return jsonify(authority)
+
+
+@app.route("/api/mana", methods=["GET"])
+def get_mana():
+    """Get current Mana state (resource economy)."""
+    mana = get_mana_state(DATABASE_PATH)
+    return jsonify(mana)
+
+
+@app.route("/api/mana/refill", methods=["POST"])
+def refill_mana_endpoint():
+    """Refill mana (for BYOK users or mana-core purchase)."""
+    data = request.get_json() or {}
+    amount = data.get("amount")  # None = fill to max
+    
+    refill_mana(DATABASE_PATH, amount)
+    mana = get_mana_state(DATABASE_PATH)
+    
+    return jsonify({
+        "success": True,
+        "mana": mana,
+    })
+
+
+@app.route("/api/mana/cost/<operation>", methods=["GET"])
+def get_operation_cost(operation):
+    """Get mana cost for a specific operation."""
+    from recog_engine.authority_mana import get_mana_cost
+    cost = get_mana_cost(DATABASE_PATH, operation)
+    return jsonify({"operation": operation, "cost": cost})
+
+
+# =============================================================================
 # API ROUTES - EHKO STATUS
 # =============================================================================
 
 @app.route("/api/ehko/status", methods=["GET"])
 def get_ehko_status():
-    """Get Ehko's current status."""
+    """Get Ehko's current status including Authority and Mana."""
     conn = get_db()
     cursor = conn.cursor()
     
-    # Forged ingot count
+    # Forged insite count (check both old and new table names)
+    forged_count = 0
     try:
-        cursor.execute("SELECT COUNT(*) FROM ingots WHERE status = 'forged'")
+        cursor.execute("SELECT COUNT(*) FROM insites WHERE status = 'forged'")
         forged_count = cursor.fetchone()[0]
     except sqlite3.OperationalError:
-        forged_count = 0
+        try:
+            cursor.execute("SELECT COUNT(*) FROM ingots WHERE status = 'forged'")
+            forged_count = cursor.fetchone()[0]
+        except sqlite3.OperationalError:
+            pass
     
     # Layer count
     try:
@@ -1360,24 +1482,17 @@ def get_ehko_status():
     
     conn.close()
     
-    # Solidity
-    solidity = min(1.0, forged_count / 50.0)
+    # Get Authority state
+    authority = get_current_authority(DATABASE_PATH)
     
-    # State
-    if forged_count < 5:
-        state = "nascent"
-    elif forged_count < 20:
-        state = "forming"
-    elif forged_count < 50:
-        state = "emerging"
-    else:
-        state = "present"
+    # Get Mana state
+    mana = get_mana_state(DATABASE_PATH)
     
     return jsonify({
         "forged_count": forged_count,
         "layer_count": layer_count,
-        "solidity": solidity,
-        "state": state,
+        "authority": authority,
+        "mana": mana,
     })
 
 
@@ -1698,7 +1813,8 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.0")
+    print("EHKOFORGE SERVER v2.1")
+    print("Authority & Mana Systems Active")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")
     print(f"Static files: {STATIC_PATH}")
