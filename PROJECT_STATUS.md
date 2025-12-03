@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-03  
-**Version:** 1.23  
+**Version:** 1.24  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -240,7 +240,7 @@
 
 ### Reorientation (Creative Direction Shift)
 - [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
-- [ ] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic
+- [x] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic, Authority bars, Mana display
 - [ ] **Phase 3: Interaction Refinement** — Tag UI, Forge simplification, typewriter effect
 - [ ] **Phase 4: Personality + Avatar** — Dynamic prompts, avatar progression
 
@@ -344,6 +344,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-03 Session 18:** Phase 2 UI Consolidation complete — Single terminal interface at `/` with mode toggle (Terminal/Reflection). Authority bars display all 5 components. Mana display with current/max and regen rate. Retro terminal aesthetic with CRT scanlines. Forge link to `/forge` for Insite review. Fixed Authority component display bug in main.js.
 - **2025-12-02 Session 15:** Control Panel v2.0 — Touch-optimized layout for Surface Pro. Added Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status). Integrated command line. VBS launcher for console-less operation. Fixed OpenAI .env loading (python-dotenv). Fixed speaker attribution in smelt (XML tags for USER_MESSAGE/EHKO_MESSAGE). Fixed surfacing criteria for immediate high-significance ingots.
 - **2025-12-02 Session 12:** ReCog Engine Specification v0.2 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
 - **2025-12-02 Session 11:** OpenAI integration complete — Added `openai_provider.py`, `provider_factory.py`. Updated `config.py` with role-based routing (processing/conversation/ehko). Smelt now uses factory for provider selection. Chat uses conversation role. LLM status endpoint shows role config.
@@ -417,6 +418,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.24 — 2025-12-03 Session 18 — Phase 2 UI Consolidation complete. Single terminal interface with mode toggle, Authority bars, Mana display. Fixed Authority component display bug in main.js.
 - v1.23 — 2025-12-03 Session 17 — Reorientation Phase 1 complete: Added Authority system (ehko_authority table, 5 components). Added Mana system (mana_state, mana_costs, mana_transactions tables). Updated prompts.py v0.2 with stage-based personality dampener. Created authority_mana.py module. Renamed ingot→insite tables. Created Reorientation_Spec_v0_1.md. Added reorientation_v0_1.sql migration.
 - v1.22 — 2025-12-03 Session 16 — License split: MIT (framework) + AGPL (ReCog Engine). Created recog_engine/ module. Moved tier0, smelt, prompts, forge_integration to AGPL module. Updated imports in forge_server.py. Added LICENSE files. Created Data_Model_Core_Tables_v1_0.md (MIT schema). Updated Data Model to v1.4 with license split.
 - v1.21 — 2025-12-02 Session 15 — Control Panel v2.0 (touch UI, Forge/Smelt controls, CLI). VBS launcher. OpenAI .env loading verified. Speaker attribution fix (XML tags). Surfacing criteria fix.

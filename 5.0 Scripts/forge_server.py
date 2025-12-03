@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.1
+EhkoForge Server v2.2
 Flask application serving the Forge UI.
+Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, insite processing, and LLM integration.
 
 Run: python forge_server.py
 Access: http://localhost:5000
 
 Routes:
-    / -> /reflect (redirect)
-    /reflect, /reflect/chat, /reflect/journal, /reflect/upload
-    /forge
-    /terminal
+    / -> Main terminal UI (consolidated)
+    /forge -> Insite review page
+    /reflect, /terminal -> Redirect to /
 """
 
 # Load environment variables FIRST, before any other imports
@@ -1759,30 +1759,27 @@ def update_journal_entry(entry_id):
 
 @app.route("/")
 def index():
-    """Redirect to Reflect area."""
-    return redirect("/reflect")
+    """Serve main terminal UI (Phase 2 consolidated interface)."""
+    return render_template("index.html")
 
 
 @app.route("/reflect")
 @app.route("/reflect/<submode>")
 def reflect(submode="chat"):
-    """Serve Reflect area with sub-modes."""
-    valid_submodes = ["chat", "journal", "upload"]
-    if submode not in valid_submodes:
-        submode = "chat"
-    return render_template("reflect.html", area="reflect", submode=submode)
+    """Redirect to main UI (legacy route)."""
+    return redirect("/")
 
 
 @app.route("/forge")
 def forge_page():
-    """Serve Forge area."""
+    """Serve Forge area (Insite review)."""
     return render_template("forge.html", area="forge", submode=None)
 
 
 @app.route("/terminal")
 def terminal():
-    """Serve Terminal area."""
-    return render_template("terminal.html", area="terminal", submode=None)
+    """Redirect to main UI (legacy route)."""
+    return redirect("/")
 
 
 # =============================================================================

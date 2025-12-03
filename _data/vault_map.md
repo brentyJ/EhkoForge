@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.5"
+version: "2.6"
 created: 2025-11-29
 updated: 2025-12-03
 tags: [system, reference, navigation]
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-03 (Session 17 - Reorientation Phase 1)
+**Generated:** 2025-12-03 (Session 18 - Reorientation Phase 2)
 
 ---
 
@@ -164,45 +164,45 @@ System Logs/
 ```
 
 ### 6.0 Frontend/
-**Purpose:** Three-area Web UI (Reflect, Forge, Terminal)
+**Purpose:** Consolidated Terminal UI with Forge review
 
 ```
-templates/                        [v2.0]
-├── base.html                     — Shared layout + nav bar
-├── reflect.html                  — Reflect area (chat, journal, upload)
-├── forge.html                    — Forge area (ingot review)
-└── terminal.html                 — Terminal area (general AI chat)
+templates/                        [v2.1]
+├── index.html                    — Main terminal UI (Phase 2 consolidated)
+├── forge.html                    — Insite review page
+├── base.html                     [legacy] — Shared layout (used by forge.html)
+├── reflect.html                  [legacy] — Redirects to /
+└── terminal.html                 [legacy] — Redirects to /
 
 static/
-├── css/                          [v2.0]
-│   ├── base.css                  — Shared styles (nav, layout, modals)
-│   ├── reflect.css               — Reflect area (teal palette)
+├── css/                          [v2.1]
+│   ├── main.css                  — Main terminal styles (retro aesthetic)
+│   ├── base.css                  [legacy] — Shared styles for forge.html
 │   ├── forge.css                 — Forge area (gold/violet palette)
-│   └── terminal.css              — Terminal area (blue retro palette)
-├── js/                           [v2.0]
-│   ├── common.js                 — Shared utilities (config, stats, API)
-│   ├── reflect.js                — Reflect chat logic
-│   ├── forge.js                  — Ingot review logic
-│   ├── terminal.js               — Terminal chat logic
-│   └── journal.js                — Journal calendar + CRUD
-├── index.html                    [v1.2, legacy] — Old single-page UI
+│   ├── reflect.css               [legacy]
+│   └── terminal.css              [legacy]
+├── js/                           [v2.1]
+│   ├── main.js                   — Main terminal logic (Authority, Mana, chat)
+│   ├── common.js                 [legacy] — Used by forge.html
+│   ├── forge.js                  — Insite review logic
+│   ├── reflect.js                [legacy]
+│   ├── terminal.js               [legacy]
+│   └── journal.js                [legacy]
+├── index.html                    [v1.2, legacy] — Old static single-page UI
 ├── styles.css                    [v1.2, legacy] — Old combined styles
 └── app.js                        [v1.2, legacy] — Old combined logic
 ```
 
-**Architecture (v2.0):**
-- Route-based navigation: `/reflect`, `/forge`, `/terminal`
-- Jinja2 templates with base inheritance
-- Area-specific palettes:
-  - Reflect: Teal (#5fb3a1)
-  - Forge: Gold/Violet (#c9a962, #9b7ed9)
-  - Terminal: Blue retro (#6b8cce)
+**Architecture (v2.1 - Phase 2 Reorientation):**
+- Single terminal interface at `/`
+- Mode toggle: Terminal (1 mana) / Reflection (3 mana)
+- Forge view at `/forge` for Insite review
+- Legacy routes `/reflect` and `/terminal` redirect to `/`
 
 **Features:**
-- **Reflect:** Chat, Journal (calendar), Upload (drag-drop)
-- **Forge:** Ingot queue, detail panel, accept/reject, smelt status
-- **Terminal:** Model selector, retro aesthetic, model-switch modal
-- **Common:** Nav bar, Ehko avatar, stats bar, settings modal
+- **Main Terminal:** Mode toggle, Authority bars (5 components), Mana display, session management, forge-to-vault
+- **Forge:** Insite queue, detail panel, accept/reject
+- **Retro Aesthetic:** CRT scanlines, blue terminal palette (#6b8cce), JetBrains Mono font
 
 ### Config/
 **Purpose:** Configuration files
@@ -395,6 +395,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v2.6 — 2025-12-03 Session 18 — Reorientation Phase 2: Updated 6.0 Frontend section for consolidated terminal UI. index.html now primary template, legacy templates marked. main.css/main.js are primary files.
 - v2.5 — 2025-12-03 Session 17 — Reorientation Phase 1: Added authority_mana.py, prompts.py v0.2, reorientation migration. Added Authority/Mana table section. Updated recog_engine module listing.
 - v2.4 — 2025-12-03 Session 16 — License split reorganisation: Added recog_engine/ module (AGPL). Moved ReCog specs to 2.0 Modules/ReCog/. Added Data_Model_Core_Tables_v1_0.md. Updated ehkoforge/ to redirect preprocessing/processing to recog_engine. Updated Data Model to v1.4. Added license structure section.
 - v2.3 — 2025-12-02 Session 15 — Updated ehko_control.py to v2.0. Added EhkoForge Control Panel.vbs launcher. Added .env to scripts listing.

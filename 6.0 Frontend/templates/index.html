@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EhkoForge</title>
+    
+    <link rel="stylesheet" href="/css/main.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- CRT Overlay Effect -->
+    <div class="crt-overlay"></div>
+    
+    <!-- Main Container -->
+    <div class="terminal-container">
+        
+        <!-- Header Bar -->
+        <header class="header-bar">
+            <div class="header-left">
+                <span class="logo">◈ EHKOFORGE</span>
+                <span class="version">v2.0</span>
+            </div>
+            
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <button class="mode-btn active" data-mode="terminal" title="Terminal Mode (1 mana/msg)">
+                    <span class="mode-icon">⌘</span>
+                    <span class="mode-label">Terminal</span>
+                </button>
+                <button class="mode-btn" data-mode="reflection" title="Reflection Mode (3 mana/msg)">
+                    <span class="mode-icon">◎</span>
+                    <span class="mode-label">Reflect</span>
+                </button>
+            </div>
+            
+            <div class="header-right">
+                <a href="/forge" class="forge-link" title="Review Insites">
+                    <span class="forge-icon">⚡</span>
+                    <span class="forge-label">Forge</span>
+                    <span class="insite-badge" id="insite-badge" style="display: none;">0</span>
+                </a>
+                <button class="settings-btn" id="settings-btn" title="Settings">⚙</button>
+            </div>
+        </header>
+        
+        <!-- Status Bar (Authority + Mana) -->
+        <div class="status-bar">
+            <!-- Authority Progress -->
+            <div class="authority-section">
+                <div class="authority-header">
+                    <span class="authority-label">AUTHORITY</span>
+                    <span class="authority-value" id="authority-total">0%</span>
+                    <span class="authority-stage" id="authority-stage">Nascent</span>
+                </div>
+                <div class="authority-bars">
+                    <div class="authority-bar" data-component="memory_depth" title="Memory Depth">
+                        <div class="bar-fill" style="width: 0%"></div>
+                        <span class="bar-label">MEM</span>
+                    </div>
+                    <div class="authority-bar" data-component="identity_clarity" title="Identity Clarity">
+                        <div class="bar-fill" style="width: 0%"></div>
+                        <span class="bar-label">IDN</span>
+                    </div>
+                    <div class="authority-bar" data-component="emotional_range" title="Emotional Range">
+                        <div class="bar-fill" style="width: 0%"></div>
+                        <span class="bar-label">EMO</span>
+                    </div>
+                    <div class="authority-bar" data-component="temporal_coverage" title="Temporal Coverage">
+                        <div class="bar-fill" style="width: 0%"></div>
+                        <span class="bar-label">TMP</span>
+                    </div>
+                    <div class="authority-bar" data-component="core_density" title="Core Density">
+                        <div class="bar-fill" style="width: 0%"></div>
+                        <span class="bar-label">COR</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mana Display -->
+            <div class="mana-section">
+                <div class="mana-display">
+                    <span class="mana-icon">◆</span>
+                    <span class="mana-value" id="mana-current">100</span>
+                    <span class="mana-separator">/</span>
+                    <span class="mana-max" id="mana-max">100</span>
+                </div>
+                <div class="mana-bar">
+                    <div class="mana-fill" id="mana-fill" style="width: 100%"></div>
+                </div>
+                <div class="mana-regen" id="mana-regen">+1.0/hr</div>
+            </div>
+        </div>
+        
+        <!-- Avatar Zone -->
+        <div class="avatar-zone" id="avatar-zone">
+            <div class="avatar" id="avatar">
+                <div class="avatar-core"></div>
+                <div class="avatar-ring"></div>
+                <div class="avatar-scanlines"></div>
+            </div>
+            <div class="avatar-status" id="avatar-status">Ready</div>
+        </div>
+        
+        <!-- Terminal Output -->
+        <div class="terminal-output" id="terminal-output">
+            <div class="welcome-message">
+                <pre class="ascii-art">
+╔═══════════════════════════════════════════════════════════════╗
+║  ███████╗██╗  ██╗██╗  ██╗ ██████╗                             ║
+║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗                            ║
+║  █████╗  ███████║█████╔╝ ██║   ██║                            ║
+║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║                            ║
+║  ███████╗██║  ██║██║  ██╗╚██████╔╝                            ║
+║  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                             ║
+╚═══════════════════════════════════════════════════════════════╝
+                </pre>
+                <p class="welcome-text" id="welcome-text">
+                    > TERMINAL MODE — Your Ehko awaits.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Input Bar -->
+        <div class="input-bar">
+            <span class="input-prompt" id="input-prompt">&gt;</span>
+            <input 
+                type="text" 
+                id="message-input" 
+                placeholder="Type a message..."
+                autocomplete="off"
+            >
+            <div class="input-cost" id="input-cost" title="Mana cost">
+                <span class="cost-icon">◆</span>
+                <span class="cost-value">1</span>
+            </div>
+            <button class="send-btn" id="send-btn" title="Send (Enter)">↵</button>
+        </div>
+        
+        <!-- Session Controls -->
+        <div class="session-bar">
+            <div class="session-info">
+                <span class="session-label">Session:</span>
+                <span class="session-title" id="session-title">New Chat</span>
+            </div>
+            <div class="session-actions">
+                <button class="session-btn" id="new-session-btn" title="New Session">+</button>
+                <button class="session-btn" id="forge-session-btn" title="Forge to Vault">⚡</button>
+                <button class="session-btn" id="history-btn" title="Session History">☰</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Session History Drawer -->
+    <div class="drawer-overlay" id="history-overlay">
+        <div class="drawer history-drawer">
+            <div class="drawer-header">
+                <h2>Session History</h2>
+                <button class="drawer-close" id="history-close">×</button>
+            </div>
+            <div class="drawer-content" id="session-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Drawer -->
+    <div class="drawer-overlay" id="settings-overlay">
+        <div class="drawer settings-drawer">
+            <div class="drawer-header">
+                <h2>Settings</h2>
+                <button class="drawer-close" id="settings-close">×</button>
+            </div>
+            <div class="drawer-content">
+                <div class="setting-group">
+                    <label class="setting-label">Display</label>
+                    <div class="setting-item">
+                        <input type="checkbox" id="setting-avatar" checked>
+                        <label for="setting-avatar">Show Avatar</label>
+                    </div>
+                    <div class="setting-item">
+                        <input type="checkbox" id="setting-scanlines" checked>
+                        <label for="setting-scanlines">Scanline Effect</label>
+                    </div>
+                    <div class="setting-item">
+                        <input type="checkbox" id="setting-motion">
+                        <label for="setting-motion">Reduce Motion</label>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label class="setting-label">Debug</label>
+                    <button class="setting-action" id="refresh-authority">Recalculate Authority</button>
+                    <button class="setting-action" id="refill-mana">Refill Mana (BYOK)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Forge Modal -->
+    <div class="modal-overlay" id="forge-overlay">
+        <div class="modal forge-modal">
+            <div class="modal-header">
+                <h2>Forge to Vault</h2>
+                <button class="modal-close" id="forge-close">×</button>
+            </div>
+            <div class="modal-content">
+                <div class="forge-field">
+                    <label for="forge-title">Title</label>
+                    <input type="text" id="forge-title" placeholder="Reflection title...">
+                </div>
+                <div class="forge-field">
+                    <label for="forge-tags">Tags (comma-separated)</label>
+                    <input type="text" id="forge-tags" placeholder="identity, values, growth...">
+                </div>
+                <div class="forge-field">
+                    <label for="forge-emotional">Emotional Tags</label>
+                    <input type="text" id="forge-emotional" placeholder="hopeful, anxious, curious...">
+                </div>
+                <div class="forge-preview">
+                    <span class="preview-count" id="forge-count">0 messages selected</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-cancel" id="forge-cancel">Cancel</button>
+                <button class="modal-confirm" id="forge-confirm">Forge</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dormant Modal -->
+    <div class="modal-overlay" id="dormant-overlay">
+        <div class="modal dormant-modal">
+            <div class="modal-header">
+                <h2>Ehko is Resting</h2>
+            </div>
+            <div class="modal-content">
+                <div class="dormant-icon">◇</div>
+                <p class="dormant-message" id="dormant-message">
+                    My mana has been depleted. I need time to recover.
+                </p>
+                <div class="dormant-stats">
+                    <span>Current: <strong id="dormant-current">0</strong></span>
+                    <span>Required: <strong id="dormant-required">1</strong></span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-confirm" id="dormant-ok">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
