@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-04  
-**Version:** 1.26  
+**Version:** 1.27  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -243,7 +243,7 @@
 - [x] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic, Authority bars, Mana display
 - [x] **Phase 3: Cleanup** — Removed unused route-based UI (base.html, reflect.html, forge.html, terminal.html)
 - [x] **Phase 4A: Mana Infrastructure (Backend)** — Database tables, mana_manager.py, API endpoints, test script
-- [ ] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display
+- [x] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display, usage history
 - [ ] **Phase 5: ReCog Engine** — Prototype, validate, integrate
 - [ ] **Phase 6: Identity Pillars + Core Memories** — Auto-population + suggestion system
 
@@ -347,6 +347,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-04 Session 19:** Phase 4B complete — Mana purchase modal with tier selection, config panel with BYOK/Mana/Hybrid mode switching, split mana display (regen + purchased bars), usage history modal with purchase log and stats. All frontend handlers wired to backend API. Full mana system operational.
 - **2025-12-03 Session 18:** Phase 2 UI Consolidation complete — Single terminal interface at `/` with mode toggle (Terminal/Reflection). Authority bars display all 5 components. Mana display with current/max and regen rate. Retro terminal aesthetic with CRT scanlines. Forge link to `/forge` for Insite review. Fixed Authority component display bug in main.js.
 - **2025-12-02 Session 15:** Control Panel v2.0 — Touch-optimized layout for Surface Pro. Added Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status). Integrated command line. VBS launcher for console-less operation. Fixed OpenAI .env loading (python-dotenv). Fixed speaker attribution in smelt (XML tags for USER_MESSAGE/EHKO_MESSAGE). Fixed surfacing criteria for immediate high-significance ingots.
 - **2025-12-02 Session 12:** ReCog Engine Specification v0.2 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
@@ -421,6 +422,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.27 — 2025-12-04 Session 19 — Phase 4B complete: Mana purchase system frontend fully wired. Purchase modal, config panel, split balance display, usage history all operational.
 - v1.26 — 2025-12-04 Session 19 — Phase 4A complete: Mana purchase system backend. Added 7 database tables (users, user_mana_balance, mana_purchases, user_api_keys, user_config, mana_usage_log, mana_pricing). Created mana_manager.py module (BYOK/Mana/Hybrid support). Added 6 mana API endpoints to forge_server.py v2.3. Created test_mana_system.py.
 - v1.25 — 2025-12-04 Session 19 — Phase 3 cleanup: Removed unused route-based UI templates. Realigned phases with current development plan (Mana Infrastructure → ReCog Engine → Pillars/Memories). Created cleanup_unused_ui.py script.
 - v1.24 — 2025-12-03 Session 18 — Phase 2 UI Consolidation complete. Single terminal interface with mode toggle, Authority bars, Mana display. Fixed Authority component display bug in main.js.

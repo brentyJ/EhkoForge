@@ -690,11 +690,18 @@ async function purchaseMana(tierId) {
         
         if (data.success) {
             console.log('[MANA] Purchase successful:', data.purchase_id);
+            
+            // Get tier info for message
+            const pricingResponse = await fetch('/api/mana/pricing');
+            const pricingData = await pricingResponse.json();
+            const tier = pricingData.tiers?.find(t => t.id === tierId);
+            const manaAmount = tier ? (tier.mana_amount / 1000).toFixed(0) + 'k' : '';
+            
             closePurchaseModal();
             await fetchManaBalance();
             
-            // Show success message
-            showNotification('Mana-Core purchased successfully!', 'success');
+            // Show success message with amount
+            showNotification(`+${manaAmount} mana purchased!`, 'success');
         } else {
             showNotification('Purchase failed: ' + data.error, 'error');
         }
@@ -825,7 +832,9 @@ async function saveManaConfig() {
         const data = await response.json();
         
         if (data.success) {
-            showNotification('Mana configuration saved', 'success');
+            const modeLabels = { byok: 'BYOK', mana: 'Mana', hybrid: 'Hybrid' };
+            const modeLabel = modeLabels[mode] || mode;
+            showNotification(`Config saved: ${modeLabel} mode`, 'success');
             await fetchManaBalance();
         } else {
             showNotification('Failed to save config', 'error');
@@ -837,9 +846,46 @@ async function saveManaConfig() {
 }
 
 function showNotification(message, type = 'info') {
-    // Simple notification (could be enhanced)
-    console.log(`[NOTIFICATION] ${type.toUpperCase()}: ${message}`);
-    // TODO: Add visual notification system
+    // Create toast container if it doesn't exist
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Icon based on type
+    const icons = {
+        success: '✓',
+        error: '✗',
+        warning: '⚠',
+        info: 'ⓘ'
+    };
+    
+    toast.innerHTML = `
+        <div class="toast-content">
+            <span class="toast-icon">${icons[type] || icons.info}</span>
+            <span class="toast-message">${message}</span>
+        </div>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('removing');
+        setTimeout(() => {
+            toast.remove();
+            // Remove container if empty
+            if (container.children.length === 0) {
+                container.remove();
+            }
+        }, 300);
+    }, 3000);
 }
 
 // =============================================================================
