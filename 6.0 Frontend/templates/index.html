@@ -147,41 +147,89 @@
                 <!-- Full-width matrix code background -->
                 <canvas class="matrix-code-bg" id="matrix-canvas" width="1200" height="120"></canvas>
             
-                <div class="avatar" id="avatar">
-                    <!-- 1950s Retro CRT Monitor Style -->
-                    <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Main monitor body (boxy with rounded corners) -->
-                        <rect class="monitor-body" x="12" y="18" width="56" height="48" rx="4" />
-                        
-                        <!-- Screen bezel -->
-                        <rect class="screen-bezel" x="18" y="24" width="44" height="32" rx="2" />
-                        
-                        <!-- Antenna/speakers (retro details) -->
-                        <line class="antenna" x1="20" y1="18" x2="18" y2="10" />
-                        <circle class="antenna-tip" cx="18" cy="10" r="1.5" />
-                        <line class="antenna" x1="60" y1="18" x2="62" y2="10" />
-                        <circle class="antenna-tip" cx="62" cy="10" r="1.5" />
-                        
-                        <!-- Ventilation slots (3 lines on each side) -->
-                        <line class="vent-line" x1="14" y1="30" x2="16" y2="30" />
-                        <line class="vent-line" x1="14" y1="34" x2="16" y2="34" />
-                        <line class="vent-line" x1="14" y1="38" x2="16" y2="38" />
-                        <line class="vent-line" x1="64" y1="30" x2="66" y2="30" />
-                        <line class="vent-line" x1="64" y1="34" x2="66" y2="34" />
-                        <line class="vent-line" x1="64" y1="38" x2="66" y2="38" />
-                        
-                        <!-- Stand/base -->
-                        <rect class="monitor-stand" x="32" y="66" width="16" height="4" rx="1" />
-                        <rect class="monitor-base" x="28" y="70" width="24" height="3" rx="1" />
-                        
-                        <!-- Inner screen glow -->
-                        <rect class="screen-glow" x="20" y="26" width="40" height="28" rx="1" />
-                    </svg>
-                    
-                    <!-- Eyes (on the screen) -->
-                    <div class="avatar-eyes">
-                        <div class="eye eye-left"></div>
-                        <div class="eye eye-right"></div>
+                <!-- Avatar Carousel -->
+                <div class="avatar-carousel" id="avatar-carousel">
+                    <!-- Form 1: The Classic (Retro Monitor) -->
+                    <div class="avatar-form-container active" data-form="classic">
+                        <div class="avatar" id="avatar">
+                            <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <rect class="monitor-body" x="12" y="18" width="56" height="48" rx="4" />
+                                <rect class="screen-bezel" x="18" y="24" width="44" height="32" rx="2" />
+                                <line class="antenna" x1="20" y1="18" x2="18" y2="10" />
+                                <circle class="antenna-tip" cx="18" cy="10" r="1.5" />
+                                <line class="antenna" x1="60" y1="18" x2="62" y2="10" />
+                                <circle class="antenna-tip" cx="62" cy="10" r="1.5" />
+                                <line class="vent-line" x1="14" y1="30" x2="16" y2="30" />
+                                <line class="vent-line" x1="14" y1="34" x2="16" y2="34" />
+                                <line class="vent-line" x1="14" y1="38" x2="16" y2="38" />
+                                <line class="vent-line" x1="64" y1="30" x2="66" y2="30" />
+                                <line class="vent-line" x1="64" y1="34" x2="66" y2="34" />
+                                <line class="vent-line" x1="64" y1="38" x2="66" y2="38" />
+                                <rect class="monitor-stand" x="32" y="66" width="16" height="4" rx="1" />
+                                <rect class="monitor-base" x="28" y="70" width="24" height="3" rx="1" />
+                                <rect class="screen-glow" x="20" y="26" width="40" height="28" rx="1" />
+                            </svg>
+                            <div class="avatar-eyes">
+                                <div class="eye eye-left"></div>
+                                <div class="eye eye-right"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form 2: The Nascent Core -->
+                    <div class="avatar-form-container" data-form="core">
+                        <div class="avatar">
+                            <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="40" r="32" fill="none" stroke="var(--accent-primary)" stroke-width="0.5" opacity="0.3">
+                                    <animateTransform attributeName="transform" type="rotate" from="0 40 40" to="360 40 40" dur="20s" repeatCount="indefinite"/>
+                                </circle>
+                                <path d="M40 15 A25 25 0 0 1 65 40 M40 65 A25 25 0 0 1 15 40" fill="none" stroke="var(--accent-primary)" stroke-width="1" opacity="0.5">
+                                    <animateTransform attributeName="transform" type="rotate" from="360 40 40" to="0 40 40" dur="10s" repeatCount="indefinite"/>
+                                </path>
+                                <rect x="30" y="30" width="20" height="20" fill="none" stroke="var(--accent-primary)" stroke-width="1.5" transform="rotate(45 40 40)">
+                                    <animate attributeName="opacity" values="0.4;1;0.4" dur="4s" repeatCount="indefinite"/>
+                                </rect>
+                                <circle cx="40" cy="40" r="4" fill="var(--accent-primary)">
+                                    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+                                    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                                </circle>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Form 3: The Construct -->
+                    <div class="avatar-form-container" data-form="construct">
+                        <div class="avatar">
+                            <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20,25 L60,25 L65,35 L65,60 L55,65 L25,65 L15,60 L15,35 Z" fill="none" stroke="var(--accent-primary)" stroke-width="1.5" />
+                                <line x1="15" y1="35" x2="65" y2="35" stroke="var(--accent-primary)" stroke-width="1" opacity="0.5" />
+                                <rect x="25" y="40" width="30" height="8" rx="2" fill="var(--accent-primary)" opacity="0.2" />
+                                <rect x="25" y="40" width="30" height="8" rx="2" fill="none" stroke="var(--accent-primary)" stroke-width="1">
+                                    <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+                                </rect>
+                                <line x1="10" y1="45" x2="15" y2="45" stroke="var(--accent-primary)" stroke-width="1" />
+                                <line x1="65" y1="45" x2="70" y2="45" stroke="var(--accent-primary)" stroke-width="1" />
+                                <path d="M30,58 L50,58" stroke="var(--accent-primary)" stroke-width="1" stroke-dasharray="2 2" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Form 4: The Resonant -->
+                    <div class="avatar-form-container" data-form="resonant">
+                        <div class="avatar">
+                            <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10,40 Q25,20 40,40 T70,40" fill="none" stroke="var(--accent-primary)" stroke-width="1" opacity="0.4">
+                                    <animate attributeName="d" values="M10,40 Q25,20 40,40 T70,40; M10,40 Q25,60 40,40 T70,40; M10,40 Q25,20 40,40 T70,40" dur="4s" repeatCount="indefinite"/>
+                                </path>
+                                <path d="M10,40 Q25,60 40,40 T70,40" fill="none" stroke="var(--accent-primary)" stroke-width="1" opacity="0.4">
+                                    <animate attributeName="d" values="M10,40 Q25,60 40,40 T70,40; M10,40 Q25,20 40,40 T70,40; M10,40 Q25,60 40,40 T70,40" dur="4s" repeatCount="indefinite"/>
+                                </path>
+                                <circle cx="40" cy="40" r="25" fill="none" stroke="var(--accent-primary)" stroke-width="0.5" stroke-dasharray="4 4" opacity="0.3">
+                                    <animateTransform attributeName="transform" type="rotate" from="0 40 40" to="-360 40 40" dur="30s" repeatCount="indefinite"/>
+                                </circle>
+                                <circle cx="40" cy="40" r="2" fill="var(--accent-primary)" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -551,6 +551,29 @@ function initMatrixCode() {
     });
 }
 
+function initAvatarCarousel() {
+    const containers = document.querySelectorAll('.avatar-form-container');
+    
+    containers.forEach(container => {
+        container.addEventListener('click', () => {
+            // Remove active from all
+            containers.forEach(c => c.classList.remove('active'));
+            
+            // Set clicked as active
+            container.classList.add('active');
+            
+            // Only the first form (classic) has eyes, so update references
+            const activeAvatar = container.querySelector('.avatar');
+            if (activeAvatar) {
+                // Update state reference for other functions
+                const oldAvatar = document.getElementById('avatar');
+                if (oldAvatar) oldAvatar.removeAttribute('id');
+                activeAvatar.id = 'avatar';
+            }
+        });
+    });
+}
+
 function initEyeBlink() {
     const eyes = document.querySelectorAll('.eye');
     
@@ -1220,6 +1243,7 @@ async function init() {
     
     // Initialize avatar animations
     initMatrixCode();
+    initAvatarCarousel();
     initEyeBlink();
     
     // Set initial mode

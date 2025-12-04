@@ -210,7 +210,20 @@ body.low-motion .crt-overlay::after {
     padding: var(--gap-md);
     position: relative;
     z-index: 10;
-    background: var(--bg-primary);
+
+    /* Slightly curved, glowing "screen" */
+    background:
+        radial-gradient(circle at 50% 0%,
+            rgba(22, 28, 40, 0.95) 0%,
+            rgba(10, 13, 20, 0.98) 50%,
+            rgba(5, 7, 11, 1) 100%);
+    border-radius: 14px;
+    border: 1px solid var(--border-primary);
+
+    box-shadow:
+        0 0 50px rgba(0, 0, 0, 0.9),
+        0 0 32px rgba(107, 140, 206, 0.22);
+    overflow: hidden;
 }
 
 /* =============================================================================
@@ -676,6 +689,45 @@ body.low-motion .crt-overlay::after {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+}
+
+/* Avatar Carousel */
+.avatar-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.avatar-form-container {
+    flex-shrink: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+}
+
+/* Inactive forms - dimmed and slightly smaller */
+.avatar-form-container:not(.active) {
+    opacity: 0.3;
+    filter: blur(1px);
+    transform: scale(0.8);
+}
+
+.avatar-form-container:not(.active):hover {
+    opacity: 0.5;
+    transform: scale(0.85);
+}
+
+/* Active form - center locked position */
+.avatar-form-container.active {
+    opacity: 1;
+    filter: none;
+    transform: scale(1);
+    z-index: 10;
 }
 
 /* Bottom corner brackets using monitor-screen pseudo-elements */
