@@ -38,6 +38,39 @@
                 </button>
             </div>
             
+            <!-- Model Selector -->
+            <div class="model-selector">
+                <div class="model-dropdown" id="model-dropdown">
+                    <button class="model-dropdown-trigger" id="model-trigger">
+                        <span class="model-name" id="selected-model-name">Claude Sonnet 4</span>
+                        <span class="model-trigger-cost" id="selected-model-cost">◆1</span>
+                        <span class="dropdown-arrow">▾</span>
+                    </button>
+                    <div class="model-dropdown-menu" id="model-menu">
+                        <div class="model-option" data-model="claude-sonnet-4" data-cost-terminal="1" data-cost-reflection="3">
+                            <span class="option-name">Claude Sonnet 4</span>
+                            <span class="option-cost"></span>
+                        </div>
+                        <div class="model-option" data-model="claude-opus-4" data-cost-terminal="2" data-cost-reflection="6">
+                            <span class="option-name">Claude Opus 4</span>
+                            <span class="option-cost"></span>
+                        </div>
+                        <div class="model-option" data-model="claude-haiku-4" data-cost-terminal="0.5" data-cost-reflection="1.5">
+                            <span class="option-name">Claude Haiku 4</span>
+                            <span class="option-cost"></span>
+                        </div>
+                        <div class="model-option" data-model="gpt-4o" data-cost-terminal="1.5" data-cost-reflection="4">
+                            <span class="option-name">GPT-4o</span>
+                            <span class="option-cost"></span>
+                        </div>
+                        <div class="model-option" data-model="gpt-4o-mini" data-cost-terminal="0.3" data-cost-reflection="1">
+                            <span class="option-name">GPT-4o mini</span>
+                            <span class="option-cost"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="header-right">
                 <a href="/forge" class="forge-link" title="Review Insites">
                     <span class="forge-icon">⚡</span>
@@ -103,10 +136,54 @@
         
         <!-- Avatar Zone -->
         <div class="avatar-zone" id="avatar-zone">
-            <div class="avatar" id="avatar">
-                <div class="avatar-core"></div>
-                <div class="avatar-ring"></div>
-                <div class="avatar-scanlines"></div>
+            <!-- Terminal header -->
+            <div class="terminal-header">
+                <span class="terminal-label">◆ EHKO DISPLAY</span>
+                <span class="terminal-version">v2.0</span>
+            </div>
+            
+            <!-- Monitor screen wrapper -->
+            <div class="monitor-screen">
+                <!-- Full-width matrix code background -->
+                <canvas class="matrix-code-bg" id="matrix-canvas" width="1200" height="120"></canvas>
+            
+                <div class="avatar" id="avatar">
+                    <!-- 1950s Retro CRT Monitor Style -->
+                    <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Main monitor body (boxy with rounded corners) -->
+                        <rect class="monitor-body" x="12" y="18" width="56" height="48" rx="4" />
+                        
+                        <!-- Screen bezel -->
+                        <rect class="screen-bezel" x="18" y="24" width="44" height="32" rx="2" />
+                        
+                        <!-- Antenna/speakers (retro details) -->
+                        <line class="antenna" x1="20" y1="18" x2="18" y2="10" />
+                        <circle class="antenna-tip" cx="18" cy="10" r="1.5" />
+                        <line class="antenna" x1="60" y1="18" x2="62" y2="10" />
+                        <circle class="antenna-tip" cx="62" cy="10" r="1.5" />
+                        
+                        <!-- Ventilation slots (3 lines on each side) -->
+                        <line class="vent-line" x1="14" y1="30" x2="16" y2="30" />
+                        <line class="vent-line" x1="14" y1="34" x2="16" y2="34" />
+                        <line class="vent-line" x1="14" y1="38" x2="16" y2="38" />
+                        <line class="vent-line" x1="64" y1="30" x2="66" y2="30" />
+                        <line class="vent-line" x1="64" y1="34" x2="66" y2="34" />
+                        <line class="vent-line" x1="64" y1="38" x2="66" y2="38" />
+                        
+                        <!-- Stand/base -->
+                        <rect class="monitor-stand" x="32" y="66" width="16" height="4" rx="1" />
+                        <rect class="monitor-base" x="28" y="70" width="24" height="3" rx="1" />
+                        
+                        <!-- Inner screen glow -->
+                        <rect class="screen-glow" x="20" y="26" width="40" height="28" rx="1" />
+                    </svg>
+                    
+                    <!-- Eyes (on the screen) -->
+                    <div class="avatar-eyes">
+                        <div class="eye eye-left"></div>
+                        <div class="eye eye-right"></div>
+                    </div>
+                </div>
             </div>
             <div class="avatar-status" id="avatar-status">Ready</div>
         </div>
@@ -133,12 +210,11 @@
         <!-- Input Bar -->
         <div class="input-bar">
             <span class="input-prompt" id="input-prompt">&gt;</span>
-            <input 
-                type="text" 
+            <textarea 
                 id="message-input" 
                 placeholder="Type a message..."
-                autocomplete="off"
-            >
+                rows="1"
+            ></textarea>
             <div class="input-cost" id="input-cost" title="Mana cost">
                 <span class="cost-icon">◆</span>
                 <span class="cost-value">1</span>

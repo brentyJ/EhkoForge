@@ -13,6 +13,7 @@ const state = {
     mode: 'terminal',  // 'terminal' or 'reflection'
     sessionId: null,
     messages: [],
+    selectedModel: 'claude-sonnet-4',
     manaCosts: {
         terminal_message: 1,
         reflection_message: 3,
@@ -180,8 +181,65 @@ function setMode(mode) {
         ? 'Share what\'s on your mind...'
         : 'Type a message...';
     
-    // Update cost display
+    // Update cost displays
     updateCostDisplay();
+    updateModelCost();
+}
+
+function updateModelCost() {
+    const dropdown = document.getElementById('model-dropdown');
+    const activeOption = dropdown.querySelector('.model-option.active');
+    
+    if (!activeOption) return;
+    
+    const costAttr = state.mode === 'reflection' ? 'data-cost-reflection' : 'data-cost-terminal';
+    const cost = parseFloat(activeOption.getAttribute(costAttr));
+    
+    // Update trigger display
+    document.getElementById('selected-model-cost').textContent = `◆${cost}`;
+    
+    // Update input cost display
+    document.querySelector('.cost-value').textContent = cost;
+    
+    // Update all option costs in menu based on current mode
+    document.querySelectorAll('.model-option').forEach(option => {
+        const optionCost = parseFloat(option.getAttribute(costAttr));
+        option.querySelector('.option-cost').textContent = `◆${optionCost}`;
+    });
+    
+    // Store in state
+    state.manaCosts[state.mode + '_message'] = cost;
+    state.selectedModel = activeOption.dataset.model;
+}
+
+function toggleModelDropdown() {
+    const dropdown = document.getElementById('model-dropdown');
+    const isOpen = dropdown.classList.contains('open');
+    
+    if (isOpen) {
+        dropdown.classList.remove('open');
+    } else {
+        dropdown.classList.add('open');
+        updateModelCost(); // Refresh costs when opening
+    }
+}
+
+function selectModel(modelElement) {
+    // Remove active from all
+    document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('active'));
+    
+    // Set active
+    modelElement.classList.add('active');
+    
+    // Update trigger text
+    const modelName = modelElement.querySelector('.option-name').textContent;
+    document.getElementById('selected-model-name').textContent = modelName;
+    
+    // Update costs
+    updateModelCost();
+    
+    // Close dropdown
+    document.getElementById('model-dropdown').classList.remove('open');
 }
 
 // =============================================================================
@@ -285,8 +343,9 @@ async function sendMessage() {
         return;
     }
     
-    // Clear input
+    // Clear input and reset height
     input.value = '';
+    input.style.height = 'auto';
     
     // Show user message immediately
     const userMsg = {
@@ -395,6 +454,121 @@ function scrollToBottom() {
 // AVATAR
 // =============================================================================
 
+let matrixInterval = null;
+let blinkInterval = null;
+
+function initMatrixCode() {
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Make canvas responsive
+    function resizeCanvas() {
+        const container = document.querySelector('.avatar-zone');
+        const width = Math.min(container.offsetWidth, 1200);
+        canvas.width = width;
+        canvas.height = 120;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    const fontSize = 10;
+    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    
+    let columns = Math.floor(canvas.width / (fontSize * 4)); // Quarter as many columns
+    let drops = [];
+    
+    function initDrops() {
+        columns = Math.floor(canvas.width / (fontSize * 4)); // Quarter as many columns
+        drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -20;
+        }
+    }
+    initDrops();
+    
+    // Ehko center position (relative to canvas)
+    const ehkoCenter = 0.5; // Center of canvas (50%)
+    const ehkoRadius = 0.15; // 15% of canvas width on each side
+    
+    let speed = 1;
+    
+    function draw() {
+        ctx.fillStyle = 'rgba(8, 10, 14, 0.15)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = 'rgba(107, 140, 206, 0.6)';
+        ctx.font = `${fontSize}px monospace`;
+        
+        for (let i = 0; i < drops.length; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * fontSize * 4; // Match column spacing
+            
+            // Calculate normalized position (0 to 1)
+            const normalizedX = i / columns;
+            
+            // Check if this column is near the Ehko
+            const distanceFromCenter = Math.abs(normalizedX - ehkoCenter);
+            const isNearEhko = distanceFromCenter < ehkoRadius;
+            
+            if (isNearEhko) {
+                // Flow UPWARD near Ehko
+                const y = canvas.height - (drops[i] * fontSize);
+                ctx.fillText(char, x, y);
+                
+                // Move up (slower)
+                drops[i] += speed * 0.3;
+                
+                // Reset if off top
+                if (drops[i] * fontSize > canvas.height) {
+                    drops[i] = 0;
+                }
+            } else {
+                // Flow DOWNWARD everywhere else
+                const y = drops[i] * fontSize;
+                ctx.fillText(char, x, y);
+                
+                // Move down (slower)
+                drops[i] += speed * 0.3;
+                
+                // Reset if off bottom
+                if (y > canvas.height && Math.random() > 0.95) {
+                    drops[i] = 0;
+                }
+            }
+        }
+    }
+    
+    matrixInterval = setInterval(draw, 50);
+    
+    window.setMatrixSpeed = (newSpeed) => {
+        speed = newSpeed;
+    };
+    
+    // Re-init on resize
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        initDrops();
+    });
+}
+
+function initEyeBlink() {
+    const eyes = document.querySelectorAll('.eye');
+    
+    function blink() {
+        eyes.forEach(eye => eye.classList.add('blinking'));
+        setTimeout(() => {
+            eyes.forEach(eye => eye.classList.remove('blinking'));
+        }, 100);
+        
+        // Schedule next blink randomly (3-7 seconds)
+        const nextBlink = 3000 + Math.random() * 4000;
+        blinkInterval = setTimeout(blink, nextBlink);
+    }
+    
+    // Start blinking
+    blink();
+}
+
 function setAvatarState(status) {
     const avatar = document.getElementById('avatar');
     const statusEl = document.getElementById('avatar-status');
@@ -405,13 +579,16 @@ function setAvatarState(status) {
         case 'thinking':
             avatar.classList.add('thinking');
             statusEl.textContent = 'Thinking...';
+            if (window.setMatrixSpeed) window.setMatrixSpeed(2); // Faster
             break;
         case 'dormant':
             avatar.classList.add('dormant');
             statusEl.textContent = 'Resting';
+            if (window.setMatrixSpeed) window.setMatrixSpeed(0.3); // Slower
             break;
         default:
             statusEl.textContent = 'Ready';
+            if (window.setMatrixSpeed) window.setMatrixSpeed(1); // Normal
     }
 }
 
@@ -898,8 +1075,42 @@ function initEventListeners() {
         btn.addEventListener('click', () => setMode(btn.dataset.mode));
     });
     
+    // Model dropdown
+    const modelTrigger = document.getElementById('model-trigger');
+    modelTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleModelDropdown();
+    });
+    
+    // Model options
+    document.querySelectorAll('.model-option').forEach(option => {
+        option.addEventListener('click', () => selectModel(option));
+    });
+    
+    // Set first option as active on init
+    const firstOption = document.querySelector('.model-option');
+    if (firstOption) {
+        firstOption.classList.add('active');
+        updateModelCost();
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('model-dropdown');
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+    
     // Message input
     const input = document.getElementById('message-input');
+    
+    // Auto-expand textarea
+    input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 200) + 'px';
+    });
+    
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -1006,6 +1217,10 @@ async function init() {
     // Apply initial settings
     document.body.classList.add('scanlines-enabled');
     applySettings();
+    
+    // Initialize avatar animations
+    initMatrixCode();
+    initEyeBlink();
     
     // Set initial mode
     setMode('terminal');
