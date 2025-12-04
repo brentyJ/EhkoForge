@@ -61,3 +61,6 @@ attachments/
 # Environment variables (API keys)
 .env
 *.env
+
+# Private strategic documentation (not for public repo)
+_private/

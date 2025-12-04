@@ -246,8 +246,10 @@
 - [x] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display, usage history
 - [ ] **Phase 5: ReCog Engine** — Prototype, validate, integrate
 - [ ] **Phase 6: Identity Pillars + Core Memories** — Auto-population + suggestion system
+- [ ] **Phase 7: Ehko Evolution System** — Authority-driven visual progression (design in progress)
 
-See: `2.0 Modules/Reorientation_Spec_v0_1.md`
+See: `2.0 Modules/Reorientation_Spec_v0_1.md`  
+**Note:** Phase 7+ strategic planning in private design docs
 
 ---
 
