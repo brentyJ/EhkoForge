@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-03  
-**Version:** 1.24  
+**Last Updated:** 2025-12-04  
+**Version:** 1.26  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -241,8 +241,11 @@
 ### Reorientation (Creative Direction Shift)
 - [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
 - [x] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic, Authority bars, Mana display
-- [ ] **Phase 3: Interaction Refinement** — Tag UI, Forge simplification, typewriter effect
-- [ ] **Phase 4: Personality + Avatar** — Dynamic prompts, avatar progression
+- [x] **Phase 3: Cleanup** — Removed unused route-based UI (base.html, reflect.html, forge.html, terminal.html)
+- [x] **Phase 4A: Mana Infrastructure (Backend)** — Database tables, mana_manager.py, API endpoints, test script
+- [ ] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display
+- [ ] **Phase 5: ReCog Engine** — Prototype, validate, integrate
+- [ ] **Phase 6: Identity Pillars + Core Memories** — Auto-population + suggestion system
 
 See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
@@ -418,6 +421,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.26 — 2025-12-04 Session 19 — Phase 4A complete: Mana purchase system backend. Added 7 database tables (users, user_mana_balance, mana_purchases, user_api_keys, user_config, mana_usage_log, mana_pricing). Created mana_manager.py module (BYOK/Mana/Hybrid support). Added 6 mana API endpoints to forge_server.py v2.3. Created test_mana_system.py.
+- v1.25 — 2025-12-04 Session 19 — Phase 3 cleanup: Removed unused route-based UI templates. Realigned phases with current development plan (Mana Infrastructure → ReCog Engine → Pillars/Memories). Created cleanup_unused_ui.py script.
 - v1.24 — 2025-12-03 Session 18 — Phase 2 UI Consolidation complete. Single terminal interface with mode toggle, Authority bars, Mana display. Fixed Authority component display bug in main.js.
 - v1.23 — 2025-12-03 Session 17 — Reorientation Phase 1 complete: Added Authority system (ehko_authority table, 5 components). Added Mana system (mana_state, mana_costs, mana_transactions tables). Updated prompts.py v0.2 with stage-based personality dampener. Created authority_mana.py module. Renamed ingot→insite tables. Created Reorientation_Spec_v0_1.md. Added reorientation_v0_1.sql migration.
 - v1.22 — 2025-12-03 Session 16 — License split: MIT (framework) + AGPL (ReCog Engine). Created recog_engine/ module. Moved tier0, smelt, prompts, forge_integration to AGPL module. Updated imports in forge_server.py. Added LICENSE files. Created Data_Model_Core_Tables_v1_0.md (MIT schema). Updated Data Model to v1.4 with license split.

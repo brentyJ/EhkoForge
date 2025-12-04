@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.2
+EhkoForge Server v2.3
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
-Includes Authority/Mana systems, insite processing, and LLM integration.
+Includes Authority/Mana systems, mana purchase (Stripe placeholder), and LLM integration.
 
 Run: python forge_server.py
 Access: http://localhost:5000
@@ -12,6 +12,7 @@ Routes:
     / -> Main terminal UI (consolidated)
     /forge -> Insite review page
     /reflect, /terminal -> Redirect to /
+    /api/mana/* -> Mana management endpoints
 """
 
 # Load environment variables FIRST, before any other imports
@@ -55,6 +56,19 @@ from recog_engine.authority_mana import (
     check_mana_available,
     get_dormant_response,
     refill_mana,
+)
+from recog_engine.mana_manager import (
+    get_user_config,
+    set_user_config,
+    get_mana_balance,
+    spend_mana_smart,
+    get_pricing_tiers,
+    record_purchase,
+    get_purchase_history,
+    get_usage_stats,
+    check_spending_limits,
+    set_api_keys,
+    get_api_keys,
 )
 
 # =============================================================================
@@ -1754,6 +1768,160 @@ def update_journal_entry(entry_id):
 
 
 # =============================================================================
+# MANA MANAGEMENT API
+# =============================================================================
+
+@app.route("/api/mana/balance", methods=["GET"])
+def api_mana_balance():
+    """Get user's complete mana balance (regenerative + purchased)."""
+    try:
+        balance = get_mana_balance(DATABASE_PATH)
+        limits = check_spending_limits(DATABASE_PATH)
+        
+        return jsonify({
+            "success": True,
+            "balance": balance,
+            "limits": limits,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mana/config", methods=["GET", "POST"])
+def api_mana_config():
+    """Get or update mana configuration."""
+    if request.method == "GET":
+        try:
+            config = get_user_config(DATABASE_PATH)
+            return jsonify({"success": True, "config": config})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+    
+    elif request.method == "POST":
+        try:
+            data = request.json
+            success = set_user_config(DATABASE_PATH, **data)
+            
+            if success:
+                config = get_user_config(DATABASE_PATH)
+                return jsonify({"success": True, "config": config})
+            else:
+                return jsonify({"success": False, "error": "Update failed"}), 400
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mana/pricing", methods=["GET"])
+def api_mana_pricing():
+    """Get available mana-core pricing tiers."""
+    try:
+        tiers = get_pricing_tiers(DATABASE_PATH)
+        return jsonify({"success": True, "tiers": tiers})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mana/purchase", methods=["POST"])
+def api_mana_purchase():
+    """
+    Process mana-core purchase (Stripe integration).
+    
+    This is a placeholder - actual Stripe integration requires:
+    1. Stripe SDK (pip install stripe)
+    2. Publishable/Secret keys
+    3. Webhook handling for payment confirmation
+    
+    For MVP, this endpoint simulates a purchase.
+    """
+    try:
+        data = request.json
+        tier_id = data.get('tier_id')
+        
+        if not tier_id:
+            return jsonify({"success": False, "error": "Missing tier_id"}), 400
+        
+        # Simulate Stripe payment (replace with actual Stripe call)
+        payment_intent_id = f"sim_pi_{uuid4().hex[:16]}"
+        charge_id = f"sim_ch_{uuid4().hex[:16]}"
+        
+        purchase_id = record_purchase(
+            DATABASE_PATH, 
+            user_id=1, 
+            tier_id=tier_id,
+            stripe_payment_intent_id=payment_intent_id,
+            stripe_charge_id=charge_id
+        )
+        
+        if purchase_id:
+            balance = get_mana_balance(DATABASE_PATH)
+            return jsonify({
+                "success": True,
+                "purchase_id": purchase_id,
+                "balance": balance,
+            })
+        else:
+            return jsonify({"success": False, "error": "Purchase failed"}), 500
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mana/history", methods=["GET"])
+def api_mana_history():
+    """Get purchase and usage history."""
+    try:
+        limit = request.args.get('limit', 10, type=int)
+        days = request.args.get('days', 30, type=int)
+        
+        purchases = get_purchase_history(DATABASE_PATH, limit=limit)
+        usage = get_usage_stats(DATABASE_PATH, days=days)
+        
+        return jsonify({
+            "success": True,
+            "purchases": purchases,
+            "usage": usage,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/mana/api-keys", methods=["GET", "POST"])
+def api_mana_keys():
+    """Manage BYOK API keys."""
+    if request.method == "GET":
+        try:
+            keys = get_api_keys(DATABASE_PATH)
+            # Mask keys for display (show last 4 chars only)
+            masked = {}
+            for provider, key in keys.items():
+                if key:
+                    masked[provider] = f"...{key[-4:]}"
+                else:
+                    masked[provider] = None
+            
+            return jsonify({"success": True, "keys": masked})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+    
+    elif request.method == "POST":
+        try:
+            data = request.json
+            claude_key = data.get('claude_key')
+            openai_key = data.get('openai_key')
+            
+            success = set_api_keys(DATABASE_PATH, 
+                                   claude_key=claude_key, 
+                                   openai_key=openai_key)
+            
+            if success:
+                return jsonify({"success": True, "message": "API keys updated"})
+            else:
+                return jsonify({"success": False, "error": "Update failed"}), 400
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
 # PAGE ROUTES
 # =============================================================================
 
@@ -1810,8 +1978,8 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.1")
-    print("Authority & Mana Systems Active")
+    print("EHKOFORGE SERVER v2.3")
+    print("Authority & Mana Purchase Systems Active")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")
     print(f"Static files: {STATIC_PATH}")

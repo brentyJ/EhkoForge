@@ -88,11 +88,16 @@
                     <span class="mana-value" id="mana-current">100</span>
                     <span class="mana-separator">/</span>
                     <span class="mana-max" id="mana-max">100</span>
+                    <button class="mana-topup-btn" id="mana-topup-btn" title="Purchase Mana-Cores">▲</button>
                 </div>
                 <div class="mana-bar">
                     <div class="mana-fill" id="mana-fill" style="width: 100%"></div>
+                    <div class="mana-fill-purchased" id="mana-fill-purchased" style="width: 0%"></div>
                 </div>
-                <div class="mana-regen" id="mana-regen">+1.0/hr</div>
+                <div class="mana-breakdown" id="mana-breakdown">
+                    <span class="mana-regen" id="mana-regen" title="Regenerative (BYOK)">Regen: 100</span>
+                    <span class="mana-purchased" id="mana-purchased" title="Purchased">Bought: 0</span>
+                </div>
             </div>
         </div>
         
@@ -177,6 +182,27 @@
             </div>
             <div class="drawer-content">
                 <div class="setting-group">
+                    <label class="setting-label">Mana Configuration</label>
+                    <div class="setting-item">
+                        <label for="mana-mode">Mode:</label>
+                        <select id="mana-mode" class="setting-select">
+                            <option value="mana">Mana (Purchase mana-cores)</option>
+                            <option value="byok">BYOK (Bring your own keys)</option>
+                            <option value="hybrid">Hybrid (Mix both)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item byok-config" style="display: none;">
+                        <label for="byok-max-mana">BYOK Max Mana:</label>
+                        <input type="number" id="byok-max-mana" class="setting-input" value="100" min="10" max="1000">
+                    </div>
+                    <div class="setting-item byok-config" style="display: none;">
+                        <label for="byok-regen-rate">Regen Rate (per hour):</label>
+                        <input type="number" id="byok-regen-rate" class="setting-input" value="1.0" min="0.1" max="10" step="0.1">
+                    </div>
+                    <button class="setting-action" id="save-mana-config">Save Mana Config</button>
+                    <button class="setting-action" id="view-usage-history">View Usage History</button>
+                </div>
+                <div class="setting-group">
                     <label class="setting-label">Display</label>
                     <div class="setting-item">
                         <input type="checkbox" id="setting-avatar" checked>
@@ -249,6 +275,54 @@
             </div>
             <div class="modal-actions">
                 <button class="modal-confirm" id="dormant-ok">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mana Purchase Modal -->
+    <div class="modal-overlay" id="purchase-overlay">
+        <div class="modal purchase-modal">
+            <div class="modal-header">
+                <h2>Purchase Mana-Cores</h2>
+                <button class="modal-close" id="purchase-close">×</button>
+            </div>
+            <div class="modal-content">
+                <p class="purchase-info">Top up your mana to continue reflecting and journaling. No subscriptions, no expiry.</p>
+                <div class="pricing-tiers" id="pricing-tiers">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="purchase-note">
+                    <p><strong>Note:</strong> This is a simulated purchase for MVP testing. Actual Stripe integration coming Q1 2026.</p>
+                    <p>Questions? Contact <a href="mailto:licensing@ehkoforge.ai">licensing@ehkoforge.ai</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage History Modal -->
+    <div class="modal-overlay" id="usage-overlay">
+        <div class="modal usage-modal">
+            <div class="modal-header">
+                <h2>Mana Usage History</h2>
+                <button class="modal-close" id="usage-close">×</button>
+            </div>
+            <div class="modal-content">
+                <div class="usage-tabs">
+                    <button class="usage-tab active" data-tab="purchases">Purchases</button>
+                    <button class="usage-tab" data-tab="usage">Usage Stats</button>
+                </div>
+                <div class="usage-tab-content">
+                    <div class="usage-pane active" id="purchases-pane">
+                        <div class="purchase-history" id="purchase-history">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="usage-pane" id="usage-pane">
+                        <div class="usage-stats" id="usage-stats">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

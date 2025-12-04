@@ -535,8 +535,9 @@ function closeHistoryDrawer() {
 // SETTINGS DRAWER
 // =============================================================================
 
-function openSettingsDrawer() {
+async function openSettingsDrawer() {
     document.getElementById('settings-overlay').classList.add('active');
+    await loadManaConfig();
 }
 
 function closeSettingsDrawer() {
@@ -587,6 +588,258 @@ function showNotice(message, type = 'info') {
     setTimeout(() => {
         statusEl.textContent = original;
     }, 2000);
+}
+
+// =============================================================================
+// MANA PURCHASE SYSTEM
+// =============================================================================
+
+async function fetchManaBalance() {
+    try {
+        const response = await fetch('/api/mana/balance');
+        const data = await response.json();
+        
+        if (data.success) {
+            updateManaDisplay(data.balance, data.limits);
+        }
+    } catch (error) {
+        console.error('[MANA] Failed to fetch balance:', error);
+    }
+}
+
+function updateManaDisplay(balance, limits) {
+    const regenMana = balance.regenerative_mana || 0;
+    const purchasedMana = balance.purchased_mana || 0;
+    const totalMana = balance.total_available || 0;
+    
+    // Update display values
+    document.getElementById('mana-current').textContent = Math.floor(totalMana);
+    document.getElementById('mana-max').textContent = Math.floor(regenMana + purchasedMana);
+    
+    // Update breakdown
+    document.getElementById('mana-regen').textContent = `Regen: ${Math.floor(regenMana)}`;
+    document.getElementById('mana-purchased').textContent = `Bought: ${Math.floor(purchasedMana)}`;
+    
+    // Update bar (layered)
+    const totalMax = regenMana + purchasedMana;
+    if (totalMax > 0) {
+        const regenPercent = (regenMana / totalMax) * 100;
+        const purchasedPercent = (purchasedMana / totalMax) * 100;
+        
+        document.getElementById('mana-fill').style.width = `${regenPercent}%`;
+        document.getElementById('mana-fill-purchased').style.width = `${purchasedPercent}%`;
+    }
+    
+    // Check for low mana warning
+    if (limits && limits.daily_alert) {
+        console.warn('[MANA] Daily spending limit alert');
+    }
+}
+
+async function openPurchaseModal() {
+    document.getElementById('purchase-overlay').classList.add('active');
+    await loadPricingTiers();
+}
+
+function closePurchaseModal() {
+    document.getElementById('purchase-overlay').classList.remove('active');
+}
+
+async function loadPricingTiers() {
+    try {
+        const response = await fetch('/api/mana/pricing');
+        const data = await response.json();
+        
+        if (data.success && data.tiers) {
+            const tiersContainer = document.getElementById('pricing-tiers');
+            tiersContainer.innerHTML = '';
+            
+            data.tiers.forEach((tier, index) => {
+                const tierEl = document.createElement('div');
+                tierEl.className = 'pricing-tier';
+                if (index === 1) tierEl.classList.add('best-value'); // Ember tier
+                
+                const manaFormatted = (tier.mana_amount / 1000).toFixed(0) + 'k';
+                const ratePerDollar = (tier.mana_amount / tier.price_usd).toFixed(0);
+                
+                tierEl.innerHTML = `
+                    <div class="tier-name">${tier.tier_name}</div>
+                    <div class="tier-mana">${manaFormatted} mana</div>
+                    <div class="tier-price">${tier.price_usd.toFixed(0)}</div>
+                    <div class="tier-rate">${ratePerDollar} mana/$</div>
+                `;
+                
+                tierEl.addEventListener('click', () => purchaseMana(tier.id));
+                tiersContainer.appendChild(tierEl);
+            });
+        }
+    } catch (error) {
+        console.error('[MANA] Failed to load pricing:', error);
+    }
+}
+
+async function purchaseMana(tierId) {
+    try {
+        const response = await fetch('/api/mana/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tier_id: tierId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log('[MANA] Purchase successful:', data.purchase_id);
+            closePurchaseModal();
+            await fetchManaBalance();
+            
+            // Show success message
+            showNotification('Mana-Core purchased successfully!', 'success');
+        } else {
+            showNotification('Purchase failed: ' + data.error, 'error');
+        }
+    } catch (error) {
+        console.error('[MANA] Purchase failed:', error);
+        showNotification('Purchase failed', 'error');
+    }
+}
+
+async function openUsageHistoryModal() {
+    document.getElementById('usage-overlay').classList.add('active');
+    await loadUsageHistory();
+}
+
+function closeUsageHistoryModal() {
+    document.getElementById('usage-overlay').classList.remove('active');
+}
+
+async function loadUsageHistory() {
+    try {
+        const response = await fetch('/api/mana/history?limit=10&days=30');
+        const data = await response.json();
+        
+        if (data.success) {
+            renderPurchaseHistory(data.purchases);
+            renderUsageStats(data.usage);
+        }
+    } catch (error) {
+        console.error('[MANA] Failed to load history:', error);
+    }
+}
+
+function renderPurchaseHistory(purchases) {
+    const container = document.getElementById('purchase-history');
+    
+    if (!purchases || purchases.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No purchases yet</p>';
+        return;
+    }
+    
+    container.innerHTML = purchases.map(purchase => {
+        const date = new Date(purchase.purchase_date);
+        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        
+        return `
+            <div class="purchase-item">
+                <div class="purchase-details">
+                    <div class="purchase-amount">${(purchase.amount_mana / 1000).toFixed(1)}k mana</div>
+                    <div class="purchase-date">${dateStr}</div>
+                </div>
+                <div class="purchase-price">${purchase.cost_usd.toFixed(2)}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderUsageStats(usage) {
+    const container = document.getElementById('usage-stats');
+    
+    if (!usage || !usage.totals) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No usage data yet</p>';
+        return;
+    }
+    
+    const totals = usage.totals;
+    const byOperation = usage.by_operation || [];
+    
+    container.innerHTML = `
+        <div class="stat-group">
+            <div class="stat-label">Total Mana Spent (Last 30 Days)</div>
+            <div class="stat-value">${Math.floor(totals.total_spent || 0)}</div>
+            <div class="stat-breakdown">
+                <span>Operations: ${totals.operation_count || 0}</span>
+                <span>Average per operation: ${Math.floor(totals.avg_per_operation || 0)}</span>
+            </div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label">Usage Breakdown</div>
+            <div class="stat-breakdown">
+                ${byOperation.slice(0, 5).map(op => `
+                    <span>${op.operation}: ${Math.floor(op.spent)} mana (${op.count} ops)</span>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+async function loadManaConfig() {
+    try {
+        const response = await fetch('/api/mana/config');
+        const data = await response.json();
+        
+        if (data.success && data.config) {
+            document.getElementById('mana-mode').value = data.config.mana_mode;
+            document.getElementById('byok-max-mana').value = data.config.byok_max_mana;
+            document.getElementById('byok-regen-rate').value = data.config.byok_regen_rate;
+            
+            toggleBYOKConfig(data.config.mana_mode);
+        }
+    } catch (error) {
+        console.error('[MANA] Failed to load config:', error);
+    }
+}
+
+function toggleBYOKConfig(mode) {
+    const byokElements = document.querySelectorAll('.byok-config');
+    byokElements.forEach(el => {
+        el.style.display = (mode === 'byok' || mode === 'hybrid') ? 'block' : 'none';
+    });
+}
+
+async function saveManaConfig() {
+    const mode = document.getElementById('mana-mode').value;
+    const maxMana = parseFloat(document.getElementById('byok-max-mana').value);
+    const regenRate = parseFloat(document.getElementById('byok-regen-rate').value);
+    
+    try {
+        const response = await fetch('/api/mana/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                mana_mode: mode,
+                byok_max_mana: maxMana,
+                byok_regen_rate: regenRate
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Mana configuration saved', 'success');
+            await fetchManaBalance();
+        } else {
+            showNotification('Failed to save config', 'error');
+        }
+    } catch (error) {
+        console.error('[MANA] Failed to save config:', error);
+        showNotification('Failed to save config', 'error');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Simple notification (could be enhanced)
+    console.log(`[NOTIFICATION] ${type.toUpperCase()}: ${message}`);
+    // TODO: Add visual notification system
 }
 
 // =============================================================================
@@ -641,6 +894,41 @@ function initEventListeners() {
     document.getElementById('refresh-authority').addEventListener('click', refreshAuthority);
     document.getElementById('refill-mana').addEventListener('click', refillMana);
     
+    // Mana purchase system
+    document.getElementById('mana-topup-btn').addEventListener('click', openPurchaseModal);
+    document.getElementById('purchase-close').addEventListener('click', closePurchaseModal);
+    document.getElementById('purchase-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'purchase-overlay') closePurchaseModal();
+    });
+    
+    // Mana config
+    document.getElementById('mana-mode').addEventListener('change', (e) => {
+        toggleBYOKConfig(e.target.value);
+    });
+    document.getElementById('save-mana-config').addEventListener('click', saveManaConfig);
+    document.getElementById('view-usage-history').addEventListener('click', openUsageHistoryModal);
+    
+    // Usage history modal
+    document.getElementById('usage-close').addEventListener('click', closeUsageHistoryModal);
+    document.getElementById('usage-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'usage-overlay') closeUsageHistoryModal();
+    });
+    
+    // Usage tabs
+    document.querySelectorAll('.usage-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            const targetTab = e.target.dataset.tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.usage-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            // Update panes
+            document.querySelectorAll('.usage-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(targetTab + '-pane').classList.add('active');
+        });
+    });
+    
     // History drawer
     document.getElementById('history-close').addEventListener('click', closeHistoryDrawer);
     document.getElementById('history-overlay').addEventListener('click', (e) => {
@@ -679,8 +967,9 @@ async function init() {
     // Fetch initial data
     await Promise.all([
         fetchAuthority(),
-        fetchMana(),
+        fetchManaBalance(),
         fetchInsiteCount(),
+        loadManaConfig(),
     ]);
     
     // Create initial session
@@ -693,7 +982,7 @@ async function init() {
     document.getElementById('message-input').focus();
     
     // Periodic updates
-    setInterval(fetchMana, 60000);  // Update mana every minute
+    setInterval(fetchManaBalance, 60000);  // Update mana every minute
     setInterval(fetchInsiteCount, 120000);  // Update insite count every 2 minutes
     
     console.log('[EhkoForge] Ready');
