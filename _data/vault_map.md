@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.0"
+version: "3.1"
 created: 2025-11-29
 updated: 2025-12-05
 tags: [system, reference, navigation]
@@ -70,7 +70,8 @@ Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
 
 # ReCog Engine
 ReCog/
-├── ReCog_Engine_Spec_v0_2.md                     [module, v0.2] — Recursive cognition
+├── ReCog_Core_Spec_v1_0.md                       [spec, v1.0] — Standalone engine architecture
+├── ReCog_Engine_Spec_v0_2.md                     [superseded] — Old EhkoForge-coupled design
 ├── Ingot_System_Schema_v0_1.md                   [module, v0.1] — DB tables
 ├── Tier0_PreAnnotation_Spec_v0_1.md              [module, v0.1] — Signal extraction
 └── Smelt_Processor_Spec_v0_1.md                  [module, v0.1] — Batch processing
@@ -345,6 +346,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.1 — 2025-12-05 Session 25 — Added ReCog_Core_Spec_v1_0.md (standalone engine architecture).
 - v3.0 — 2025-12-05 Session 25 — Consolidated to single AGPLv3 license at root. Removed split licensing references.
 - v2.9 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed). Corrected changelogs.
 - v2.8 — 2025-12-05 Session 23 — [INCOMPLETE - chat crashed] Work started but not completed.

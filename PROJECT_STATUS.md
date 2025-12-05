@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-05  
-**Version:** 1.31  
+**Version:** 1.32  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -41,12 +41,18 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## SPECIFIED (Design Complete, No Implementation)
 
+### ReCog Engine (Core Priority)
+- [ ] **ReCog Core v1.0** — Standalone recursive insight engine
+  - Spec: `EhkoForge/2.0 Modules/ReCog/ReCog_Core_Spec_v1_0.md`
+  - Status: Specification complete, implementation starting
+  - Architecture: Domain-agnostic engine with adapter pattern
+  - EhkoForge becomes a client adapter, not the core
+  - **Phase 1:** Core types, signal processor, memory adapter
+  - **Phase 2:** Extractor (Tier 1)
+  - **Phase 3:** Correlator (Tier 2)
+  - **Phase 4:** Synthesizer (Tier 3) + EhkoForge adapter
+
 ### Processing & Automation
-- [ ] **ReCog Engine** — Recursive cognition orchestration layer
-  - Spec: `EhkoForge/2.0 Modules/ReCog/ReCog_Engine_Spec_v0_2.md`
-  - Status: Architecture designed, implementation deferred until ingot pipeline tested
-  - Purpose: Make iterative insight refinement deliberate instead of accidental
-  - Blocker: Needs real data flowing through ingot system first
 
 - [ ] **Mobile Input Processor** — Convert _inbox JSON packets to structured reflections
   - Spec: Defined in `1_4_Data_Model_v1_4.md` Section 4.2
@@ -158,7 +164,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 - [x] **System Architecture Modules** — 9 specification documents in `1.0 System Architecture/`
 - [x] **Ingot System Specifications** — 4 design docs in `2.0 Modules/ReCog/`
-- [x] **ReCog Engine Specification v0.2** — Recursive cognition design
+- [x] **ReCog Core Specification v1.0** — Standalone engine architecture (supersedes v0.2)
 - [x] **Universal Template Framework v1.2** — Base structure for all entries
 - [x] **Mirrorwell Reflection Template v1.2** — Personal reflection structure
 
@@ -244,6 +250,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.32 — 2025-12-05 Session 25 — ReCog Core v1.0 spec: Standalone engine architecture with adapter pattern. EhkoForge becomes client adapter.
 - v1.31 — 2025-12-05 Session 25 — Consolidated to AGPLv3 (removed split licensing).
 - v1.30 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed before completing). Fixed README repository structure.
 - v1.29 — 2025-12-05 Session 23 — [INCOMPLETE - chat crashed] Diagnostic work started.
