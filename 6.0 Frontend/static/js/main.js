@@ -1,9 +1,95 @@
 /**
- * EhkoForge Main JavaScript v2.0
+ * EhkoForge Main JavaScript v2.1
  * Phase 2: UI Consolidation
  * 
  * Single terminal interface with mode toggle
  */
+
+// =============================================================================
+// EHKO TAGLINE ROTATOR
+// =============================================================================
+
+const EHKO_ACRONYMS = [
+    ['Evolving', 'Human', 'Knowledge', 'Observer'],
+    ['Eternal', 'Human', 'Knowledge', 'Origin'],
+    ['Ethical', 'Heritage', 'Knowledge', 'Oracle'],
+    ['Emergent', 'Human', 'Knowledge', 'Organizer'],
+    ['Enduring', 'Human', 'Knowledge', 'Opus'],
+    ['Experiential', 'Human', 'Knowledge', 'Object'],
+    ['Essential', 'Human', 'Knowledge', 'Origin'],
+    ['Existential', 'Human', 'Knowledge', 'Observer'],
+    ['Encoded', 'Human', 'Knowledge', 'Output'],
+    ['Everlasting', 'Human', 'Knowledge', 'Orchestrator']
+];
+
+function getRandomAcronym() {
+    return EHKO_ACRONYMS[Math.floor(Math.random() * EHKO_ACRONYMS.length)];
+}
+
+// =============================================================================
+// MODE DIAL TOGGLE
+// =============================================================================
+
+function initModeDial() {
+    const knob = document.getElementById('dial-knob');
+    const channel = document.querySelector('.dial-channel');
+    const labelTerminal = document.querySelector('.dial-label-terminal');
+    const labelReflect = document.querySelector('.dial-label-reflect');
+    const ledTerminal = document.getElementById('led-terminal');
+    const ledReflect = document.getElementById('led-reflect');
+    
+    if (!knob || !channel) return;
+    
+    function updateDialVisuals(mode) {
+        if (mode === 'reflection') {
+            knob.classList.add('right');
+            labelTerminal.classList.remove('active');
+            labelReflect.classList.add('active');
+            ledTerminal.classList.remove('active');
+            ledReflect.classList.add('active');
+        } else {
+            knob.classList.remove('right');
+            labelTerminal.classList.add('active');
+            labelReflect.classList.remove('active');
+            ledTerminal.classList.add('active');
+            ledReflect.classList.remove('active');
+        }
+    }
+    
+    function toggleMode() {
+        const newMode = state.mode === 'terminal' ? 'reflection' : 'terminal';
+        setMode(newMode);
+        updateDialVisuals(newMode);
+    }
+    
+    // Click handlers
+    channel.addEventListener('click', toggleMode);
+    knob.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMode();
+    });
+    
+    labelTerminal.addEventListener('click', () => {
+        if (state.mode !== 'terminal') {
+            setMode('terminal');
+            updateDialVisuals('terminal');
+        }
+    });
+    
+    labelReflect.addEventListener('click', () => {
+        if (state.mode !== 'reflection') {
+            setMode('reflection');
+            updateDialVisuals('reflection');
+        }
+    });
+    
+    // Initialize visuals
+    updateDialVisuals(state.mode);
+    labelTerminal.classList.add('active');
+}
+
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', initModeDial);
 
 // =============================================================================
 // STATE
@@ -14,6 +100,7 @@ const state = {
     sessionId: null,
     messages: [],
     selectedModel: 'claude-sonnet-4',
+    currentAcronym: null,  // Store selected acronym to prevent changes on re-render
     manaCosts: {
         terminal_message: 1,
         reflection_message: 3,
@@ -158,11 +245,6 @@ async function fetchInsiteCount() {
 function setMode(mode) {
     state.mode = mode;
     
-    // Update buttons
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-    });
-    
     // Update body class for styling
     document.body.classList.toggle('mode-reflection', mode === 'reflection');
     document.body.classList.toggle('mode-terminal', mode === 'terminal');
@@ -254,6 +336,7 @@ async function createSession() {
         });
         state.sessionId = data.id;
         state.messages = [];
+        state.currentAcronym = getRandomAcronym();  // Fresh acronym for new session
         document.getElementById('session-title').textContent = data.title;
         clearMessages();
         showWelcome();
@@ -299,15 +382,30 @@ function clearMessages() {
 
 function showWelcome() {
     const output = document.getElementById('terminal-output');
+    
+    // Use stored acronym if exists, otherwise generate and store new one
+    if (!state.currentAcronym) {
+        state.currentAcronym = getRandomAcronym();
+    }
+    const acronym = state.currentAcronym;
+    
+    // Line structure (65 chars total), words shifted down 1 row to center:
+    // Row 1: EHKO(35) + 29 spaces + ║ = 65 (empty)
+    // Rows 2-5: EHKO(36) + 5 spaces + "• " + word.padEnd(21) + ║ = 65
+    // Row 6: EHKO(35) + 29 spaces + ║ = 65 (empty)
+    const formatWord = (word) => {
+        const padding = ' '.repeat(21 - word.length);
+        return `<span class="blink-dot">•</span> <span class="glow-letter">${word[0]}</span>${word.slice(1)}${padding}`;
+    };
     output.innerHTML = `
         <div class="welcome-message">
             <pre class="ascii-art">
 ╔═══════════════════════════════════════════════════════════════╗
 ║  ███████╗██╗  ██╗██╗  ██╗ ██████╗                             ║
-║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗                            ║
-║  █████╗  ███████║█████╔╝ ██║   ██║                            ║
-║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║                            ║
-║  ███████╗██║  ██║██║  ██╗╚██████╔╝                            ║
+║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗     ${formatWord(acronym[0])}║
+║  █████╗  ███████║█████╔╝ ██║   ██║     ${formatWord(acronym[1])}║
+║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║     ${formatWord(acronym[2])}║
+║  ███████╗██║  ██║██║  ██╗╚██████╔╝     ${formatWord(acronym[3])}║
 ║  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                             ║
 ╚═══════════════════════════════════════════════════════════════╝
             </pre>
@@ -1093,11 +1191,6 @@ function showNotification(message, type = 'info') {
 // =============================================================================
 
 function initEventListeners() {
-    // Mode toggle
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => setMode(btn.dataset.mode));
-    });
-    
     // Model dropdown
     const modelTrigger = document.getElementById('model-trigger');
     modelTrigger.addEventListener('click', (e) => {

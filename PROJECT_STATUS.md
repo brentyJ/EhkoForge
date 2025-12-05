@@ -1,210 +1,41 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-04  
-**Version:** 1.27  
+**Last Updated:** 2025-12-05  
+**Version:** 1.29  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
-## IMPLEMENTED (Working Code Exists)
+## IN PROGRESS
 
-### Core Infrastructure
-- [x] **ehko_refresh.py v2.0** — Full indexing + transcription processing system
-  - Location: `EhkoForge/5.0 Scripts/ehko_refresh.py`
-  - Status: Working, tested
-  - Features:
-    - Incremental indexing with hash-based change detection
-    - Full rebuild mode
-    - Transcription processing pipeline — auto-converts transcription files to Mirrorwell reflections
-    - Archives processed originals to `_processed/` folder
-    - Statistics reporting
-  - Dependencies: pyyaml, sqlite3 (built-in)
-  - Last verified: 2025-11-28
+### Reorientation (Creative Direction Shift)
+- [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
+- [x] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic, Authority bars, Mana display
+- [x] **Phase 3: Cleanup** — Removed unused route-based UI files
+- [x] **Phase 4A: Mana Infrastructure (Backend)** — Database tables, mana_manager.py, API endpoints
+- [x] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display, usage history
+- [ ] **Phase 5: ReCog Engine** — Prototype, validate, integrate
+- [ ] **Phase 6: Identity Pillars + Core Memories** — Auto-population + suggestion system
+- [ ] **Phase 7: Ehko Evolution System** — Authority-driven visual progression
 
-- [x] **Transcription Processing Utilities** — Bugfix patches for ehko_refresh.py
-  - `fix_regex.py` — Patches theme extraction regex
-  - `fix_theme_headers.py` — Corrects header detection (## vs #)
-  - `fix_transcription_extraction.py` — Fixes transcription section boundary detection
-  - `run_process_transcriptions.bat` — Batch runner for all fixes + refresh
-  - Status: Working, applied
+See: `2.0 Modules/Reorientation_Spec_v0_1.md`  
+**Note:** Phase 7+ strategic planning in `_private/` docs
 
-- [x] **SQLite Database Schema** — Complete table structure
-  - Location: `EhkoForge/_data/ehko_index.db`
-  - Size: ~200KB
-  - Core Tables: reflection_objects, tags, cross_references, changelog_entries, mirrorwell_extensions, emotional_tags, shared_with_friends, friend_registry, shared_memories, authentication_tokens, authentication_logs, custodians, prepared_messages, message_deliveries, forge_sessions, forge_messages
-  - Ingot Tables: smelt_queue, transcript_segments, annotations, ingots, ingot_sources, ingot_history, ehko_personality_layers
-  - Status: All tables deployed and tested
-  - **Note:** Foreign keys use `object_id` (not `reflection_id`), emotional_tags uses `emotion` column
+---
 
-- [x] **LLM Integration Module v1.1** — Multi-provider support with role-based routing
-  - Location: `EhkoForge/5.0 Scripts/ehkoforge/llm/`
-  - Status: **WORKING** — Updated 2025-12-02
-  - Components:
-    - `base.py` — Abstract `LLMProvider` interface
-    - `claude_provider.py` — Anthropic API wrapper
-    - `openai_provider.py` — OpenAI API wrapper
-    - `provider_factory.py` — Role-based provider instantiation
-    - `context_builder.py` — Queries reflection corpus for relevant context
-    - ~~`system_prompt.py`~~ — Moved to `recog_engine/prompts.py` (AGPL)
-    - `config.py` — API key + role-based model routing
-  - API Keys: Set via environment variables:
-    - `ANTHROPIC_API_KEY` — Claude access
-    - `OPENAI_API_KEY` — OpenAI access
-  - Role-Based Routing:
-    - `processing` — Smelt, tier ops (default: OpenAI gpt-4o-mini)
-    - `conversation` — Chat responses (default: Claude Sonnet)
-    - `ehko` — Ehko personality (default: Claude Sonnet, future: user-selectable)
-  - Environment Overrides:
-    - `EHKO_PROCESSING_PROVIDER`, `EHKO_PROCESSING_MODEL`
-    - `EHKO_CONVERSATION_PROVIDER`, `EHKO_CONVERSATION_MODEL`
-    - `EHKO_EHKO_PROVIDER`, `EHKO_EHKO_MODEL`
-  - Features:
-    - Provider fallback chain if primary unavailable
-    - Context injection from indexed reflections
-    - Keyword-based search across titles, tags, emotional tags
-    - Forging mode prompt (Ehko learning from forger)
-    - Visitor mode prompt (Ehko speaking about forger) — defined, not exposed
-    - Archived mode prompt (time capsule) — defined, not exposed
-  - **Testing Status:** ✅ Fully tested and verified (Session 11, 2025-12-02)
-    - Both providers initialized successfully
-    - Role-based routing confirmed (OpenAI for processing, Claude for conversation)
-    - Live API calls successful for both Claude and OpenAI
+## NEEDS TESTING
 
-- [x] **Ingot System v0.1** — Complete ingot extraction and forging pipeline
-  - Status: **WORKING** — Migration run, endpoints verified, UI complete
-  - Database Migration: `EhkoForge/5.0 Scripts/migrations/ingot_migration_v0_1.sql`
-  - Migration Runner: `EhkoForge/5.0 Scripts/run_ingot_migration.py`
-  - Components (moved to `recog_engine/` — AGPL licensed):
-    - `recog_engine/tier0.py` — Tier 0 signal extraction (no LLM cost)
-    - `recog_engine/smelt.py` — Tier 2 batch ingot extraction
-    - `recog_engine/prompts.py` — Ehko behaviour prompts
-    - `recog_engine/forge_integration.py` — Server integration helpers
-    - `forge_server.py v1.2` — Smelt/ingot/Ehko API endpoints
-  - Pipeline: Chat → Smelt Queue → Tier 0 Pre-Annotation → Tier 2 Extraction → Surface → Review → Forge/Reject
-  - Surfacing threshold: `(significance >= 0.4 AND pass_count >= 2) OR source_count >= 3`
-  - Tier icons: 💎 mythic (≥0.9), 🥇 gold (≥0.75), 🥈 silver (≥0.5), ⚙️ iron (≥0.25), 🔶 copper (<0.25)
-  - Test utility: `seed_test_ingots.py` — Creates sample ingots for UI testing
+- [ ] **End-to-End Ingot Flow** — Real conversation → smelt → review → forge
+  - Have substantive chat conversation
+  - Queue session for smelting
+  - Run smelt (Tier 0 + Tier 2)
+  - Review surfaced ingots
+  - Accept valuable insights into Ehko
+  - Verify Ehko state progression
 
-### Documentation & Architecture
-
-- [x] **System Architecture Modules** (Specification documents)
-  - `1_0_Ehko_Manifest.md` — Core philosophy and principles
-  - `1_0a_Ehko_Manifesto_Personal.md` — Personal context and motivation
-  - `1_1_Overview_v1_0.md` — System overview and scope
-  - `1_2_Components_v1_0.md` — Component architecture
-  - `1_3_Security_Ownership.md` — Authentication and access control design
-  - `1_4_Data_Model_v1_3.md` — Data structures and schemas (v1.3)
-  - `1_5_Behaviour_Engine_v1_1.md` — AI behaviour rules and modes
-  - `1_6_Identity_Pillars_Scientific_Basis_v1_0.md` — Research-backed pillar framework
-  - `1_7_Core_Memory_Index_Framework_v1_0.md` — Core memory curation framework
-
-- [x] **Ingot System Specifications** (Design docs for implemented system)
-  - `Ingot_System_Schema_v0_1.md` — Database tables for smelt/ingot pipeline
-  - `Tier0_PreAnnotation_Spec_v0_1.md` — Code-based signal extraction
-  - `Smelt_Processor_Spec_v0_1.md` — Batch job for ingot extraction
-  - `Forge_UI_Update_Spec_v0_1.md` — Chat/Forge mode UI design
-
-- [x] **ReCog Engine Specification v0.2** — NEW
-  - Location: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_2.md`
-  - Purpose: Recursive Cognition Engine — orchestration layer for iterative meaning-making
-  - Status: **SPECIFIED** — Design complete, captures emergent insight processing pattern
-  - Defines:
-    - Three processing loops: Extraction, Correlation, Integration
-    - Termination conditions for each loop
-    - Processing stages (Tier 0 → Extraction → Correlation → Surfacing → Integration)
-    - Coherence anchoring via Identity Pillars and Core Memory
-    - Configuration parameters
-  - Note: Implementation deferred until ingot pipeline has real data flowing
-
-- [x] **Universal Template Framework v1.2**
-  - Location: `EhkoForge/3.0 Templates/Universal/universal_template.md`
-  - Purpose: Base structure for all EhkoForge system entries
-  - Status: Defined, documented, scope reduced to two-vault model
-
-- [x] **Mirrorwell Reflection Template v1.2**
-  - Location: `Mirrorwell/Templates/reflection_template.md`
-  - Purpose: Structure for personal reflections and journal entries
-  - Status: Defined and documented
-  - Features: Raw Input preservation, emotional tagging, friend sharing metadata
-
-### Repository & Distribution
-
-- [x] **GitHub Repository** — Public open-source release
-  - URL: https://github.com/brentyJ/EhkoForge
-  - License: MIT
-  - Status: Live as of 2025-11-28
-  - Initial commit: 33 files, 9084 lines
-
-- [x] **Repository Infrastructure**
-  - `README.md` — Complete project documentation
-  - `LICENSE` — MIT License
-  - `.gitignore` — Configured for Python, Obsidian, user data
-  - `_mirrorwell_template/` — Empty vault scaffold for users to fork
-    - Includes folder structure, `Start Here.md`, `reflection_template.md`
-
-- [x] **UI-MDV Specification v1.0**
-  - Location: `EhkoForge/2.0 Modules/UI-MDV-Specification.md`
-  - Purpose: Minimum Delightful Version UI design
-  - Status: Complete conceptual spec
-
-- [x] **Lexicon v1.0** — Complete terminology and taxonomy reference
-  - Location: `EhkoForge/4.0 Lexicon/4_0_Lexicon_v1_0.md`
-  - Status: **COMPLETE** — Created 2025-11-28
-  - Contents: Core terminology, tag taxonomies (general, emotional, system), controlled vocabularies, naming conventions
-
-- [x] **Core Memory Index Framework v1.0** — First curation pass complete
-  - Framework: `EhkoForge/1.0 System Architecture/1_7_Core_Memory_Index_Framework_v1_0.md`
-  - Index: `Mirrorwell/1_Core Identity/1.4 Core Memory Index/core_memory_index.md`
-  - Status: **WORKING** — 10 memories curated, organised by pillar and theme
-  - Results: 7 existing flagged entries confirmed, 3 new nominations added
-
-- [x] **Control Panel v2.0** — Python/tkinter GUI for managing EhkoForge
-  - Location: `EhkoForge/5.0 Scripts/ehko_control.py`
-  - Launcher: `EhkoForge Control Panel.vbs` (silent launch, no console)
-  - Status: **WORKING** — Updated 2025-12-02
-  - Features:
-    - Start/Stop server (embedded or terminal)
-    - Open Forge UI in browser
-    - Run refresh scripts (incremental or full rebuild)
-    - Process transcriptions batch
-    - Open vault folders in Explorer
-    - Clear backups with confirmation
-    - Live output log panel
-    - **NEW:** Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status)
-    - **NEW:** Touch-optimized layout for Surface Pro
-    - **NEW:** Integrated command line
-  - Run: Double-click `EhkoForge Control Panel.vbs` or `py ehko_control.py`
-
-- [x] **Frontend Implementation v2.0** — Three-area route-based UI
-  - Location: `EhkoForge/5.0 Scripts/forge_server.py` + `EhkoForge/6.0 Frontend/`
-  - Spec: `EhkoForge/2.0 Modules/UI_Redesign_Spec_v0_1.md`
-  - Status: **WORKING** — Phase 1 complete (Route Infrastructure)
-  - **Architecture:**
-    - Route-based navigation: `/reflect`, `/forge`, `/terminal`
-    - Jinja2 templates with shared base layout
-    - Area-specific CSS palettes and JavaScript
-  - **Reflect Area (`/reflect`):**
-    - Sub-modes: `/reflect/chat`, `/reflect/journal`, `/reflect/upload`
-    - Teal palette (#5fb3a1)
-    - Session management, Ehko chat, forge-to-vault
-    - Journal with calendar navigation and CRUD API
-  - **Forge Area (`/forge`):**
-    - Gold/violet palette (#c9a962, #9b7ed9)
-    - Ingot queue with tier filters and badges
-    - Ingot detail with accept/reject actions
-    - Smelt status with manual trigger
-  - **Terminal Area (`/terminal`):**
-    - Blue retro palette (#6b8cce)
-    - Model selector (Claude Sonnet/Haiku, GPT-4o/mini)
-    - Monospace terminal aesthetic
-    - Model switch warning modal
-  - **Common:**
-    - Global nav bar with area tabs and dropdowns
-    - Ehko avatar + stats bar in all modes
-    - Settings modal (theme, avatar, motion)
-    - Ingot count badge in nav
-  - Run: `cd "EhkoForge/5.0 Scripts" && python forge_server.py`
-  - Access: http://localhost:5000
+- [ ] **ehko_refresh.py with Full Vault Content**
+  - Need to verify: Tag extraction, emotional tag parsing, shared_with friend linking
+  - Test with: Multiple reflection types, edge cases, malformed YAML
 
 ---
 
@@ -212,13 +43,13 @@
 
 ### Processing & Automation
 - [ ] **ReCog Engine** — Recursive cognition orchestration layer
-  - Spec: `EhkoForge/2.0 Modules/ReCog_Engine_Spec_v0_2.md`
+  - Spec: `EhkoForge/2.0 Modules/ReCog/ReCog_Engine_Spec_v0_2.md`
   - Status: Architecture designed, implementation deferred until ingot pipeline tested
   - Purpose: Make iterative insight refinement deliberate instead of accidental
   - Blocker: Needs real data flowing through ingot system first
 
 - [ ] **Mobile Input Processor** — Convert _inbox JSON packets to structured reflections
-  - Spec: Defined in `1_4_Data_Model_v1_3.md` Section 4.2
+  - Spec: Defined in `1_4_Data_Model_v1_4.md` Section 4.2
   - Status: Architecture designed, no code written
   - Blocker: None
 
@@ -236,60 +67,6 @@
 
 ---
 
-## IN PROGRESS
-
-### Reorientation (Creative Direction Shift)
-- [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
-- [x] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic, Authority bars, Mana display
-- [x] **Phase 3: Cleanup** — Removed unused route-based UI (base.html, reflect.html, forge.html, terminal.html)
-- [x] **Phase 4A: Mana Infrastructure (Backend)** — Database tables, mana_manager.py, API endpoints, test script
-- [x] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display, usage history
-- [ ] **Phase 5: ReCog Engine** — Prototype, validate, integrate
-- [ ] **Phase 6: Identity Pillars + Core Memories** — Auto-population + suggestion system
-- [ ] **Phase 7: Ehko Evolution System** — Authority-driven visual progression (design in progress)
-
-See: `2.0 Modules/Reorientation_Spec_v0_1.md`  
-**Note:** Phase 7+ strategic planning in private design docs
-
----
-
-## KNOWN MISALIGNMENTS
-
-### All Previously Identified — RESOLVED
-1. ~~**Behaviour Engine (1_5)**~~ — **RESOLVED 2025-11-29.** v1.1 canonical.
-2. ~~**Lexicon (4.0)**~~ — **RESOLVED.** `4_0_Lexicon_v1_0.md` created.
-3. ~~**Core Memory Index Framework**~~ — **RESOLVED 2025-11-29.** First curation pass complete.
-4. ~~**Identity Pillars folder**~~ — **RESOLVED 2025-11-29.** Six pillar documents created.
-5. ~~**MonsterGarden/ManaCore status**~~ — **RESOLVED 2025-11-29.** Marked dormant.
-6. ~~**Data Model filename**~~ — **RESOLVED 2025-11-29.** Renamed to v1_3.
-
----
-
-## NEEDS TESTING
-
-- [x] **ehko_refresh.py transcription processing** — Tested 2025-11-27, working
-- [x] **Ingot System backend endpoints** — Tested 2025-12-01, working
-- [x] **Ingot System UI** — Tested 2025-12-01 with seed data, working
-
-- [x] **OpenAI Provider Integration** — Tested 2025-12-02
-  - `.env` file loading via python-dotenv
-  - Role-based routing verified (processing → OpenAI, conversation → Claude)
-  - Smelt runs successfully with gpt-4o-mini
-
-- [ ] **End-to-End Ingot Flow** — Real conversation → smelt → review → forge
-  - Have substantive chat conversation
-  - Queue session for smelting
-  - Run smelt (Tier 0 + Tier 2)
-  - Review surfaced ingots
-  - Accept valuable insights into Ehko
-  - Verify Ehko state progression
-
-- [ ] **ehko_refresh.py with Full Vault Content**
-  - Need to verify: Tag extraction, emotional tag parsing, shared_with friend linking
-  - Test with: Multiple reflection types, edge cases, malformed YAML
-
----
-
 ## GAPS & MISSING PIECES
 
 ### Medium Priority
@@ -297,9 +74,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
    - Terminal and Reflection chat sessions need backup to Mirrorwell
    - Session → Reflection Object conversion logic needed
    - Storage location and naming conventions
-   - Incremental vs batch backup triggers
    - Memory retrieval for context injection across sessions
-   - Reference: UI_Redesign_Spec_v0_1.md Section 10
 
 2. **Friend Registry Population** — No data entry method
    - Tables exist but empty
@@ -323,47 +98,129 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ---
 
+## NEXT PRIORITIES (Recommended Order)
+
+### Immediate (Testing)
+1. **End-to-End Test with Real Content** — Substantive chat → smelt → review → forge
+2. **Bug Fixes** — Address any issues discovered
+
+### Short Term (Polish)
+3. **Smelt Scheduling** — Add APScheduler for automatic processing
+4. **Export System** — Portable archive generation
+
+### Medium Term
+5. **ReCog Engine Implementation** — After real data validates the need
+6. **Friend Registry Population** — Entry mechanism
+7. **Visitor Mode** — UI exposure + authentication gate
+
+---
+
 ## BLOCKERS
 
 **None. All major decisions resolved.**
 
 ---
 
-## NEXT PRIORITIES (Recommended Order)
+## IMPLEMENTED (Working Code Exists)
 
-### Immediate (Testing)
-1. **OpenAI Provider Test** — Verify multi-provider routing works
-2. **End-to-End Test with Real Content** — Substantive chat → smelt → review → forge
-3. **Bug Fixes** — Address any issues discovered
+### Core Infrastructure
+- [x] **ehko_refresh.py v2.0** — Full indexing + transcription processing system
+  - Location: `EhkoForge/5.0 Scripts/ehko_refresh.py`
+  - Features: Incremental indexing with hash-based change detection, transcription processing pipeline
 
-### Short Term (Polish)
-4. **Smelt Scheduling** — Add APScheduler for automatic processing
-5. **Export System** — Portable archive generation
+- [x] **SQLite Database Schema** — 35 tables deployed
+  - Location: `EhkoForge/_data/ehko_index.db`
+  - Core Tables: reflection_objects, tags, cross_references, mirrorwell_extensions
+  - Auth Tables: friend_registry, authentication_tokens, custodians
+  - Forge Tables: forge_sessions, forge_messages
+  - Ingot Tables: smelt_queue, ingots, ingot_sources, ehko_personality_layers
+  - Authority Tables: ehko_authority, identity_pillars, mana_state, mana_transactions
+  - Mana Purchase Tables: users, user_mana_balance, mana_purchases, user_config, mana_usage_log
 
-### Medium Term
-6. **ReCog Engine Implementation** — After real data validates the need
-7. **Friend Registry Population** — Entry mechanism
-8. **Visitor Mode** — UI exposure + authentication gate
+- [x] **LLM Integration Module v1.1** — Multi-provider with role-based routing
+  - Location: `EhkoForge/5.0 Scripts/ehkoforge/llm/`
+  - Role-Based Routing: processing (OpenAI gpt-4o-mini), conversation (Claude Sonnet), ehko (Claude Sonnet)
+
+- [x] **Ingot System v0.1** — Complete ingot extraction and forging pipeline
+  - Components: tier0.py, smelt.py, forge_server.py endpoints
+  - Pipeline: Chat → Queue → Tier 0 → Tier 2 → Surface → Review → Forge/Reject
+
+- [x] **Authority & Mana Systems v0.1** — Progression and resource economy
+  - Authority: 5 components (Memory Depth, Pattern Recognition, Emotional Resonance, Identity Clarity, Generative Coherence)
+  - Mana: Regenerating resource + purchased mana, mode switching (BYOK/Mana/Hybrid)
+
+- [x] **Mana Purchase System v0.1** — Complete purchase infrastructure
+  - Backend: mana_manager.py with 6 API endpoints
+  - Frontend: Purchase modal, config panel, split balance display, usage history
+  - Status: Stripe placeholder (simulated purchases working)
+
+### Documentation & Architecture
+
+- [x] **System Architecture Modules** — 9 specification documents in `1.0 System Architecture/`
+- [x] **Ingot System Specifications** — 4 design docs in `2.0 Modules/ReCog/`
+- [x] **ReCog Engine Specification v0.2** — Recursive cognition design
+- [x] **Universal Template Framework v1.2** — Base structure for all entries
+- [x] **Mirrorwell Reflection Template v1.2** — Personal reflection structure
+
+### Repository & Distribution
+
+- [x] **GitHub Repository** — Public at https://github.com/brentyJ/EhkoForge
+- [x] **Split Licensing** — MIT (framework) + AGPLv3 (ReCog Engine)
+- [x] **Control Panel v2.0** — Touch-optimized tkinter GUI with VBS launcher
+
+### Frontend
+
+- [x] **Frontend Implementation v2.1** — Single terminal interface with mode toggle
+  - Main terminal at `/`, Forge view at `/forge`
+  - Authority bars (5 components), Mana display (regen + purchased)
+  - Retro terminal aesthetic with CRT scanlines
 
 ---
 
 ## RECENTLY COMPLETED
 
-- **2025-12-04 Session 19:** Phase 4B complete — Mana purchase modal with tier selection, config panel with BYOK/Mana/Hybrid mode switching, split mana display (regen + purchased bars), usage history modal with purchase log and stats. All frontend handlers wired to backend API. Full mana system operational.
-- **2025-12-03 Session 18:** Phase 2 UI Consolidation complete — Single terminal interface at `/` with mode toggle (Terminal/Reflection). Authority bars display all 5 components. Mana display with current/max and regen rate. Retro terminal aesthetic with CRT scanlines. Forge link to `/forge` for Insite review. Fixed Authority component display bug in main.js.
-- **2025-12-02 Session 15:** Control Panel v2.0 — Touch-optimized layout for Surface Pro. Added Forge/Smelt controls (Queue All, Run Smelt, Resurface, Status). Integrated command line. VBS launcher for console-less operation. Fixed OpenAI .env loading (python-dotenv). Fixed speaker attribution in smelt (XML tags for USER_MESSAGE/EHKO_MESSAGE). Fixed surfacing criteria for immediate high-significance ingots.
-- **2025-12-02 Session 12:** ReCog Engine Specification v0.2 created — Captures recursive cognition orchestration pattern. Defines three loops (Extraction, Correlation, Integration), termination conditions, coherence anchoring via Identity Pillars. Implementation deferred until ingot pipeline tested with real data.
-- **2025-12-02 Session 11:** OpenAI integration complete — Added `openai_provider.py`, `provider_factory.py`. Updated `config.py` with role-based routing (processing/conversation/ehko). Smelt now uses factory for provider selection. Chat uses conversation role. LLM status endpoint shows role config.
-- **2025-12-01 Session 10:** Ingot System complete — Migration run successfully (7 tables created). Backend verified (tier0.py, smelt.py, forge_server.py v1.2). Frontend v1.2 with mode toggle, ingot queue, detail panel, accept/reject, smelt status, Ehko state indicator. Test ingots seeded and verified. Full pipeline operational.
-- **2025-12-01 Session 9:** Ingot System architecture + backend — Four specs created. Backend implemented: tier0.py, smelt.py, forge_server.py v1.2, run_ingot_migration.py.
-- **2025-11-30 Session 8:** LLM Integration complete — Claude API working, context builder fixed, forge-to-vault auto-indexing working
-- **2025-11-29 Session 7:** Identity Pillars created — Six pillar summary documents
-- **2025-11-29 Session 6:** PROJECT_STATUS cleanup — All blockers resolved
-- **2025-11-29 Session 5:** Quick wins — Data Model renamed, dormant vaults marked
-- **2025-11-29 Session 4:** Core Memory Index first curation pass — 10 memories indexed
-- **2025-11-29 Session 3:** Behaviour Engine misalignment resolved
-- **2025-11-29:** Control Panel v1.0, Frontend v1.0 tested and working
-- **2025-11-28:** GitHub repository published
+- **2025-12-05 Session 23:** Diagnostic completion. Removed stale `recog/` folder (empty placeholder, redundant with recog_engine). Verified all reference docs current. Updated git_push.bat.
+- **2025-12-05 Session 22:** Full diagnostic sweep. Archived deprecated scripts (fix_*.py, cleanup_unused_ui.py). Created _private/ROADMAP.md with Mana Core expansion and Ehko Bridge post-MVP phases. Updated vault_map, script_registry, db_schema_summary. Reorganised PROJECT_STATUS.md structure.
+- **2025-12-04 Session 19:** Phase 4B complete — Mana purchase modal with tier selection, config panel with BYOK/Mana/Hybrid mode switching, split mana display (regen + purchased bars), usage history modal.
+- **2025-12-04 Session 19:** Phase 4A complete — 7 mana purchase database tables, mana_manager.py module, 6 mana API endpoints.
+- **2025-12-03 Session 18:** Phase 2 UI Consolidation complete — Single terminal interface with mode toggle, Authority bars, Mana display, retro aesthetic.
+- **2025-12-03 Session 17:** Phase 1 Foundation complete — Authority system, Mana system, stage-based prompts, reorientation migration.
+- **2025-12-02 Session 15:** Control Panel v2.0, OpenAI .env loading verified, speaker attribution fix.
+- **2025-12-02 Session 12:** ReCog Engine Specification v0.2 created.
+- **2025-12-02 Session 11:** OpenAI integration complete, multi-provider LLM module.
+- **2025-12-01 Session 10:** Ingot System complete — Full pipeline operational.
+
+---
+
+## SCRIPT INVENTORY
+
+| Script | Version | Status |
+|--------|---------|--------|
+| ehko_refresh.py | v2.0 | ✅ Working |
+| forge_server.py | v2.3 | ✅ Working |
+| ehko_control.py | v2.0 | ✅ Working |
+| run_ingot_migration.py | v1.0 | ✅ Applied |
+| run_reorientation_migration.py | v1.0 | ✅ Applied |
+| run_mana_migration.py | v1.0 | ✅ Applied |
+| ehkoforge/llm/ | v1.1 | ✅ Working |
+| recog_engine/tier0.py | v0.1 | ✅ Working |
+| recog_engine/smelt.py | v0.1 | ✅ Working |
+| recog_engine/prompts.py | v0.2 | ✅ Working |
+| recog_engine/authority_mana.py | v0.1 | ✅ Working |
+| recog_engine/mana_manager.py | v0.1 | ✅ Working |
+
+---
+
+## SPECIFICATION INVENTORY
+
+| Spec | Version | Status |
+|------|---------|--------|
+| ReCog_Engine_Spec_v0_2.md | v0.2 | 📋 Specified |
+| Ingot_System_Schema_v0_1.md | v0.1 | ✅ Implemented |
+| Tier0_PreAnnotation_Spec_v0_1.md | v0.1 | ✅ Implemented |
+| Smelt_Processor_Spec_v0_1.md | v0.1 | ✅ Implemented |
+| Forge_UI_Update_Spec_v0_1.md | v0.1 | ✅ Implemented |
+| Reorientation_Spec_v0_1.md | v0.1 | 🔄 In Progress |
 
 ---
 
@@ -376,79 +233,22 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ---
 
-## SCRIPT INVENTORY
-
-| Script | Version | Purpose | Status |
-|--------|---------|---------|--------|
-| ehko_refresh.py | v2.0 | Index vaults + process transcriptions | ✅ Working |
-| forge_server.py | v1.2 | Flask server + API + LLM + Ingot endpoints | ✅ Working |
-| ehko_control.py | v2.0 | GUI control panel (touch-optimized) | ✅ Working |
-| run_ingot_migration.py | v1.0 | Database migration runner | ✅ Applied |
-| seed_test_ingots.py | v1.0 | Test data generator | ✅ Working |
-| ehkoforge/llm/ | v1.1 | LLM integration module (multi-provider) | ✅ Working |
-| recog_engine/tier0.py | v0.1 | Tier 0 signal extraction (AGPL) | ✅ Working |
-| recog_engine/smelt.py | v0.1 | Smelt batch processor (AGPL) | ✅ Working |
-| recog_engine/prompts.py | v0.1 | Ehko behaviour prompts (AGPL) | ✅ Working |
-| recog_engine/forge_integration.py | v0.1 | Server integration (AGPL) | ✅ Working |
-| index.html | v1.2 | Frontend UI (Chat + Forge modes) | ✅ Working |
-| app.js | v1.2 | Frontend logic + ingot handlers | ✅ Working |
-| styles.css | v1.2 | MDV aesthetic + ingot styles | ✅ Working |
-| fix_regex.py | — | Patch theme extraction regex | ✅ Applied |
-| fix_theme_headers.py | — | Correct header level detection | ✅ Applied |
-| fix_transcription_extraction.py | — | Fix section boundary regex | ✅ Applied |
-| run_process_transcriptions.bat | — | Batch runner for all fixes | ✅ Working |
-
----
-
-## SPECIFICATION INVENTORY
-
-| Spec | Version | Purpose | Status |
-|------|---------|---------|--------|
-| UI_Redesign_Spec_v0_1.md | v0.1 | Three-area UI restructure | ✅ Implemented |
-| ReCog_Engine_Spec_v0_2.md | v0.2 | Recursive cognition orchestration | 📋 Specified |
-| Ingot_System_Schema_v0_1.md | v0.1 | Ingot database schema | ✅ Implemented |
-| Tier0_PreAnnotation_Spec_v0_1.md | v0.1 | Code-based signal extraction | ✅ Implemented |
-| Smelt_Processor_Spec_v0_1.md | v0.1 | Batch ingot extraction | ✅ Implemented |
-| Forge_UI_Update_Spec_v0_1.md | v0.1 | Chat/Forge UI design | ✅ Implemented |
-
----
-
 ## NOTES
 
 - This file should be updated whenever implementation status changes
 - Check this file at the start of each session to maintain alignment
 - "Implemented" means working code exists; "Specified" means design complete but no code
 - Append completed items to "Recently Completed" section with dates
-- Version bump on significant updates
 
 ---
 
 **Changelog:**
-- v1.27 — 2025-12-04 Session 19 — Phase 4B complete: Mana purchase system frontend fully wired. Purchase modal, config panel, split balance display, usage history all operational.
-- v1.26 — 2025-12-04 Session 19 — Phase 4A complete: Mana purchase system backend. Added 7 database tables (users, user_mana_balance, mana_purchases, user_api_keys, user_config, mana_usage_log, mana_pricing). Created mana_manager.py module (BYOK/Mana/Hybrid support). Added 6 mana API endpoints to forge_server.py v2.3. Created test_mana_system.py.
-- v1.25 — 2025-12-04 Session 19 — Phase 3 cleanup: Removed unused route-based UI templates. Realigned phases with current development plan (Mana Infrastructure → ReCog Engine → Pillars/Memories). Created cleanup_unused_ui.py script.
-- v1.24 — 2025-12-03 Session 18 — Phase 2 UI Consolidation complete. Single terminal interface with mode toggle, Authority bars, Mana display. Fixed Authority component display bug in main.js.
-- v1.23 — 2025-12-03 Session 17 — Reorientation Phase 1 complete: Added Authority system (ehko_authority table, 5 components). Added Mana system (mana_state, mana_costs, mana_transactions tables). Updated prompts.py v0.2 with stage-based personality dampener. Created authority_mana.py module. Renamed ingot→insite tables. Created Reorientation_Spec_v0_1.md. Added reorientation_v0_1.sql migration.
-- v1.22 — 2025-12-03 Session 16 — License split: MIT (framework) + AGPL (ReCog Engine). Created recog_engine/ module. Moved tier0, smelt, prompts, forge_integration to AGPL module. Updated imports in forge_server.py. Added LICENSE files. Created Data_Model_Core_Tables_v1_0.md (MIT schema). Updated Data Model to v1.4 with license split.
-- v1.21 — 2025-12-02 Session 15 — Control Panel v2.0 (touch UI, Forge/Smelt controls, CLI). VBS launcher. OpenAI .env loading verified. Speaker attribution fix (XML tags). Surfacing criteria fix.
-- v1.20 — 2025-12-02 Session 14 — UI Redesign Phase 1 complete.
-- v1.19 — 2025-12-02 Session 14 — UI Redesign Specification v0.1 created. Three-area structure (Reflections, Forge, Terminal) with distinct aesthetics. Journal mode with calendar, Terminal with model selector, Upload for bulk ore.
-- v1.18 — 2025-12-02 Session 11 (end) — OpenAI integration tested and verified. Both providers working. Dual-provider mode operational. Updated git_push.bat.
-- v1.17 — 2025-12-02 Session 13 — Token efficiency improvements: STACKWRIGHT_INSTRUCTIONS v2.2 with edit_file strategy; created script_registry.md and db_schema_summary.md compressed references. Expected 50-70% token reduction.
-- v1.16 — 2025-12-02 Session 12 — Added ReCog Engine Specification v0.2 to documentation. Added to SPECIFIED section. Added SPECIFICATION INVENTORY table. Updated NEEDS TESTING with OpenAI provider test.
-- v1.15 — 2025-12-02 Session 11 — OpenAI provider integration complete. LLM module updated to v1.1 with multi-provider support.
-- v1.14 — 2025-12-01 Session 10 (end) — Moved Ingot System from SPECIFIED to IMPLEMENTED. Updated script inventory with all new scripts. Consolidated GAPS section. Simplified RECENTLY COMPLETED. Session cleanup.
-- v1.13 — 2025-12-01 Session 10 — Ingot System UI complete.
-- v1.12 — 2025-12-01 Session 9 — Ingot System specs and backend.
-- v1.11 — 2025-11-30 Session 8 — LLM Integration complete.
-- v1.10 — 2025-11-29 Session 7 — Identity Pillars populated.
-- v1.9 — 2025-11-29 Session 6 — PROJECT_STATUS cleanup.
-- v1.8 — 2025-11-29 Session 5 — Data Model renamed, dormant vaults marked.
-- v1.7 — 2025-11-29 Session 4 — Core Memory Index curation.
-- v1.6 — 2025-11-29 Session 3 — Behaviour Engine resolved.
-- v1.5 — 2025-11-29 Session 2 — Stackwright in Project memory.
-- v1.4 — 2025-11-29 — Frontend v1.0 implemented.
-- v1.3 — 2025-11-28 — GitHub repository published.
-- v1.2 — 2025-11-28 — ehko_refresh.py v2.0, utility scripts.
-- v1.1 — 2025-11-27 Session 2 — Misalignments identified.
-- v1.0 — 2025-11-27 — Initial PROJECT_STATUS.md created.
+- v1.29 — 2025-12-05 Session 23 — Diagnostic completion: Removed stale recog/ folder, verified all docs current.
+- v1.28 — 2025-12-05 Session 22 — Diagnostic sweep: Reorganised structure (incomplete items at top). Archived deprecated scripts. Added private roadmap. Updated all reference docs.
+- v1.27 — 2025-12-04 Session 19 — Phase 4B complete: Mana purchase system frontend.
+- v1.26 — 2025-12-04 Session 19 — Phase 4A complete: Mana purchase system backend.
+- v1.25 — 2025-12-04 Session 19 — Phase 3 cleanup: Removed unused route-based UI.
+- v1.24 — 2025-12-03 Session 18 — Phase 2 UI Consolidation complete.
+- v1.23 — 2025-12-03 Session 17 — Reorientation Phase 1 complete.
+- v1.22 — 2025-12-03 Session 16 — License split (MIT/AGPL).
+- v1.21 — 2025-12-02 Session 15 — Control Panel v2.0.

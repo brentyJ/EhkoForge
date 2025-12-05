@@ -241,62 +241,182 @@ body.low-motion .crt-overlay::after {
     margin-bottom: var(--gap-md);
 }
 
-.header-left {
+/* Header Brand */
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-primary);
+    border-radius: 4px;
+    box-shadow: 
+        0 0 10px var(--accent-glow),
+        inset 0 0 15px rgba(107, 140, 206, 0.1);
+}
+
+.brand-icon {
+    font-size: 1.4rem;
+    color: var(--accent-primary);
+    text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.brand-name {
+    font-family: var(--font-retro);
+    font-size: 1.6rem;
+    color: var(--accent-primary);
+    letter-spacing: 4px;
+    text-shadow: 
+        0 0 4px var(--accent-primary),
+        0 0 12px var(--accent-glow);
+    line-height: 1;
+}
+
+.brand-version {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+}
+
+/* Mode Dial - Retro Toggle Switch */
+.mode-dial-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.dial-track {
     display: flex;
     align-items: center;
     gap: var(--gap-sm);
 }
 
-.logo {
+.dial-label {
+    font-family: var(--font-retro);
     font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--accent-primary);
-    text-shadow: 0 0 10px var(--accent-glow);
     letter-spacing: 2px;
-}
-
-.version {
-    font-size: 0.7rem;
     color: var(--text-dim);
-}
-
-/* Mode Toggle */
-.mode-toggle {
-    display: flex;
-    gap: 2px;
-    background: var(--bg-primary);
-    border-radius: 6px;
-    padding: 2px;
-}
-
-.mode-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    padding: var(--gap-sm) var(--gap-md);
-    background: transparent;
-    border: none;
-    border-radius: 4px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
     cursor: pointer;
+    transition: all var(--transition-fast);
+    padding: 4px 8px;
+}
+
+.dial-label:hover {
+    color: var(--text-secondary);
+}
+
+.dial-label.active {
+    color: var(--accent-primary);
+    text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.dial-channel {
+    width: 60px;
+    height: 28px;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-primary);
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.dial-channel::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--border-subtle);
+    transform: translateY(-50%);
+}
+
+.dial-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 20px;
+    background: linear-gradient(180deg, 
+        var(--blue-600) 0%, 
+        var(--blue-700) 50%,
+        var(--blue-800) 100%);
+    border: 1px solid var(--accent-primary);
+    border-radius: 3px;
+    cursor: grab;
+    transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dial-knob:active {
+    cursor: grabbing;
+}
+
+.dial-knob.right {
+    left: calc(100% - 27px);
+}
+
+.knob-grip {
+    width: 12px;
+    height: 2px;
+    background: var(--accent-dim);
+    border-radius: 1px;
+}
+
+.dial-indicators {
+    display: flex;
+    gap: 40px;
+}
+
+.dial-led {
+    width: 8px;
+    height: 8px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50%;
     transition: all var(--transition-fast);
 }
 
-.mode-btn:hover {
-    color: var(--text-secondary);
-    background: var(--bg-tertiary);
+.dial-led.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    box-shadow: 
+        0 0 6px var(--accent-primary),
+        0 0 12px var(--accent-glow);
 }
 
-.mode-btn.active {
-    color: var(--text-primary);
-    background: var(--bg-elevated);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-
-.mode-icon {
-    font-size: 1rem;
+/* Reflection mode LED color */
+.dial-led#led-reflect.active {
+    background: #9b7ed9;
+    border-color: #9b7ed9;
+    box-shadow: 
+        0 0 6px #9b7ed9,
+        0 0 12px rgba(155, 126, 217, 0.4);
 }
 
 /* Model Selector */
@@ -1982,3 +2102,28 @@ body.reduce-motion *::after {
 .toast.removing {
     animation: slideOut 0.3s ease-out forwards;
 }
+
+/* ASCII Art Acronym Styling */
+.ascii-art {
+    font-size: 1.5em;
+    line-height: 1.1;
+}
+
+.blink-dot {
+    animation: blink-cursor 1s step-end infinite;
+    color: var(--accent-primary);
+}
+
+@keyframes blink-cursor {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.glow-letter {
+    color: #fff;
+    text-shadow: 
+        0 0 4px var(--accent-primary),
+        0 0 8px var(--accent-primary),
+        0 0 12px var(--accent-primary);
+}
+

@@ -2,8 +2,8 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.6  
-Status: Active Development  
+Version: 2.8  
+Status: Active Development (MVP Phase 4 Complete)  
 License: MIT + AGPLv3 (split)
 
 ---
@@ -73,15 +73,15 @@ This framework is built for people who:
 
 ---
 
-## Current State (2025-12-03)
+## Current State (2025-12-05)
 
 ### ✅ Working
 
 **Core Infrastructure**
 - **ehko_refresh.py v2.0** — Full vault indexing with hash-based change detection, transcription processing
-- **forge_server.py v1.2** — Flask server with REST API, LLM integration, ingot processing endpoints
+- **forge_server.py v2.3** — Flask server with REST API, LLM integration, ingot processing, mana purchase system
 - **ehko_control.py v2.0** — GUI control panel (tkinter, touch-optimized) for managing all EhkoForge operations
-- **SQLite schema** — 20+ tables for indexing, authentication, sessions, and ingot processing
+- **SQLite schema** — 35 tables for indexing, authentication, sessions, ingot processing, authority, and mana purchase
 
 **Frontend (The Forge)**
 - **Chat Mode** — Session management, real LLM API responses, context injection from reflection corpus
@@ -503,6 +503,8 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.8 — 2025-12-05 — Diagnostic completion: Removed stale recog/ folder, verified all docs current.
+- v2.7 — 2025-12-05 — MVP Phase 4 complete: Full mana purchase system (backend + frontend). Diagnostic sweep: archived deprecated scripts, updated all reference docs.
 - v2.6 — 2025-12-03 — License split: MIT (framework) + AGPLv3 (ReCog Engine). Reorganised code into recog_engine/ module. Updated imports and documentation.
 - v2.5 — 2025-12-02 — Control Panel v2.0 (touch-optimized, Forge/Smelt controls, CLI). VBS launcher. OpenAI integration verified with .env loading. Speaker attribution fix in smelt.
 - v2.4 — 2025-12-02 — Expanded terminology section to acknowledge mixed metaphors; separated forge metaphor (primary) from architectural terms; clarified Identity Pillars as organizational framework not psychological claims

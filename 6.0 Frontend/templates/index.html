@@ -21,21 +21,34 @@
         
         <!-- Header Bar -->
         <header class="header-bar">
-            <div class="header-left">
-                <span class="logo">◈ EHKOFORGE</span>
-                <span class="version">v2.0</span>
+            <!-- Brand -->
+            <div class="header-brand">
+                <div class="brand-logo">
+                    <span class="brand-icon">⚒</span>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">EHKOFORGE</span>
+                    <span class="brand-version">v2.0</span>
+                </div>
             </div>
             
-            <!-- Mode Toggle -->
-            <div class="mode-toggle">
-                <button class="mode-btn active" data-mode="terminal" title="Terminal Mode (1 mana/msg)">
-                    <span class="mode-icon">⌘</span>
-                    <span class="mode-label">Terminal</span>
-                </button>
-                <button class="mode-btn" data-mode="reflection" title="Reflection Mode (3 mana/msg)">
-                    <span class="mode-icon">◎</span>
-                    <span class="mode-label">Reflect</span>
-                </button>
+            <!-- Mode Dial - Retro Toggle -->
+            <div class="mode-dial-container">
+                <div class="dial-track">
+                    <span class="dial-label dial-label-terminal" data-mode="terminal">TERMINAL</span>
+                    <div class="dial-channel">
+                        <div class="dial-knob" id="dial-knob">
+                            <div class="knob-grip"></div>
+                            <div class="knob-grip"></div>
+                            <div class="knob-grip"></div>
+                        </div>
+                    </div>
+                    <span class="dial-label dial-label-reflect" data-mode="reflection">REFLECT</span>
+                </div>
+                <div class="dial-indicators">
+                    <span class="dial-led active" id="led-terminal"></span>
+                    <span class="dial-led" id="led-reflect"></span>
+                </div>
             </div>
             
             <!-- Model Selector -->
@@ -181,10 +194,10 @@
                 <pre class="ascii-art">
 ╔═══════════════════════════════════════════════════════════════╗
 ║  ███████╗██╗  ██╗██╗  ██╗ ██████╗                             ║
-║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗                            ║
-║  █████╗  ███████║█████╔╝ ██║   ██║                            ║
-║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║                            ║
-║  ███████╗██║  ██║██║  ██╗╚██████╔╝                            ║
+║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗     <span class="blink-dot">•</span> <span class="glow-letter">E</span>volving           ║
+║  █████╗  ███████║█████╔╝ ██║   ██║     <span class="blink-dot">•</span> <span class="glow-letter">H</span>uman              ║
+║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║     <span class="blink-dot">•</span> <span class="glow-letter">K</span>nowledge          ║
+║  ███████╗██║  ██║██║  ██╗╚██████╔╝     <span class="blink-dot">•</span> <span class="glow-letter">O</span>bserver           ║
 ║  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                             ║
 ╚═══════════════════════════════════════════════════════════════╝
                 </pre>

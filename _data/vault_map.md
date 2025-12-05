@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.6"
+version: "2.8"
 created: 2025-11-29
-updated: 2025-12-03
+updated: 2025-12-05
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-03 (Session 18 - Reorientation Phase 2)
+**Generated:** 2025-12-05 (Session 23 - Diagnostic Completion)
 
 ---
 
@@ -67,7 +67,8 @@ _Index.md                                         [navigation, v1.0]
 ```
 Frontend_Implementation_Spec_v1_0.md              [module, v1.0]
 UI-MDV-Specification.md                           [module, v1.0]
-SPINOFF_IDEAS.md                                  [planning, v1.0]
+Reorientation_Spec_v0_1.md                        [module, v0.1] — Creative direction
+# Note: SPINOFF_IDEAS.md moved to documents/ folder
 Ideas for road mapping - Proko & Evolution Concept Scaffold.md  [concept, draft]
 Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
 
@@ -101,19 +102,25 @@ Universal/
 #### Root Scripts
 ```
 ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
-forge_server.py                   [v2.1, working] — Flask server + Authority/Mana + Insite endpoints
+forge_server.py                   [v2.3, working] — Flask server + Mana system + LLM
 ehko_control.py                   [v2.0, working] — GUI control panel (tkinter, touch-optimized)
 EhkoForge Control Panel.vbs       [v1.0, working] — Silent launcher (no console window)
-run_ingot_migration.py            [v1.0, working] — DB migration runner
-run_reorientation_migration.py    [v1.0, working] — Reorientation migration runner
+run_ingot_migration.py            [v1.0, applied]  — Ingot tables migration
+run_reorientation_migration.py    [v1.0, applied]  — Authority/Mana migration
+run_mana_migration.py             [v1.0, applied]  — Mana purchase migration
 seed_test_ingots.py               [v1.0, utility]  — Test data generator
+test_openai_integration.py        [v1.0, utility]  — Provider verification
+test_mana_system.py               [v1.0, utility]  — Mana API testing
+test_mana_simple.py               [v1.0, utility]  — Mana API testing (non-interactive)
+run_process_transcriptions.bat    [working] — Batch runner
 .env                              [config]        — API keys (not in git)
 
-# Utility scripts
-fix_regex.py                      [applied] — Patch theme extraction
-fix_theme_headers.py              [applied] — Header level fix
-fix_transcription_extraction.py   [applied] — Section boundary fix
-run_process_transcriptions.bat    [working] — Batch runner
+# Archived (applied patches, no longer needed)
+_archive/
+├── fix_regex.py
+├── fix_theme_headers.py
+├── fix_transcription_extraction.py
+└── cleanup_unused_ui.py
 ```
 
 #### recog_engine/ Module (AGPL-licensed)
@@ -125,6 +132,7 @@ recog_engine/
 ├── smelt.py                      [v0.1, working] — Batch ingot extraction
 ├── prompts.py                    [v0.2, working] — Stage-based personality dampener
 ├── authority_mana.py             [v0.1, working] — Authority & Mana systems
+├── mana_manager.py               [v0.1, working] — Purchase system, BYOK/Mana/Hybrid
 └── forge_integration.py          [v0.1, guide]   — Server integration helpers
 ```
 
@@ -150,7 +158,8 @@ ehkoforge/
 ```
 migrations/
 ├── ingot_migration_v0_1.sql      [applied] — Ingot system tables
-└── reorientation_v0_1.sql        [applied] — Authority/Mana/Insite tables
+├── reorientation_v0_1.sql        [applied] — Authority/Mana/Insite tables
+└── mana_purchase_v0_1.sql        [applied] — Mana purchase tables (7 tables)
 ```
 
 #### Documentation (in 5.0 Scripts/)
@@ -167,30 +176,20 @@ System Logs/
 **Purpose:** Consolidated Terminal UI with Forge review
 
 ```
-templates/                        [v2.1]
-├── index.html                    — Main terminal UI (Phase 2 consolidated)
-├── forge.html                    — Insite review page
-├── base.html                     [legacy] — Shared layout (used by forge.html)
-├── reflect.html                  [legacy] — Redirects to /
-└── terminal.html                 [legacy] — Redirects to /
+templates/
+└── index.html                    [v2.1] — Main terminal UI (Phase 2 consolidated)
 
 static/
-├── css/                          [v2.1]
-│   ├── main.css                  — Main terminal styles (retro aesthetic)
-│   ├── base.css                  [legacy] — Shared styles for forge.html
-│   ├── forge.css                 — Forge area (gold/violet palette)
-│   ├── reflect.css               [legacy]
-│   └── terminal.css              [legacy]
-├── js/                           [v2.1]
-│   ├── main.js                   — Main terminal logic (Authority, Mana, chat)
-│   ├── common.js                 [legacy] — Used by forge.html
-│   ├── forge.js                  — Insite review logic
-│   ├── reflect.js                [legacy]
-│   ├── terminal.js               [legacy]
-│   └── journal.js                [legacy]
 ├── index.html                    [v1.2, legacy] — Old static single-page UI
 ├── styles.css                    [v1.2, legacy] — Old combined styles
-└── app.js                        [v1.2, legacy] — Old combined logic
+├── app.js                        [v1.2, legacy] — Old combined logic
+├── css/
+│   ├── main.css                  [v2.1] — Main terminal styles (retro aesthetic)
+│   └── forge.css                 — Forge area (gold/violet palette)
+└── js/
+    ├── main.js                   [v2.1] — Main terminal logic (Authority, Mana, chat)
+    ├── forge.js                  — Insite review logic
+    └── journal.js                [legacy] — Journal functionality
 ```
 
 **Architecture (v2.1 - Phase 2 Reorientation):**
@@ -200,7 +199,7 @@ static/
 - Legacy routes `/reflect` and `/terminal` redirect to `/`
 
 **Features:**
-- **Main Terminal:** Mode toggle, Authority bars (5 components), Mana display, session management, forge-to-vault
+- **Main Terminal:** Mode toggle, Authority bars (5 components), Mana display (regen + purchased), session management
 - **Forge:** Insite queue, detail panel, accept/reject
 - **Retro Aesthetic:** CRT scanlines, blue terminal palette (#6b8cce), JetBrains Mono font
 
@@ -211,20 +210,44 @@ static/
 ui-preferences.json               [user settings]
 ```
 
+### documents/
+**Purpose:** Working documents, research PDFs, images, planning docs
+
+```
+SPINOFF_IDEAS.md                          [planning, v1.0]
+First Deep Recursive Insight Attempt OPUS4.5.md  [reference]
+Defining Ehko's Identity Pillars...pdf    [research]
+iconArcane.png, iconArcane.ico            [assets]
+TechnoForge.png, technoForge_noText.png   [assets]
+```
+
 ### _data/
 **Purpose:** Database and system files
 
 ```
 ehko_index.db                     [SQLite, ~200KB]
 vault_map.md                      [this file]
-script_registry.md                [v1.0] — Compressed script reference
-db_schema_summary.md              [v1.0] — Compressed DB schema reference
+script_registry.md                [v1.2] — Compressed script reference
+db_schema_summary.md              [v1.2] — Compressed DB schema reference
+```
+
+### _private/
+**Purpose:** Strategic planning (gitignored)
+
+```
+README.md                         — Directory purpose
+FORM_EVOLUTION_VISION.md          — Authority-driven visual progression
+MANA_ECONOMICS.md                 — Pricing psychology, monetization
+STRATEGIC_NOTES.md                — Future features, marketplace concepts
+MEMORY_CORES_TERMINOLOGY.md       — Key terminology decisions
+CREATIVE_STUDIO_VISION.md         — Character design platform
+ROADMAP.md                        — Expansion phases (Ehko Bridge, Mana Core)
 ```
 
 ### PROJECT_STATUS.md
 **Purpose:** Current implementation state and priorities
 **Location:** `EhkoForge/PROJECT_STATUS.md`
-**Version:** 1.13
+**Version:** 1.28
 
 ---
 
@@ -235,46 +258,12 @@ db_schema_summary.md              [v1.0] — Compressed DB schema reference
 | License | Tables |
 |---------|--------|
 | **MIT** | reflection_objects, tags, emotional_tags, cross_references, changelog_entries, mirrorwell_extensions, forge_sessions, forge_messages, friend_registry, shared_with_friends, shared_memories, authentication_tokens, authentication_logs, custodians, prepared_messages, message_deliveries |
-| **AGPLv3** | smelt_queue, transcript_segments, annotations, ingots, ingot_sources, ingot_history, ehko_personality_layers |
+| **AGPLv3** | smelt_queue, transcript_segments, annotations, ingots/insites, ingot_sources, ingot_history, ehko_personality_layers, ehko_authority, identity_pillars, mana_state, mana_costs, mana_transactions, users, user_mana_balance, mana_purchases, user_api_keys, user_config, mana_usage_log, mana_pricing |
 
-### Core Tables (MIT)
-- `reflection_objects` — Indexed vault entries
-- `tags` — General tags (object_id, tag)
-- `emotional_tags` — Emotional tags (object_id, emotion)
-- `cross_references` — Links between entries
-- `changelog_entries` — Version history
-- `mirrorwell_extensions` — Personal metadata (core_memory, pillar, shared_with)
-
-### Friend/Auth Tables (MIT)
-- `friend_registry` — Known people
-- `shared_with_friends` — Sharing permissions
-- `shared_memories` — Shared content
-- `authentication_tokens` — Active sessions
-- `authentication_logs` — Auth history
-- `custodians` — Posthumous access
-- `prepared_messages` — Time-capsule messages
-- `message_deliveries` — Delivery tracking
-
-### Forge Session Tables (MIT)
-- `forge_sessions` — Chat sessions
-- `forge_messages` — Session messages
-
-### Ingot/Insite System Tables (AGPLv3)
-- `smelt_queue` — Pending content for analysis
-- `transcript_segments` — Chunked transcripts
-- `annotations` — User hints on content
-- `ingots` — Core insight objects (legacy)
-- `insites` — Core insight objects (new name)
-- `ingot_sources` / `insite_sources` — Links to sources
-- `ingot_history` / `insite_history` — Audit trail
-- `ehko_personality_layers` — Forged personality components
-
-### Authority & Mana Tables (AGPLv3)
-- `ehko_authority` — Ehko advancement state (singleton)
-- `identity_pillars` — Pillar tracking for Identity Clarity
-- `mana_state` — Resource economy state (singleton)
-- `mana_costs` — Operation costs
-- `mana_transactions` — Spending/regen log
+### Table Count
+- **MIT:** 16 tables
+- **AGPL:** 19 tables
+- **Total:** 35 tables
 
 ---
 
@@ -307,24 +296,6 @@ reflection_template.md            [v1.2]
 #### 2.1 Journals/
 **Total:** 15 entries
 
-```
-2025-11-28_structuring_manacore_as_an_ai_text_adventure.md
-2025-11-28_first-ui-forge.md
-2025-11-27_building_the_echo_forge_framework.md
-2025-11-26_isolation-family-dynamics-seeking-validation.md
-2025-11-22 — Growing Up in the 90s.md
-2025-11-16_navigating-family-conflict-sister.md
-2025-11-14_family-trauma-sisterly-silence.md
-2025-09-09_unjust_police_resignation_after_drug_test.md
-2025-09-08_unpacking_control_and_self_perception.md
-2025-09-08_control_anxiety_relationships.md
-2025-08-02_evolving-beliefs-societal-views.md
-2025-08-01_ai-childhood-trauma-reflection.md
-2025-08-01_lasting-bonds-childhood-friendships.md
-2025-08-01_toxic-mother-son-dynamics.md
-2025-07-31_childhood-trauma-family-reflection.md
-```
-
 #### 2.2 Transcripts/
 ```
 _processed/                       [archived originals]
@@ -340,7 +311,7 @@ _processed/                       [archived originals]
 
 ### ManaCore/
 **Status:** Dormant (VAULT_STATUS.md created 2025-11-29)
-**Purpose:** Fiction worldbuilding
+**Purpose:** Fiction worldbuilding — potential Expansion 1 (text adventure)
 
 ---
 
@@ -363,12 +334,6 @@ python forge_server.py
 
 # Refresh index
 python ehko_refresh.py
-
-# Run ingot migration (one-time)
-python run_ingot_migration.py
-
-# Seed test ingots
-python seed_test_ingots.py
 
 # GUI control panel
 python ehko_control.py
@@ -395,21 +360,15 @@ python ehko_control.py
 ---
 
 **Changelog:**
-- v2.6 — 2025-12-03 Session 18 — Reorientation Phase 2: Updated 6.0 Frontend section for consolidated terminal UI. index.html now primary template, legacy templates marked. main.css/main.js are primary files.
-- v2.5 — 2025-12-03 Session 17 — Reorientation Phase 1: Added authority_mana.py, prompts.py v0.2, reorientation migration. Added Authority/Mana table section. Updated recog_engine module listing.
-- v2.4 — 2025-12-03 Session 16 — License split reorganisation: Added recog_engine/ module (AGPL). Moved ReCog specs to 2.0 Modules/ReCog/. Added Data_Model_Core_Tables_v1_0.md. Updated ehkoforge/ to redirect preprocessing/processing to recog_engine. Updated Data Model to v1.4. Added license structure section.
-- v2.3 — 2025-12-02 Session 15 — Updated ehko_control.py to v2.0. Added EhkoForge Control Panel.vbs launcher. Added .env to scripts listing.
-- v2.2 — 2025-12-02 Session 14 — UI Redesign Phase 1: Added templates/, css/, js/ directories. Updated forge_server.py to v2.0 with route-based navigation.
-- v2.1 — 2025-12-02 Session 13 — Updated ReCog_Engine_Spec to v0.2 (framing clarifications).
-- v2.1 — 2025-12-02 Session 13 — Added script_registry.md and db_schema_summary.md to _data.
-- v2.0 — 2025-12-02 Session 12 — Added ReCog_Engine_Spec_v0_1.md to 2.0 Modules.
-- v1.9 — 2025-12-02 Session 11 — Added openai_provider.py, provider_factory.py to LLM module. Updated llm/ to v1.1.
-- v1.8 — 2025-12-01 Session 10 — Ingot system complete: Added tier0.py, smelt.py to ehkoforge module. Added migrations/ folder. Added run_ingot_migration.py, seed_test_ingots.py. Updated frontend to v1.2. Moved ingot tables from "specified" to "created". Added quick reference section.
-- v1.7 — 2025-12-01 — Added Forge_UI_Update_Spec_v0_1.md to 2.0 Modules.
-- v1.6 — 2025-12-01 — Added Ingot System specs to 2.0 Modules (Schema, Tier0, Smelt Processor). Added future DB tables list.
-- v1.5 — 2025-11-30 — Added 6.0 Frontend section, LLM module details, updated forge_server.py to v1.1
-- v1.4 — 2025-11-29 — Identity Pillars folder populated (6 documents)
-- v1.3 — 2025-11-29 — Data Model filename corrected; dormant vaults marked
-- v1.2 — 2025-11-29 — Core Memory Index first curation pass complete
-- v1.1 — 2025-11-29 — Added Core Memory Index Framework
+- v2.8 — 2025-12-05 Session 23 — Diagnostic completion: Removed stale recog/ folder from root (empty, redundant with recog_engine).
+- v2.7 — 2025-12-05 Session 22 — Diagnostic sweep: Added _private/ folder listing, _archive/ folder, mana_manager.py, all migration scripts. Removed legacy template references (cleanup complete). Updated database table counts (35 total).
+- v2.6 — 2025-12-03 Session 18 — Reorientation Phase 2: Updated 6.0 Frontend section for consolidated terminal UI.
+- v2.5 — 2025-12-03 Session 17 — Reorientation Phase 1: Added authority_mana.py, prompts.py v0.2, reorientation migration.
+- v2.4 — 2025-12-03 Session 16 — License split reorganisation: Added recog_engine/ module (AGPL).
+- v2.3 — 2025-12-02 Session 15 — Updated ehko_control.py to v2.0. Added VBS launcher.
+- v2.2 — 2025-12-02 Session 14 — UI Redesign Phase 1.
+- v2.1 — 2025-12-02 Session 13 — Added script_registry.md and db_schema_summary.md.
+- v2.0 — 2025-12-02 Session 12 — Added ReCog_Engine_Spec_v0_1.md.
+- v1.9 — 2025-12-02 Session 11 — Added openai_provider.py, provider_factory.py.
+- v1.8 — 2025-12-01 Session 10 — Ingot system complete.
 - v1.0 — 2025-11-29 — Initial vault map created
