@@ -2,9 +2,9 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.9  
+Version: 2.11  
 Status: Active Development (MVP Phase 4 Complete)  
-License: MIT + AGPLv3 (split)
+License: AGPLv3
 
 ---
 
@@ -143,8 +143,7 @@ EhkoForge/
 ├── 2.0 Modules/                # Feature specifications
 │   ├── Frontend_Implementation_Spec_v1_0.md
 │   ├── UI-MDV-Specification.md
-│   ├── ReCog/                             # AGPL-licensed ReCog Engine
-│   │   ├── LICENSE                        # AGPLv3
+│   ├── ReCog/                             # ReCog Engine specifications
 │   │   ├── ReCog_Engine_Spec_v0_2.md
 │   │   ├── Ingot_System_Schema_v0_1.md
 │   │   ├── Tier0_PreAnnotation_Spec_v0_1.md
@@ -165,14 +164,13 @@ EhkoForge/
 │   ├── ehko_control.py                    # GUI control panel
 │   ├── run_ingot_migration.py             # Database migration
 │   ├── seed_test_ingots.py                # Test data generator
-│   ├── recog_engine/                      # AGPL-licensed ReCog Engine
-│   │   ├── LICENSE                        # AGPLv3
+│   ├── recog_engine/                      # ReCog Engine implementation
 │   │   ├── __init__.py
 │   │   ├── tier0.py                       # Signal extraction
 │   │   ├── smelt.py                       # Batch processing
 │   │   ├── prompts.py                     # Ehko behaviour prompts
 │   │   └── forge_integration.py           # Server integration
-│   ├── ehkoforge/                         # MIT-licensed modules
+│   ├── ehkoforge/                         # Core modules
 │   │   ├── llm/                           # LLM integration (v1.1)
 │   │   │   ├── base.py                    # Abstract provider interface
 │   │   │   ├── claude_provider.py         # Anthropic wrapper
@@ -459,44 +457,45 @@ Read the manifestos:
 
 ## License
 
-EhkoForge uses a **split licensing model**:
+EhkoForge is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 
-### MIT License (Framework)
+This means:
+- ✅ **Free for personal use** — Build your own Ehko, no restrictions
+- ✅ **Free for internal company use** — Use within your organization
+- ✅ **Free for open-source projects** — Contribute and share improvements
+- ✅ **Modifications must be shared** — If you provide network access to users, you must make your source code available
 
-The core framework is MIT-licensed — free to use, modify, and distribute:
-- Vault structure, templates, indexing scripts
-- LLM provider infrastructure (`ehkoforge/llm/`)
-- Core database schema (reflection_objects, tags, sessions, authentication)
-- Frontend UI shell
-- Universal Template Framework
+### Commercial Licensing Available
 
-See [LICENSE](LICENSE) for full MIT text.
+Want to use EhkoForge in a proprietary product or hosted service without AGPL obligations?
 
-### AGPLv3 (ReCog Engine)
+**Contact:** brent@ehkolabs.io
 
-The **ReCog Engine** — the cognitive processing pipeline — is AGPLv3-licensed:
-- Tier 0 signal extraction (`recog_engine/tier0.py`)
-- Smelt batch processing (`recog_engine/smelt.py`)
-- Ehko behaviour prompts (`recog_engine/prompts.py`)
-- Ingot system tables and specifications
-- Personality layer integration
+**Commercial licensing includes:**
+- Freedom to modify without source disclosure
+- Proprietary deployment rights
+- Priority support
+- Custom feature development available
 
-See [5.0 Scripts/recog_engine/LICENSE](5.0%20Scripts/recog_engine/LICENSE) for full AGPLv3 text.
+**Pricing:**
+- Startup tier: Contact for pricing (<10 users)
+- Business tier: Contact for pricing (unlimited users)
+- Enterprise: Custom (on-premise, SLA, dedicated support)
 
-### What This Means
+### Why AGPL?
 
-**If you're building your own Ehko:** Use freely. Both licenses allow personal use.
+EhkoForge is built on principles of user sovereignty and 200-year durability. AGPL ensures:
 
-**If you're building a commercial product:**
-- MIT components: Use freely, no obligations
-- ReCog components: Either open-source your entire system under AGPL, or contact brent@ehkolabs.io for a commercial license
+1. **Protection from exploitation** — Big tech can't wrap this in a service and profit without contributing back
+2. **Alignment with philosophy** — Code stays free and open, just like your data should be
+3. **Commercial fairness** — "Use it free if you respect the ecosystem. Pay if you want to profit privately."
+4. **SaaS loophole closed** — Network services must share their source (unlike MIT/BSD)
 
-### Why Split?
+The AGPL is specifically designed to keep software free for the community while creating a sustainable path for developers. It's the same license used by MongoDB, Nextcloud, and Grafana.
 
-- **MIT for framework:** Encourages adoption, lets anyone build identity preservation systems
-- **AGPL for ReCog:** Protects the cognitive architecture research from being absorbed by big tech without contributing back
+This is open source with teeth. If you're building something open, you're welcome. If you're building something proprietary, let's talk terms.
 
-The AGPL specifically closes the "SaaS loophole" — if you run ReCog as a network service, you must make your source available.
+See [LICENSE](LICENSE) for full AGPLv3 text.
 
 ---
 
@@ -514,6 +513,8 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.11 — 2025-12-05 — Session 25: Cleaned up repository structure to reflect unified AGPLv3 (removed references to split licensing with separate LICENSE files).
+- v2.10 — 2025-12-05 — Session 25: Updated license from split (MIT/AGPL) to unified AGPLv3. Clarified licensing rationale and commercial path.
 - v2.9 — 2025-12-05 — Session 24: Fixed incorrect Session 23 changelog (recog/ wasn't actually deleted). Updated repository structure: frontend now shows templates/ and split css/js folders; added missing migration files.
 - v2.8 — 2025-12-05 — Diagnostic completion: Removed stale recog/ folder, verified all docs current.
 - v2.7 — 2025-12-05 — MVP Phase 4 complete: Full mana purchase system (backend + frontend). Diagnostic sweep: archived deprecated scripts, updated all reference docs.

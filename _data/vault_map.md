@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.9"
+version: "3.0"
 created: 2025-11-29
 updated: 2025-12-05
 tags: [system, reference, navigation]
@@ -30,15 +30,11 @@ G:\Other computers\Ehko\Obsidian\
 
 ---
 
-## LICENSE STRUCTURE
+## LICENSE
 
-EhkoForge uses split licensing:
+EhkoForge is licensed under **AGPLv3**.
 
-| Component | License | Location |
-|-----------|---------|----------|
-| Framework (core) | MIT | `EhkoForge/LICENSE` |
-| ReCog Engine (code) | AGPLv3 | `5.0 Scripts/recog_engine/LICENSE` |
-| ReCog Engine (specs) | AGPLv3 | `2.0 Modules/ReCog/LICENSE` |
+Single LICENSE file at repository root.
 
 ---
 
@@ -72,9 +68,8 @@ Reorientation_Spec_v0_1.md                        [module, v0.1] — Creative di
 Ideas for road mapping - Proko & Evolution Concept Scaffold.md  [concept, draft]
 Forge_UI_Update_Spec_v0_1.md                      [module, v0.1] — UI design
 
-# ReCog Engine (AGPL-licensed)
+# ReCog Engine
 ReCog/
-├── LICENSE                                       [AGPLv3]
 ├── ReCog_Engine_Spec_v0_2.md                     [module, v0.2] — Recursive cognition
 ├── Ingot_System_Schema_v0_1.md                   [module, v0.1] — DB tables
 ├── Tier0_PreAnnotation_Spec_v0_1.md              [module, v0.1] — Signal extraction
@@ -123,10 +118,9 @@ _archive/
 └── cleanup_unused_ui.py
 ```
 
-#### recog_engine/ Module (AGPL-licensed)
+#### recog_engine/ Module
 ```
 recog_engine/
-├── LICENSE                       [AGPLv3]
 ├── __init__.py
 ├── tier0.py                      [v0.1, working] — Signal extraction (no LLM)
 ├── smelt.py                      [v0.1, working] — Batch ingot extraction
@@ -136,7 +130,7 @@ recog_engine/
 └── forge_integration.py          [v0.1, guide]   — Server integration helpers
 ```
 
-#### ehkoforge/ Module (MIT-licensed)
+#### ehkoforge/ Module
 ```
 ehkoforge/
 ├── __init__.py
@@ -253,17 +247,8 @@ ROADMAP.md                        — Expansion phases (Ehko Bridge, Mana Core)
 
 ## DATABASE SCHEMA
 
-### License Split
-
-| License | Tables |
-|---------|--------|
-| **MIT** | reflection_objects, tags, emotional_tags, cross_references, changelog_entries, mirrorwell_extensions, forge_sessions, forge_messages, friend_registry, shared_with_friends, shared_memories, authentication_tokens, authentication_logs, custodians, prepared_messages, message_deliveries |
-| **AGPLv3** | smelt_queue, transcript_segments, annotations, ingots/insites, ingot_sources, ingot_history, ehko_personality_layers, ehko_authority, identity_pillars, mana_state, mana_costs, mana_transactions, users, user_mana_balance, mana_purchases, user_api_keys, user_config, mana_usage_log, mana_pricing |
-
 ### Table Count
-- **MIT:** 16 tables
-- **AGPL:** 19 tables
-- **Total:** 35 tables
+**Total:** 35 tables
 
 ---
 
@@ -360,6 +345,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.0 — 2025-12-05 Session 25 — Consolidated to single AGPLv3 license at root. Removed split licensing references.
 - v2.9 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed). Corrected changelogs.
 - v2.8 — 2025-12-05 Session 23 — [INCOMPLETE - chat crashed] Work started but not completed.
 - v2.7 — 2025-12-05 Session 22 — Diagnostic sweep: Added _private/ folder listing, _archive/ folder, mana_manager.py, all migration scripts. Removed legacy template references (cleanup complete). Updated database table counts (35 total).

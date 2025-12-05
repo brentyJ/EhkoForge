@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-05  
-**Version:** 1.30  
+**Version:** 1.31  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -165,7 +165,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ### Repository & Distribution
 
 - [x] **GitHub Repository** — Public at https://github.com/brentyJ/EhkoForge
-- [x] **Split Licensing** — MIT (framework) + AGPLv3 (ReCog Engine)
+- [x] **License** — AGPLv3 (single LICENSE at repository root)
 - [x] **Control Panel v2.0** — Touch-optimized tkinter GUI with VBS launcher
 
 ### Frontend
@@ -244,6 +244,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.31 — 2025-12-05 Session 25 — Consolidated to AGPLv3 (removed split licensing).
 - v1.30 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed before completing). Fixed README repository structure.
 - v1.29 — 2025-12-05 Session 23 — [INCOMPLETE - chat crashed] Diagnostic work started.
 - v1.28 — 2025-12-05 Session 22 — Diagnostic sweep: Reorganised structure (incomplete items at top). Archived deprecated scripts. Added private roadmap. Updated all reference docs.
