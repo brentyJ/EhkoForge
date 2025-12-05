@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-05  
-**Version:** 1.35  
+**Version:** 1.36  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -44,13 +44,14 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ### ReCog Engine (Core Priority)
 - [x] **ReCog Core v1.0** — Standalone recursive insight engine
   - Spec: `EhkoForge/2.0 Modules/ReCog/ReCog_Core_Spec_v1_0.md`
-  - Status: **Phase 4 complete**, EhkoForge adapter next
+  - Status: **COMPLETE** - All tiers + EhkoForge adapter
   - Architecture: Domain-agnostic engine with adapter pattern
   - EhkoForge becomes a client adapter, not the core
   - [x] **Phase 1:** Core types, signal processor, memory adapter
   - [x] **Phase 2:** Extractor (Tier 1) - config, LLM interface, extraction
   - [x] **Phase 3:** Correlator (Tier 2) - theme clustering, pattern detection
   - [x] **Phase 4:** Synthesizer (Tier 3) - trait/belief/tendency/theme synthesis
+  - [x] **EhkoForge Adapter:** Database integration, ingots/personality layers mapping
 
 ### Processing & Automation
 
@@ -250,6 +251,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.36 — 2025-12-05 Session 25 — EhkoForge adapter complete: ehkoforge.py bridges ReCog to database (ingots, patterns, personality_layers).
 - v1.35 — 2025-12-05 Session 25 — ReCog Core Phases 3-4 complete: correlator.py (Tier 2), synthesizer.py (Tier 3). Full pipeline done.
 - v1.34 — 2025-12-05 Session 25 — ReCog Core Phase 2 complete: config.py, llm.py (LLMProvider interface), extractor.py (Tier 1).
 - v1.33 — 2025-12-05 Session 25 — ReCog Core Phase 1 complete: types.py, signal.py, adapters (base, memory), test script.

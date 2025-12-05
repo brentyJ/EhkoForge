@@ -40,10 +40,10 @@ class PatternType(Enum):
 
 class SynthesisType(Enum):
     """Types of synthesis output."""
-    REPORT = "report"              # Comprehensive analysis
-    RECOMMENDATION = "recommendation"  # Actionable insights
-    SUMMARY = "summary"            # Executive overview
-    NARRATIVE = "narrative"        # Chronological story
+    TRAIT = "trait"                # Personality characteristic
+    BELIEF = "belief"              # Core belief or value
+    TENDENCY = "tendency"          # Behavioural pattern
+    THEME = "theme"                # Recurring life theme
 
 
 # =============================================================================
@@ -268,26 +268,27 @@ class Synthesis:
     This is the output of Tier 3 (Synthesis).
     """
     id: str
-    title: str
-    content: str                  # Full synthesis text
-    synthesis_type: SynthesisType
+    summary: str                  # 2-4 sentence synthesis
+    synthesis_type: SynthesisType # trait, belief, tendency, theme
     pattern_ids: List[str]        # Patterns contributing to this
-    insight_ids: List[str]        # Direct insight references
+    significance: float           # 0.0-1.0 how central this is
+    confidence: float             # 0.0-1.0 synthesis confidence
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     
     @classmethod
-    def create(cls, title: str, content: str, synthesis_type: SynthesisType,
-               pattern_ids: List[str], insight_ids: List[str] = None,
+    def create(cls, summary: str, synthesis_type: SynthesisType,
+               pattern_ids: List[str], significance: float = 0.5,
+               confidence: float = 0.5,
                metadata: Dict[str, Any] = None) -> "Synthesis":
         """Factory method with auto-generated ID."""
         return cls(
             id=str(uuid.uuid4()),
-            title=title,
-            content=content,
+            summary=summary,
             synthesis_type=synthesis_type,
             pattern_ids=pattern_ids,
-            insight_ids=insight_ids or [],
+            significance=significance,
+            confidence=confidence,
             metadata=metadata or {},
             created_at=datetime.utcnow(),
         )
@@ -296,11 +297,11 @@ class Synthesis:
         """Serialise to dictionary."""
         return {
             "id": self.id,
-            "title": self.title,
-            "content": self.content,
+            "summary": self.summary,
             "synthesis_type": self.synthesis_type.value,
             "pattern_ids": self.pattern_ids,
-            "insight_ids": self.insight_ids,
+            "significance": self.significance,
+            "confidence": self.confidence,
             "metadata": self.metadata,
             "created_at": self.created_at.isoformat(),
         }
@@ -310,11 +311,11 @@ class Synthesis:
         """Deserialise from dictionary."""
         return cls(
             id=data["id"],
-            title=data["title"],
-            content=data["content"],
+            summary=data["summary"],
             synthesis_type=SynthesisType(data["synthesis_type"]),
             pattern_ids=data["pattern_ids"],
-            insight_ids=data.get("insight_ids", []),
+            significance=data.get("significance", 0.5),
+            confidence=data.get("confidence", 0.5),
             metadata=data.get("metadata", {}),
             created_at=datetime.fromisoformat(data["created_at"]),
         )

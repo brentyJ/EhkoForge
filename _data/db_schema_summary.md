@@ -49,6 +49,13 @@
 | `ingot_history` / `insite_history` | Audit trail | ingot_id, action, timestamp, details |
 | `ehko_personality_layers` | Forged personality | id, layer_type, content, weight |
 
+## ReCog Pattern Tables (AGPL)
+
+| Table | Purpose | Key Columns |
+|-------|---------|-------------|
+| `ingot_patterns` | ReCog patterns across insights | id, summary, pattern_type, strength |
+| `ingot_pattern_insights` | Pattern-to-insight links | pattern_id, ingot_id |
+
 ## Authority & Mana Tables (AGPL)
 
 | Table | Purpose | Key Columns |
@@ -106,6 +113,7 @@ GROUP BY operation;
 ---
 
 **Changelog:**
+- v1.3 — 2025-12-05 — Added ReCog Pattern Tables (ingot_patterns, ingot_pattern_insights).
 - v1.2 — 2025-12-05 — Added Mana Purchase Tables section (7 tables). Added mana queries.
 - v1.1 — 2025-12-03 — Added Authority & Mana Tables. License annotations (MIT/AGPL split).
 - v1.0 — 2025-12-02 — Initial schema summary created

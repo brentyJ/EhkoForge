@@ -9,9 +9,11 @@ Adapters connect ReCog to specific applications.
 
 from .base import RecogAdapter
 from .memory import MemoryAdapter
+from .ehkoforge import EhkoForgeAdapter
 
 
 __all__ = [
     "RecogAdapter",
     "MemoryAdapter",
+    "EhkoForgeAdapter",
 ]

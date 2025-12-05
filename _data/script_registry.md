@@ -3,6 +3,13 @@
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
 **Updated:** 2025-12-05 (Session 25)
 
+### recog_engine.adapters.ehkoforge (NEW)
+- `EhkoForgeAdapter(db_path)` — Connect to EhkoForge database
+- `adapter.load_documents(source_type, limit)` — Load from reflection_objects, sessions
+- `adapter.save_insight(insight)` — Save to ingots table
+- `adapter.save_pattern(pattern)` — Save to ingot_patterns table
+- `adapter.save_synthesis(synthesis)` — Save to ehko_personality_layers table
+
 ---
 
 ## Core Scripts
@@ -29,6 +36,7 @@
 | `test_recog_extractor.py` | ReCog Extractor Phase 2 verification |
 | `test_recog_correlator.py` | ReCog Correlator Phase 3 verification |
 | `test_recog_synthesizer.py` | ReCog Synthesizer Phase 4 verification |
+| `test_recog_ehkoforge.py` | ReCog EhkoForge adapter verification |
 | `test_openai_integration.py` | Provider setup verification |
 | `test_mana_system.py` | Mana API endpoint testing (interactive) |
 | `test_mana_simple.py` | Mana API testing (non-interactive) |
@@ -78,6 +86,7 @@
 | `core/synthesizer.py` | 1.0 | Tier 3 deep synthesis (traits, beliefs, tendencies) |
 | `adapters/base.py` | 1.0 | RecogAdapter abstract interface |
 | `adapters/memory.py` | 1.0 | In-memory adapter for testing/standalone use |
+| `adapters/ehkoforge.py` | 1.0 | EhkoForge database adapter (ingots, personality_layers) |
 
 ### Legacy (EhkoForge-specific)
 
@@ -154,6 +163,7 @@
 ---
 
 **Changelog:**
+- v1.6 — 2025-12-05 — Added EhkoForge adapter: ehkoforge.py, test script.
 - v1.5 — 2025-12-05 — Added Phase 3-4: correlator.py, synthesizer.py. Added test scripts.
 - v1.4 — 2025-12-05 — Added Phase 2: config.py, llm.py, extractor.py. Added test_recog_extractor.py.
 - v1.3 — 2025-12-05 — Added ReCog Core v1.0 structure (core/, adapters/). Added test_recog_core.py.

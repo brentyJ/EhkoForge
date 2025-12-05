@@ -62,6 +62,7 @@ from .core import (
 from .adapters import (
     RecogAdapter,
     MemoryAdapter,
+    EhkoForgeAdapter,
 )
 
 
@@ -148,6 +149,7 @@ __all__ = [
     # Adapters
     'RecogAdapter',
     'MemoryAdapter',
+    'EhkoForgeAdapter',
     
     # === Legacy v0.x API ===
     # Tier 0

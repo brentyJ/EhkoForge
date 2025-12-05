@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.4"
+version: "3.5"
 created: 2025-11-29
 updated: 2025-12-05
 tags: [system, reference, navigation]
@@ -109,6 +109,7 @@ test_recog_core.py                [v1.0, utility]  — ReCog Core Phase 1 tests
 test_recog_extractor.py           [v1.0, utility]  — ReCog Extractor Phase 2 tests
 test_recog_correlator.py          [v1.0, utility]  — ReCog Correlator Phase 3 tests
 test_recog_synthesizer.py         [v1.0, utility]  — ReCog Synthesizer Phase 4 tests
+test_recog_ehkoforge.py           [v1.0, utility]  — ReCog EhkoForge adapter tests
 test_openai_integration.py        [v1.0, utility]  — Provider verification
 test_mana_system.py               [v1.0, utility]  — Mana API testing
 test_mana_simple.py               [v1.0, utility]  — Mana API testing (non-interactive)
@@ -139,7 +140,8 @@ recog_engine/
 ├── adapters/                     [NEW - v1.0 Adapters]
 │   ├── __init__.py
 │   ├── base.py                   [v1.0] — RecogAdapter interface
-│   └── memory.py                 [v1.0] — In-memory adapter for testing
+│   ├── memory.py                 [v1.0] — In-memory adapter for testing
+│   └── ehkoforge.py              [v1.0] — EhkoForge database adapter
 ├── tier0.py                      [v0.1, legacy] — Original signal extraction
 ├── smelt.py                      [v0.1, legacy] — Batch ingot extraction
 ├── prompts.py                    [v0.2] — Stage-based personality dampener
@@ -363,6 +365,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.5 — 2025-12-05 Session 25 — EhkoForge adapter: ehkoforge.py bridges ReCog to database.
 - v3.4 — 2025-12-05 Session 25 — ReCog Core Phase 3-4: correlator.py, synthesizer.py, test scripts.
 - v3.3 — 2025-12-05 Session 25 — ReCog Core Phase 2: config.py, llm.py, extractor.py, test script.
 - v3.2 — 2025-12-05 Session 25 — ReCog Core Phase 1 implementation: core/types.py, core/signal.py, adapters/base.py, adapters/memory.py, test script.
