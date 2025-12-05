@@ -51,6 +51,12 @@ from .core import (
     # Extraction (Tier 1)
     Extractor,
     extract_from_text,
+    # Correlation (Tier 2)
+    Correlator,
+    find_patterns,
+    # Synthesis (Tier 3)
+    Synthesizer,
+    synthesise_patterns,
 )
 
 from .adapters import (
@@ -133,6 +139,12 @@ __all__ = [
     # Extraction (Tier 1)
     'Extractor',
     'extract_from_text',
+    # Correlation (Tier 2)
+    'Correlator',
+    'find_patterns',
+    # Synthesis (Tier 3)
+    'Synthesizer',
+    'synthesise_patterns',
     # Adapters
     'RecogAdapter',
     'MemoryAdapter',

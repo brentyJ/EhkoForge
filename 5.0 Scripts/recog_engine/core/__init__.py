@@ -41,6 +41,16 @@ from .extractor import (
     extract_from_text,
 )
 
+from .correlator import (
+    Correlator,
+    find_patterns,
+)
+
+from .synthesizer import (
+    Synthesizer,
+    synthesise_patterns,
+)
+
 
 __all__ = [
     # Enums
@@ -68,4 +78,10 @@ __all__ = [
     # Extraction (Tier 1)
     "Extractor",
     "extract_from_text",
+    # Correlation (Tier 2)
+    "Correlator",
+    "find_patterns",
+    # Synthesis (Tier 3)
+    "Synthesizer",
+    "synthesise_patterns",
 ]

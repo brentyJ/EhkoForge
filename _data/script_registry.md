@@ -27,6 +27,8 @@
 |--------|---------|
 | `test_recog_core.py` | ReCog Core Phase 1 verification |
 | `test_recog_extractor.py` | ReCog Extractor Phase 2 verification |
+| `test_recog_correlator.py` | ReCog Correlator Phase 3 verification |
+| `test_recog_synthesizer.py` | ReCog Synthesizer Phase 4 verification |
 | `test_openai_integration.py` | Provider setup verification |
 | `test_mana_system.py` | Mana API endpoint testing (interactive) |
 | `test_mana_simple.py` | Mana API testing (non-interactive) |
@@ -72,6 +74,8 @@
 | `core/llm.py` | 1.0 | LLMProvider interface, LLMResponse, MockLLMProvider |
 | `core/signal.py` | 1.0 | Tier 0 signal extraction (refactored, uses new types) |
 | `core/extractor.py` | 1.0 | Tier 1 insight extraction from documents |
+| `core/correlator.py` | 1.0 | Tier 2 pattern correlation across insights |
+| `core/synthesizer.py` | 1.0 | Tier 3 deep synthesis (traits, beliefs, tendencies) |
 | `adapters/base.py` | 1.0 | RecogAdapter abstract interface |
 | `adapters/memory.py` | 1.0 | In-memory adapter for testing/standalone use |
 
@@ -137,9 +141,20 @@
 - `extractor.extract_batch(documents, adapter)` — Batch extraction with persistence
 - `extract_from_text(text, llm)` — Convenience function for raw text
 
+### recog_engine.core.correlator (NEW)
+- `Correlator(llm, config)` — Create correlator with LLM provider
+- `correlator.correlate(insights, adapter)` — Find patterns across insights
+- `find_patterns(insights, llm)` — Convenience function
+
+### recog_engine.core.synthesizer (NEW)
+- `Synthesizer(llm, config)` — Create synthesizer with LLM provider
+- `synthesizer.synthesise(patterns, insights)` — Generate high-level syntheses
+- `synthesise_patterns(patterns, llm)` — Convenience function
+
 ---
 
 **Changelog:**
+- v1.5 — 2025-12-05 — Added Phase 3-4: correlator.py, synthesizer.py. Added test scripts.
 - v1.4 — 2025-12-05 — Added Phase 2: config.py, llm.py, extractor.py. Added test_recog_extractor.py.
 - v1.3 — 2025-12-05 — Added ReCog Core v1.0 structure (core/, adapters/). Added test_recog_core.py.
 - v1.2 — 2025-12-05 — Added mana_manager.py, authority_mana.py. Moved deprecated scripts to _archive. Added test scripts section.
