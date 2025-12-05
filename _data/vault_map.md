@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "2.8"
+version: "2.9"
 created: 2025-11-29
 updated: 2025-12-05
 tags: [system, reference, navigation]
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-05 (Session 23 - Diagnostic Completion)
+**Generated:** 2025-12-05 (Session 24 - Cleanup Completion)
 
 ---
 
@@ -360,7 +360,8 @@ python ehko_control.py
 ---
 
 **Changelog:**
-- v2.8 — 2025-12-05 Session 23 — Diagnostic completion: Removed stale recog/ folder from root (empty, redundant with recog_engine).
+- v2.9 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed). Corrected changelogs.
+- v2.8 — 2025-12-05 Session 23 — [INCOMPLETE - chat crashed] Work started but not completed.
 - v2.7 — 2025-12-05 Session 22 — Diagnostic sweep: Added _private/ folder listing, _archive/ folder, mana_manager.py, all migration scripts. Removed legacy template references (cleanup complete). Updated database table counts (35 total).
 - v2.6 — 2025-12-03 Session 18 — Reorientation Phase 2: Updated 6.0 Frontend section for consolidated terminal UI.
 - v2.5 — 2025-12-03 Session 17 — Reorientation Phase 1: Added authority_mana.py, prompts.py v0.2, reorientation migration.

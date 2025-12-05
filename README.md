@@ -2,7 +2,7 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.8  
+Version: 2.9  
 Status: Active Development (MVP Phase 4 Complete)  
 License: MIT + AGPLv3 (split)
 
@@ -183,13 +183,24 @@ EhkoForge/
 │   │   ├── preprocessing/                 # (redirects to recog_engine)
 │   │   └── processing/                    # (redirects to recog_engine)
 │   └── migrations/
-│       └── ingot_migration_v0_1.sql
+│       ├── ingot_migration_v0_1.sql
+│       ├── reorientation_v0_1.sql
+│       └── mana_purchase_v0_1.sql
 │
 ├── 6.0 Frontend/               # Web UI
+│   ├── templates/
+│   │   └── index.html                 # Main terminal UI (Flask template)
 │   └── static/
-│       ├── index.html
-│       ├── styles.css
-│       └── app.js
+│       ├── index.html                 # Legacy (superseded)
+│       ├── styles.css                 # Legacy (superseded)
+│       ├── app.js                     # Legacy (superseded)
+│       ├── css/
+│       │   ├── main.css               # Main terminal styles
+│       │   └── forge.css              # Forge review styles
+│       └── js/
+│           ├── main.js                # Main terminal logic
+│           ├── forge.js               # Forge review logic
+│           └── journal.js             # Legacy journal
 │
 ├── Config/                     # Configuration files
 │   ├── llm_config.json
@@ -503,6 +514,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v2.9 — 2025-12-05 — Session 24: Fixed incorrect Session 23 changelog (recog/ wasn't actually deleted). Updated repository structure: frontend now shows templates/ and split css/js folders; added missing migration files.
 - v2.8 — 2025-12-05 — Diagnostic completion: Removed stale recog/ folder, verified all docs current.
 - v2.7 — 2025-12-05 — MVP Phase 4 complete: Full mana purchase system (backend + frontend). Diagnostic sweep: archived deprecated scripts, updated all reference docs.
 - v2.6 — 2025-12-03 — License split: MIT (framework) + AGPLv3 (ReCog Engine). Reorganised code into recog_engine/ module. Updated imports and documentation.

@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-05  
-**Version:** 1.29  
+**Version:** 1.30  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -179,7 +179,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
-- **2025-12-05 Session 23:** Diagnostic completion. Removed stale `recog/` folder (empty placeholder, redundant with recog_engine). Verified all reference docs current. Updated git_push.bat.
+- **2025-12-05 Session 24:** Actually removed stale `recog/` folder (Session 23 crashed mid-operation). Fixed README repository structure (frontend templates/, split css/js, migration files). Corrected changelogs.
+- **2025-12-05 Session 23:** [INCOMPLETE - chat crashed] Diagnostic work started but not completed.
 - **2025-12-05 Session 22:** Full diagnostic sweep. Archived deprecated scripts (fix_*.py, cleanup_unused_ui.py). Created _private/ROADMAP.md with Mana Core expansion and Ehko Bridge post-MVP phases. Updated vault_map, script_registry, db_schema_summary. Reorganised PROJECT_STATUS.md structure.
 - **2025-12-04 Session 19:** Phase 4B complete — Mana purchase modal with tier selection, config panel with BYOK/Mana/Hybrid mode switching, split mana display (regen + purchased bars), usage history modal.
 - **2025-12-04 Session 19:** Phase 4A complete — 7 mana purchase database tables, mana_manager.py module, 6 mana API endpoints.
@@ -243,7 +244,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
-- v1.29 — 2025-12-05 Session 23 — Diagnostic completion: Removed stale recog/ folder, verified all docs current.
+- v1.30 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed before completing). Fixed README repository structure.
+- v1.29 — 2025-12-05 Session 23 — [INCOMPLETE - chat crashed] Diagnostic work started.
 - v1.28 — 2025-12-05 Session 22 — Diagnostic sweep: Reorganised structure (incomplete items at top). Archived deprecated scripts. Added private roadmap. Updated all reference docs.
 - v1.27 — 2025-12-04 Session 19 — Phase 4B complete: Mana purchase system frontend.
 - v1.26 — 2025-12-04 Session 19 — Phase 4A complete: Mana purchase system backend.
