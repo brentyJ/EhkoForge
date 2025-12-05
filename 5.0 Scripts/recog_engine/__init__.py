@@ -38,10 +38,19 @@ from .core import (
     # State
     ProcessingState,
     Corpus,
-    # Signal processing
+    # Config
+    RecogConfig,
+    # LLM interface
+    LLMResponse,
+    LLMProvider,
+    MockLLMProvider,
+    # Signal processing (Tier 0)
     SignalProcessor,
     process_text,
     process_document,
+    # Extraction (Tier 1)
+    Extractor,
+    extract_from_text,
 )
 
 from .adapters import (
@@ -111,10 +120,19 @@ __all__ = [
     'Synthesis',
     'ProcessingState',
     'Corpus',
-    # Signal processing
+    # Config
+    'RecogConfig',
+    # LLM interface
+    'LLMResponse',
+    'LLMProvider',
+    'MockLLMProvider',
+    # Signal processing (Tier 0)
     'SignalProcessor',
     'process_text',
     'process_document',
+    # Extraction (Tier 1)
+    'Extractor',
+    'extract_from_text',
     # Adapters
     'RecogAdapter',
     'MemoryAdapter',

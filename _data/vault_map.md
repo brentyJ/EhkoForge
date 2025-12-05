@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.2"
+version: "3.3"
 created: 2025-11-29
 updated: 2025-12-05
 tags: [system, reference, navigation]
@@ -106,6 +106,7 @@ run_reorientation_migration.py    [v1.0, applied]  — Authority/Mana migration
 run_mana_migration.py             [v1.0, applied]  — Mana purchase migration
 seed_test_ingots.py               [v1.0, utility]  — Test data generator
 test_recog_core.py                [v1.0, utility]  — ReCog Core Phase 1 tests
+test_recog_extractor.py           [v1.0, utility]  — ReCog Extractor Phase 2 tests
 test_openai_integration.py        [v1.0, utility]  — Provider verification
 test_mana_system.py               [v1.0, utility]  — Mana API testing
 test_mana_simple.py               [v1.0, utility]  — Mana API testing (non-interactive)
@@ -127,7 +128,10 @@ recog_engine/
 ├── core/                         [NEW - v1.0 Core]
 │   ├── __init__.py
 │   ├── types.py                  [v1.0] — Document, Insight, Pattern, Synthesis
-│   └── signal.py                 [v1.0] — Tier 0 signal processor
+│   ├── config.py                 [v1.0] — RecogConfig engine configuration
+│   ├── llm.py                    [v1.0] — LLMProvider interface, MockLLMProvider
+│   ├── signal.py                 [v1.0] — Tier 0 signal processor
+│   └── extractor.py              [v1.0] — Tier 1 insight extraction
 ├── adapters/                     [NEW - v1.0 Adapters]
 │   ├── __init__.py
 │   ├── base.py                   [v1.0] — RecogAdapter interface
@@ -355,6 +359,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.3 — 2025-12-05 Session 25 — ReCog Core Phase 2: config.py, llm.py, extractor.py, test script.
 - v3.2 — 2025-12-05 Session 25 — ReCog Core Phase 1 implementation: core/types.py, core/signal.py, adapters/base.py, adapters/memory.py, test script.
 - v3.1 — 2025-12-05 Session 25 — Added ReCog_Core_Spec_v1_0.md (standalone engine architecture).
 - v3.0 — 2025-12-05 Session 25 — Consolidated to single AGPLv3 license at root. Removed split licensing references.

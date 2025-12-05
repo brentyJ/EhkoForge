@@ -4,7 +4,7 @@ ReCog Core - Core Module
 Copyright (c) 2025 Brent Lefebure
 Licensed under AGPLv3 - See LICENSE in repository root
 
-Core types and processors for the ReCog recursive insight engine.
+Core types, processors, and configuration for the ReCog recursive insight engine.
 """
 
 from .types import (
@@ -22,10 +22,23 @@ from .types import (
     Corpus,
 )
 
+from .config import RecogConfig
+
+from .llm import (
+    LLMResponse,
+    LLMProvider,
+    MockLLMProvider,
+)
+
 from .signal import (
     SignalProcessor,
     process_text,
     process_document,
+)
+
+from .extractor import (
+    Extractor,
+    extract_from_text,
 )
 
 
@@ -42,8 +55,17 @@ __all__ = [
     # State
     "ProcessingState",
     "Corpus",
-    # Signal processing
+    # Config
+    "RecogConfig",
+    # LLM
+    "LLMResponse",
+    "LLMProvider",
+    "MockLLMProvider",
+    # Signal processing (Tier 0)
     "SignalProcessor",
     "process_text",
     "process_document",
+    # Extraction (Tier 1)
+    "Extractor",
+    "extract_from_text",
 ]

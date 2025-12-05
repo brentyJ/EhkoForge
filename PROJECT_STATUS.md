@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-05  
-**Version:** 1.33  
+**Version:** 1.34  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -44,11 +44,11 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ### ReCog Engine (Core Priority)
 - [ ] **ReCog Core v1.0** — Standalone recursive insight engine
   - Spec: `EhkoForge/2.0 Modules/ReCog/ReCog_Core_Spec_v1_0.md`
-  - Status: **Phase 1 complete**, Phase 2 next
+  - Status: **Phase 2 complete**, Phase 3 next
   - Architecture: Domain-agnostic engine with adapter pattern
   - EhkoForge becomes a client adapter, not the core
   - [x] **Phase 1:** Core types, signal processor, memory adapter
-  - [ ] **Phase 2:** Extractor (Tier 1)
+  - [x] **Phase 2:** Extractor (Tier 1) - config, LLM interface, extraction
   - [ ] **Phase 3:** Correlator (Tier 2)
   - [ ] **Phase 4:** Synthesizer (Tier 3) + EhkoForge adapter
 
@@ -250,6 +250,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.34 — 2025-12-05 Session 25 — ReCog Core Phase 2 complete: config.py, llm.py (LLMProvider interface), extractor.py (Tier 1).
 - v1.33 — 2025-12-05 Session 25 — ReCog Core Phase 1 complete: types.py, signal.py, adapters (base, memory), test script.
 - v1.32 — 2025-12-05 Session 25 — ReCog Core v1.0 spec: Standalone engine architecture with adapter pattern. EhkoForge becomes client adapter.
 - v1.31 — 2025-12-05 Session 25 — Consolidated to AGPLv3 (removed split licensing).
