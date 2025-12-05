@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-05  
-**Version:** 1.32  
+**Version:** 1.33  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -44,13 +44,13 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ### ReCog Engine (Core Priority)
 - [ ] **ReCog Core v1.0** — Standalone recursive insight engine
   - Spec: `EhkoForge/2.0 Modules/ReCog/ReCog_Core_Spec_v1_0.md`
-  - Status: Specification complete, implementation starting
+  - Status: **Phase 1 complete**, Phase 2 next
   - Architecture: Domain-agnostic engine with adapter pattern
   - EhkoForge becomes a client adapter, not the core
-  - **Phase 1:** Core types, signal processor, memory adapter
-  - **Phase 2:** Extractor (Tier 1)
-  - **Phase 3:** Correlator (Tier 2)
-  - **Phase 4:** Synthesizer (Tier 3) + EhkoForge adapter
+  - [x] **Phase 1:** Core types, signal processor, memory adapter
+  - [ ] **Phase 2:** Extractor (Tier 1)
+  - [ ] **Phase 3:** Correlator (Tier 2)
+  - [ ] **Phase 4:** Synthesizer (Tier 3) + EhkoForge adapter
 
 ### Processing & Automation
 
@@ -210,8 +210,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 | run_reorientation_migration.py | v1.0 | ✅ Applied |
 | run_mana_migration.py | v1.0 | ✅ Applied |
 | ehkoforge/llm/ | v1.1 | ✅ Working |
-| recog_engine/tier0.py | v0.1 | ✅ Working |
-| recog_engine/smelt.py | v0.1 | ✅ Working |
+| recog_engine (core) | v1.0 | ✅ Working |
+| recog_engine (legacy) | v0.1 | ✅ Working |
 | recog_engine/prompts.py | v0.2 | ✅ Working |
 | recog_engine/authority_mana.py | v0.1 | ✅ Working |
 | recog_engine/mana_manager.py | v0.1 | ✅ Working |
@@ -250,6 +250,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.33 — 2025-12-05 Session 25 — ReCog Core Phase 1 complete: types.py, signal.py, adapters (base, memory), test script.
 - v1.32 — 2025-12-05 Session 25 — ReCog Core v1.0 spec: Standalone engine architecture with adapter pattern. EhkoForge becomes client adapter.
 - v1.31 — 2025-12-05 Session 25 — Consolidated to AGPLv3 (removed split licensing).
 - v1.30 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed before completing). Fixed README repository structure.

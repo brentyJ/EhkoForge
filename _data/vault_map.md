@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.1"
+version: "3.2"
 created: 2025-11-29
 updated: 2025-12-05
 tags: [system, reference, navigation]
@@ -105,6 +105,7 @@ run_ingot_migration.py            [v1.0, applied]  — Ingot tables migration
 run_reorientation_migration.py    [v1.0, applied]  — Authority/Mana migration
 run_mana_migration.py             [v1.0, applied]  — Mana purchase migration
 seed_test_ingots.py               [v1.0, utility]  — Test data generator
+test_recog_core.py                [v1.0, utility]  — ReCog Core Phase 1 tests
 test_openai_integration.py        [v1.0, utility]  — Provider verification
 test_mana_system.py               [v1.0, utility]  — Mana API testing
 test_mana_simple.py               [v1.0, utility]  — Mana API testing (non-interactive)
@@ -122,13 +123,21 @@ _archive/
 #### recog_engine/ Module
 ```
 recog_engine/
-├── __init__.py
-├── tier0.py                      [v0.1, working] — Signal extraction (no LLM)
-├── smelt.py                      [v0.1, working] — Batch ingot extraction
-├── prompts.py                    [v0.2, working] — Stage-based personality dampener
-├── authority_mana.py             [v0.1, working] — Authority & Mana systems
-├── mana_manager.py               [v0.1, working] — Purchase system, BYOK/Mana/Hybrid
-└── forge_integration.py          [v0.1, guide]   — Server integration helpers
+├── __init__.py                   [v1.0] — Main package with v1.0 + legacy API
+├── core/                         [NEW - v1.0 Core]
+│   ├── __init__.py
+│   ├── types.py                  [v1.0] — Document, Insight, Pattern, Synthesis
+│   └── signal.py                 [v1.0] — Tier 0 signal processor
+├── adapters/                     [NEW - v1.0 Adapters]
+│   ├── __init__.py
+│   ├── base.py                   [v1.0] — RecogAdapter interface
+│   └── memory.py                 [v1.0] — In-memory adapter for testing
+├── tier0.py                      [v0.1, legacy] — Original signal extraction
+├── smelt.py                      [v0.1, legacy] — Batch ingot extraction
+├── prompts.py                    [v0.2] — Stage-based personality dampener
+├── authority_mana.py             [v0.1] — Authority & Mana systems
+├── mana_manager.py               [v0.1] — Purchase system, BYOK/Mana/Hybrid
+└── forge_integration.py          [v0.1, guide] — Server integration helpers
 ```
 
 #### ehkoforge/ Module
@@ -346,6 +355,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.2 — 2025-12-05 Session 25 — ReCog Core Phase 1 implementation: core/types.py, core/signal.py, adapters/base.py, adapters/memory.py, test script.
 - v3.1 — 2025-12-05 Session 25 — Added ReCog_Core_Spec_v1_0.md (standalone engine architecture).
 - v3.0 — 2025-12-05 Session 25 — Consolidated to single AGPLv3 license at root. Removed split licensing references.
 - v2.9 — 2025-12-05 Session 24 — Actually removed stale recog/ folder (Session 23 crashed). Corrected changelogs.

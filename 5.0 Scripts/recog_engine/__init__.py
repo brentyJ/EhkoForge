@@ -1,17 +1,73 @@
 """
-ReCog Engine - Recursive Cognition Engine v0.2
-Licensed under AGPLv3 - See LICENSE in this directory
+ReCog Engine - Recursive Cognition Engine v1.0
+
+Copyright (c) 2025 Brent Lefebure
+Licensed under AGPLv3 - See LICENSE in repository root
 
 Commercial licenses available: brent@ehkolabs.io
 
-v0.2 Changes:
-- Added Authority system (Ehko advancement)
-- Added Mana system (resource economy)
-- Stage-based personality dampener
+ReCog is a standalone text analysis engine that extracts, correlates, 
+and synthesises insights from unstructured text corpora.
+
+v1.0 Changes:
+- Standalone engine architecture (domain-agnostic)
+- Adapter pattern for application integration
+- Core types: Document, Insight, Pattern, Synthesis
+- Processing tiers: Signal, Extract, Correlate, Synthesise
+
+Legacy v0.x imports still available for backwards compatibility.
 """
 
-from .tier0 import Tier0Processor, preprocess_text, summarise_for_prompt
-from .smelt import SmeltProcessor, queue_for_smelt, get_queue_stats, should_auto_smelt
+__version__ = '1.0.0'
+
+
+# =============================================================================
+# NEW v1.0 CORE API
+# =============================================================================
+
+from .core import (
+    # Enums
+    ProcessingStatus,
+    PatternType,
+    SynthesisType,
+    # Core types
+    Document,
+    Insight,
+    Pattern,
+    Synthesis,
+    # State
+    ProcessingState,
+    Corpus,
+    # Signal processing
+    SignalProcessor,
+    process_text,
+    process_document,
+)
+
+from .adapters import (
+    RecogAdapter,
+    MemoryAdapter,
+)
+
+
+# =============================================================================
+# LEGACY v0.x API (Backwards Compatibility)
+# =============================================================================
+
+# These imports maintain compatibility with existing EhkoForge code.
+# They will be deprecated once the EhkoForge adapter is complete.
+
+from .tier0 import (
+    Tier0Processor, 
+    preprocess_text as legacy_preprocess_text, 
+    summarise_for_prompt as legacy_summarise,
+)
+from .smelt import (
+    SmeltProcessor, 
+    queue_for_smelt, 
+    get_queue_stats, 
+    should_auto_smelt,
+)
 from .prompts import (
     get_system_prompt, 
     get_forging_prompt, 
@@ -34,14 +90,40 @@ from .authority_mana import (
     refill_mana,
 )
 
-# Note: forge_integration.py is a guide document, not auto-imported.
-# Import explicitly if needed: from recog_engine.forge_integration import ForgeIntegration
+
+# =============================================================================
+# EXPORTS
+# =============================================================================
 
 __all__ = [
+    # Version
+    '__version__',
+    
+    # === v1.0 Core API ===
+    # Enums
+    'ProcessingStatus',
+    'PatternType',
+    'SynthesisType',
+    # Core types
+    'Document',
+    'Insight',
+    'Pattern',
+    'Synthesis',
+    'ProcessingState',
+    'Corpus',
+    # Signal processing
+    'SignalProcessor',
+    'process_text',
+    'process_document',
+    # Adapters
+    'RecogAdapter',
+    'MemoryAdapter',
+    
+    # === Legacy v0.x API ===
     # Tier 0
     'Tier0Processor',
-    'preprocess_text',
-    'summarise_for_prompt',
+    'legacy_preprocess_text',
+    'legacy_summarise',
     # Smelt
     'SmeltProcessor',
     'queue_for_smelt',
@@ -66,5 +148,3 @@ __all__ = [
     'set_mana_config',
     'refill_mana',
 ]
-
-__version__ = '0.2.0'

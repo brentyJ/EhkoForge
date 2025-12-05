@@ -1,7 +1,7 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-05 (Session 22)
+**Updated:** 2025-12-05 (Session 25)
 
 ---
 
@@ -25,6 +25,7 @@
 
 | Script | Purpose |
 |--------|---------|
+| `test_recog_core.py` | ReCog Core Phase 1 verification |
 | `test_openai_integration.py` | Provider setup verification |
 | `test_mana_system.py` | Mana API endpoint testing (interactive) |
 | `test_mana_simple.py` | Mana API testing (non-interactive) |
@@ -61,9 +62,20 @@
 
 ## Module: recog_engine/ (AGPL)
 
+### v1.0 Core (New)
+
 | File | Version | Purpose |
 |------|---------|---------|
-| `tier0.py` | 0.1 | Signal extraction without LLM (timestamps, speakers, questions) |
+| `core/types.py` | 1.0 | Document, Insight, Pattern, Synthesis, ProcessingState, Corpus |
+| `core/signal.py` | 1.0 | Tier 0 signal extraction (refactored, uses new types) |
+| `adapters/base.py` | 1.0 | RecogAdapter abstract interface |
+| `adapters/memory.py` | 1.0 | In-memory adapter for testing/standalone use |
+
+### Legacy (EhkoForge-specific)
+
+| File | Version | Purpose |
+|------|---------|---------|
+| `tier0.py` | 0.1 | Original signal extraction (backwards compat) |
 | `smelt.py` | 0.1 | Batch ingot extraction from queue |
 | `prompts.py` | 0.2 | System prompts with stage-based personality dampener |
 | `authority_mana.py` | 0.1 | Authority progression + Mana regeneration systems |
@@ -102,9 +114,23 @@
 - `record_purchase(user_id, tier_id)` — Log mana purchase
 - `get_usage_stats(user_id, days)` — Usage analytics
 
+### recog_engine.core (NEW)
+- `Document.create(content, source_type, source_ref)` — Create document
+- `SignalProcessor().process(document)` — Tier 0 signal extraction
+- `process_text(text)` — Convenience function for signals
+- `Insight.create(summary, themes, significance, ...)` — Create insight
+- `Pattern.create(summary, pattern_type, insight_ids, strength)` — Create pattern
+
+### recog_engine.adapters (NEW)
+- `MemoryAdapter()` — In-memory storage for testing
+- `adapter.add_document(doc)` — Add document to store
+- `adapter.save_insight(insight)` — Save extracted insight
+- `adapter.get_insights(**filters)` — Retrieve insights
+
 ---
 
 **Changelog:**
+- v1.3 — 2025-12-05 — Added ReCog Core v1.0 structure (core/, adapters/). Added test_recog_core.py.
 - v1.2 — 2025-12-05 — Added mana_manager.py, authority_mana.py. Moved deprecated scripts to _archive. Added test scripts section.
 - v1.1 — 2025-12-03 — License split: moved tier0, smelt, prompts to recog_engine/ (AGPL). Updated ehko_control to v2.0.
 - v1.0 — 2025-12-02 — Initial registry created
