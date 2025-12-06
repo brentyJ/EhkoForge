@@ -56,6 +56,18 @@
 | `ingot_patterns` | ReCog patterns across insights | id, summary, pattern_type, strength |
 | `ingot_pattern_insights` | Pattern-to-insight links | pattern_id, ingot_id |
 
+## Memory & Progression Tables (AGPL)
+
+| Table | Purpose | Key Columns |
+|-------|---------|-------------|
+| `session_summaries` | Distilled chat summaries | session_id, summary, key_points_json, themes_json |
+| `ehko_progression` | Stage tracking (singleton) | stage, pillars_seeded, core_memory_count |
+| `recog_processing_log` | What ReCog has processed | source_type, source_id, tier, processed_at |
+| `recog_reports` | ReCog synthesis snapshots | report_type, summary, conclusions_json, status |
+| `recog_queue` | Pending ReCog operations | operation_type, estimated_mana, requires_confirmation |
+
+**Note:** `forge_sessions` extended with: `memory_tier` (hot/warm/cold), `archived_at`, `last_accessed_at`
+
 ## Authority & Mana Tables (AGPL)
 
 | Table | Purpose | Key Columns |
@@ -113,6 +125,7 @@ GROUP BY operation;
 ---
 
 **Changelog:**
+- v1.4 — 2025-12-06 — Added Memory & Progression Tables (session_summaries, ehko_progression, recog_processing_log, recog_reports, recog_queue). Noted forge_sessions extensions.
 - v1.3 — 2025-12-05 — Added ReCog Pattern Tables (ingot_patterns, ingot_pattern_insights).
 - v1.2 — 2025-12-05 — Added Mana Purchase Tables section (7 tables). Added mana queries.
 - v1.1 — 2025-12-03 — Added Authority & Mana Tables. License annotations (MIT/AGPL split).

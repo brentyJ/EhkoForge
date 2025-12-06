@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.5"
+version: "3.7"
 created: 2025-11-29
-updated: 2025-12-05
+updated: 2025-12-06
 tags: [system, reference, navigation]
 ---
 
@@ -98,18 +98,21 @@ Universal/
 #### Root Scripts
 ```
 ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
-forge_server.py                   [v2.3, working] — Flask server + Mana system + LLM
+forge_server.py                   [v2.4, working] — Flask server + Mana system + LLM + ReCog scheduler
 ehko_control.py                   [v2.0, working] — GUI control panel (tkinter, touch-optimized)
 EhkoForge Control Panel.vbs       [v1.0, working] — Silent launcher (no console window)
 run_ingot_migration.py            [v1.0, applied]  — Ingot tables migration
 run_reorientation_migration.py    [v1.0, applied]  — Authority/Mana migration
 run_mana_migration.py             [v1.0, applied]  — Mana purchase migration
+run_memory_migration.py           [v1.0, applied]  — Memory tiers + progression migration
 seed_test_ingots.py               [v1.0, utility]  — Test data generator
 test_recog_core.py                [v1.0, utility]  — ReCog Core Phase 1 tests
 test_recog_extractor.py           [v1.0, utility]  — ReCog Extractor Phase 2 tests
 test_recog_correlator.py          [v1.0, utility]  — ReCog Correlator Phase 3 tests
 test_recog_synthesizer.py         [v1.0, utility]  — ReCog Synthesizer Phase 4 tests
 test_recog_ehkoforge.py           [v1.0, utility]  — ReCog EhkoForge adapter tests
+test_recog_scheduler.py           [v1.0, utility]  — ReCog Scheduler confirmation flow
+test_recog_integration.py         [v1.0, utility]  — Full ReCog pipeline integration test
 test_openai_integration.py        [v1.0, utility]  — Provider verification
 test_mana_system.py               [v1.0, utility]  — Mana API testing
 test_mana_simple.py               [v1.0, utility]  — Mana API testing (non-interactive)
@@ -136,7 +139,8 @@ recog_engine/
 │   ├── signal.py                 [v1.0] — Tier 0 signal processor
 │   ├── extractor.py              [v1.0] — Tier 1 insight extraction
 │   ├── correlator.py             [v1.0] — Tier 2 pattern correlation
-│   └── synthesizer.py            [v1.0] — Tier 3 deep synthesis
+│   ├── synthesizer.py            [v1.0] — Tier 3 deep synthesis
+│   └── ehko_llm.py               [v1.0] — Wrapper bridging ehkoforge LLM to ReCog
 ├── adapters/                     [NEW - v1.0 Adapters]
 │   ├── __init__.py
 │   ├── base.py                   [v1.0] — RecogAdapter interface
@@ -147,6 +151,7 @@ recog_engine/
 ├── prompts.py                    [v0.2] — Stage-based personality dampener
 ├── authority_mana.py             [v0.1] — Authority & Mana systems
 ├── mana_manager.py               [v0.1] — Purchase system, BYOK/Mana/Hybrid
+├── scheduler.py                  [v1.0] — ReCog queue management + confirmation flow
 └── forge_integration.py          [v0.1, guide] — Server integration helpers
 ```
 
@@ -173,7 +178,8 @@ ehkoforge/
 migrations/
 ├── ingot_migration_v0_1.sql      [applied] — Ingot system tables
 ├── reorientation_v0_1.sql        [applied] — Authority/Mana/Insite tables
-└── mana_purchase_v0_1.sql        [applied] — Mana purchase tables (7 tables)
+├── mana_purchase_v0_1.sql        [applied] — Mana purchase tables (7 tables)
+└── memory_progression_v0_1.sql   [applied] — Memory tiers + progression tables (5 tables)
 ```
 
 #### Documentation (in 5.0 Scripts/)
@@ -268,7 +274,7 @@ ROADMAP.md                        — Expansion phases (Ehko Bridge, Mana Core)
 ## DATABASE SCHEMA
 
 ### Table Count
-**Total:** 35 tables
+**Total:** 40 tables (after memory migration)
 
 ---
 
@@ -365,6 +371,8 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.7 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: scheduler.py, test_recog_scheduler.py, forge_server.py v2.4, 8 API endpoints.
+- v3.6 — 2025-12-06 Session 26 — Memory & Progression migration: memory_progression_v0_1.sql, run_memory_migration.py. 5 new tables.
 - v3.5 — 2025-12-05 Session 25 — EhkoForge adapter: ehkoforge.py bridges ReCog to database.
 - v3.4 — 2025-12-05 Session 25 — ReCog Core Phase 3-4: correlator.py, synthesizer.py, test scripts.
 - v3.3 — 2025-12-05 Session 25 — ReCog Core Phase 2: config.py, llm.py, extractor.py, test script.

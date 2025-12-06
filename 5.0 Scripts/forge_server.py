@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.3
+EhkoForge Server v2.4
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
-Includes Authority/Mana systems, mana purchase (Stripe placeholder), and LLM integration.
+Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
+and ReCog scheduler with user confirmation flow.
 
 Run: python forge_server.py
 Access: http://localhost:5000
@@ -70,6 +71,9 @@ from recog_engine.mana_manager import (
     set_api_keys,
     get_api_keys,
 )
+
+# ReCog Scheduler
+from recog_engine.scheduler import RecogScheduler, MANA_COSTS, OperationType
 
 # =============================================================================
 # CONFIGURATION
@@ -1922,6 +1926,192 @@ def api_mana_keys():
 
 
 # =============================================================================
+# API ROUTES - RECOG SCHEDULER
+# =============================================================================
+
+# Lazy-loaded scheduler instance
+_recog_scheduler = None
+
+def get_recog_scheduler():
+    """Get or create ReCog scheduler instance."""
+    global _recog_scheduler
+    if _recog_scheduler is None:
+        _recog_scheduler = RecogScheduler(
+            db_path=DATABASE_PATH,
+            config_path=EHKOFORGE_ROOT / "Config",
+        )
+    return _recog_scheduler
+
+
+@app.route("/api/recog/status", methods=["GET"])
+def recog_status():
+    """Get ReCog scheduler status."""
+    try:
+        scheduler = get_recog_scheduler()
+        status = scheduler.get_status()
+        return jsonify({"success": True, **status})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/check", methods=["POST"])
+def recog_check():
+    """
+    Check for new content and queue operations.
+    Also runs Tier 0 (free) on unprocessed content.
+    """
+    try:
+        scheduler = get_recog_scheduler()
+        queued = scheduler.check_and_queue()
+        return jsonify({
+            "success": True,
+            "queued": [op.to_dict() for op in queued],
+            "count": len(queued),
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/pending", methods=["GET"])
+def recog_pending():
+    """Get operations awaiting user confirmation."""
+    try:
+        scheduler = get_recog_scheduler()
+        pending = scheduler.get_pending_confirmations()
+        return jsonify({
+            "success": True,
+            "pending": [op.to_dict() for op in pending],
+            "count": len(pending),
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/confirm/<int:operation_id>", methods=["POST"])
+def recog_confirm(operation_id):
+    """
+    User confirms a queued operation.
+    Operation will be processed on next /api/recog/process call.
+    """
+    try:
+        scheduler = get_recog_scheduler()
+        success = scheduler.confirm_operation(operation_id)
+        if success:
+            return jsonify({"success": True, "operation_id": operation_id})
+        else:
+            return jsonify({"success": False, "error": "Operation not found or already confirmed"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/cancel/<int:operation_id>", methods=["POST"])
+def recog_cancel(operation_id):
+    """User cancels a pending operation."""
+    try:
+        scheduler = get_recog_scheduler()
+        success = scheduler.cancel_operation(operation_id)
+        if success:
+            return jsonify({"success": True, "operation_id": operation_id})
+        else:
+            return jsonify({"success": False, "error": "Operation not found or not pending"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/process", methods=["POST"])
+def recog_process():
+    """
+    Process all confirmed (ready) operations.
+    This actually runs the LLM calls and costs mana.
+    """
+    try:
+        scheduler = get_recog_scheduler()
+        results = scheduler.process_confirmed()
+        return jsonify({
+            "success": True,
+            "results": [r.to_dict() for r in results],
+            "processed": len(results),
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/reports", methods=["GET"])
+def recog_reports():
+    """Get ReCog reports (What ReCog thinks now)."""
+    try:
+        limit = request.args.get("limit", 5, type=int)
+        status = request.args.get("status", "current")
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id, report_type, created_at, summary, 
+                   insights_count, patterns_count, syntheses_count,
+                   conclusions_json, status
+            FROM recog_reports
+            WHERE status = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+        """, (status, limit))
+        
+        reports = []
+        for row in cursor.fetchall():
+            reports.append({
+                "id": row["id"],
+                "report_type": row["report_type"],
+                "created_at": row["created_at"],
+                "summary": row["summary"],
+                "insights_count": row["insights_count"],
+                "patterns_count": row["patterns_count"],
+                "syntheses_count": row["syntheses_count"],
+                "conclusions": json.loads(row["conclusions_json"]) if row["conclusions_json"] else [],
+                "status": row["status"],
+            })
+        
+        conn.close()
+        return jsonify({"success": True, "reports": reports})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/progression", methods=["GET"])
+def recog_progression():
+    """Get Ehko progression status (nascent → sovereign)."""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM ehko_progression WHERE id = 1")
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            return jsonify({
+                "success": True,
+                "stage": row["stage"],
+                "stage_entered_at": row["stage_entered_at"],
+                "pillars_seeded": row["pillars_seeded"],
+                "pillars_populated": row["pillars_populated"],
+                "pillars": json.loads(row["pillars_json"]) if row["pillars_json"] else {},
+                "core_memory_count": row["core_memory_count"],
+                "core_memories_curated": row["core_memories_curated"],
+                "last_synthesis_at": row["last_synthesis_at"],
+            })
+        else:
+            return jsonify({
+                "success": True,
+                "stage": "nascent",
+                "pillars_seeded": 0,
+                "pillars_populated": 0,
+                "core_memory_count": 0,
+            })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
 # PAGE ROUTES
 # =============================================================================
 
@@ -1978,8 +2168,8 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.3")
-    print("Authority & Mana Purchase Systems Active")
+    print("EHKOFORGE SERVER v2.4")
+    print("Authority, Mana & ReCog Scheduler Active")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")
     print(f"Static files: {STATIC_PATH}")

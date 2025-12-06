@@ -1,7 +1,7 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-05 (Session 25)
+**Updated:** 2025-12-06 (Session 26)
 
 ### recog_engine.adapters.ehkoforge (NEW)
 - `EhkoForgeAdapter(db_path)` — Connect to EhkoForge database
@@ -17,7 +17,7 @@
 | Script | Version | Purpose |
 |--------|---------|---------|
 | `ehko_refresh.py` | 2.0 | Vault indexing, transcription processing, DB sync |
-| `forge_server.py` | 2.3 | Flask API, LLM routing, mana system, chat sessions |
+| `forge_server.py` | 2.4 | Flask API, LLM routing, mana system, chat sessions, ReCog scheduler |
 | `ehko_control.py` | 2.0 | Tkinter GUI, touch-optimized, Forge/Smelt controls |
 
 ## Migration Scripts
@@ -27,6 +27,7 @@
 | `run_ingot_migration.py` | Ingot system tables | Applied |
 | `run_reorientation_migration.py` | Authority/Mana tables | Applied |
 | `run_mana_migration.py` | Mana purchase tables | Applied |
+| `run_memory_migration.py` | Memory tiers + progression | Applied |
 
 ## Test Scripts
 
@@ -37,6 +38,8 @@
 | `test_recog_correlator.py` | ReCog Correlator Phase 3 verification |
 | `test_recog_synthesizer.py` | ReCog Synthesizer Phase 4 verification |
 | `test_recog_ehkoforge.py` | ReCog EhkoForge adapter verification |
+| `test_recog_scheduler.py` | ReCog Scheduler confirmation flow |
+| `test_recog_integration.py` | Full ReCog pipeline with real LLM |
 | `test_openai_integration.py` | Provider setup verification |
 | `test_mana_system.py` | Mana API endpoint testing (interactive) |
 | `test_mana_simple.py` | Mana API testing (non-interactive) |

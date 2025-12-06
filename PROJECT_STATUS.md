@@ -1,12 +1,26 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-05  
-**Version:** 1.36  
+**Last Updated:** 2025-12-06  
+**Version:** 1.38  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
 ## IN PROGRESS
+
+### Memory Tiers & Progression System (NEW)
+- [x] **Phase 1: Schema** — Memory tier tables, progression tracking, ReCog queue
+  - Tables: `session_summaries`, `ehko_progression`, `recog_processing_log`, `recog_reports`, `recog_queue`
+  - Extended: `forge_sessions` with memory_tier (hot/warm/cold)
+  - Migration: `memory_progression_v0_1.sql` applied
+- [ ] **Phase 2: Session Distillation** — Auto-summarise sessions as they age
+- [x] **Phase 3: ReCog Scheduler** — Automatic processing with mana confirmation
+  - scheduler.py: Queue management, confirmation flow, processing pipeline
+  - API endpoints: /api/recog/* (status, check, pending, confirm, cancel, process, reports, progression)
+  - forge_server.py v2.4 with scheduler integration
+- [ ] **Phase 4: Progression Tracking** — Stage advancement (nascent→sovereign)
+- [ ] **Phase 5: ReCog Forge UI** — Red palette, animated processing visualisation
+- [ ] **Phase 6: Report System** — ReCog → Ehko snapshots
 
 ### Reorientation (Creative Direction Shift)
 - [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
@@ -77,11 +91,11 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ## GAPS & MISSING PIECES
 
 ### Medium Priority
-1. **Permanent Memory Architecture** — Not specified
-   - Terminal and Reflection chat sessions need backup to Mirrorwell
-   - Session → Reflection Object conversion logic needed
-   - Storage location and naming conventions
-   - Memory retrieval for context injection across sessions
+1. ~~**Permanent Memory Architecture**~~ → **IN PROGRESS** (Memory Tiers & Progression System)
+   - [x] Schema: hot/warm/cold session tiers, progression tracking
+   - [ ] Session distillation (raw → summary)
+   - [ ] Archive management
+   - [ ] Context injection for Ehko
 
 2. **Friend Registry Population** — No data entry method
    - Tables exist but empty
@@ -186,6 +200,9 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-06 Session 26:** Memory Tiers & Progression System Phases 1+3 complete — Schema migration (5 tables), ReCog Scheduler v1.0 with confirmation flow, 8 new API endpoints (/api/recog/*), forge_server.py v2.4.
+- **2025-12-05 Session 25:** ReCog Core v1.0 complete — All 4 tiers + EhkoForge adapter. Integration test passed (9 insights, 1 pattern, 2 syntheses from real content).
+
 - **2025-12-05 Session 24:** Actually removed stale `recog/` folder (Session 23 crashed mid-operation). Fixed README repository structure (frontend templates/, split css/js, migration files). Corrected changelogs.
 - **2025-12-05 Session 23:** [INCOMPLETE - chat crashed] Diagnostic work started but not completed.
 - **2025-12-05 Session 22:** Full diagnostic sweep. Archived deprecated scripts (fix_*.py, cleanup_unused_ui.py). Created _private/ROADMAP.md with Mana Core expansion and Ehko Bridge post-MVP phases. Updated vault_map, script_registry, db_schema_summary. Reorganised PROJECT_STATUS.md structure.
@@ -205,17 +222,19 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 | Script | Version | Status |
 |--------|---------|--------|
 | ehko_refresh.py | v2.0 | ✅ Working |
-| forge_server.py | v2.3 | ✅ Working |
+| forge_server.py | v2.4 | ✅ Working |
 | ehko_control.py | v2.0 | ✅ Working |
 | run_ingot_migration.py | v1.0 | ✅ Applied |
 | run_reorientation_migration.py | v1.0 | ✅ Applied |
 | run_mana_migration.py | v1.0 | ✅ Applied |
+| run_memory_migration.py | v1.0 | ✅ Applied |
 | ehkoforge/llm/ | v1.1 | ✅ Working |
 | recog_engine (core) | v1.0 | ✅ Working |
 | recog_engine (legacy) | v0.1 | ✅ Working |
 | recog_engine/prompts.py | v0.2 | ✅ Working |
 | recog_engine/authority_mana.py | v0.1 | ✅ Working |
 | recog_engine/mana_manager.py | v0.1 | ✅ Working |
+| recog_engine/scheduler.py | v1.0 | ✅ Working |
 
 ---
 
@@ -251,6 +270,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.38 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: Confirmation flow, queue management, 8 API endpoints, forge_server.py v2.4.
+- v1.37 — 2025-12-06 Session 26 — Memory Tiers & Progression System Phase 1: Schema migration with 5 new tables, 173 sessions marked 'hot'.
 - v1.36 — 2025-12-05 Session 25 — EhkoForge adapter complete: ehkoforge.py bridges ReCog to database (ingots, patterns, personality_layers).
 - v1.35 — 2025-12-05 Session 25 — ReCog Core Phases 3-4 complete: correlator.py (Tier 2), synthesizer.py (Tier 3). Full pipeline done.
 - v1.34 — 2025-12-05 Session 25 — ReCog Core Phase 2 complete: config.py, llm.py (LLMProvider interface), extractor.py (Tier 1).
