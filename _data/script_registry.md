@@ -1,7 +1,7 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-06 (Session 26)
+**Updated:** 2025-12-06 (Session 26 - ReCog Forge UI)
 
 ### recog_engine.adapters.ehkoforge (NEW)
 - `EhkoForgeAdapter(db_path)` — Connect to EhkoForge database
@@ -100,6 +100,7 @@
 | `prompts.py` | 0.2 | System prompts with stage-based personality dampener |
 | `authority_mana.py` | 0.1 | Authority progression + Mana regeneration systems |
 | `mana_manager.py` | 0.1 | Mana purchase, BYOK/Mana/Hybrid modes, spending limits |
+| `scheduler.py` | 1.0 | ReCog queue management, confirmation flow, processing pipeline |
 | `forge_integration.py` | 0.1 | Server integration guide (sample code) |
 
 ---
@@ -111,7 +112,7 @@
 - `process_transcriptions()` — Extracts themes from transcripts
 - `compute_hash(content)` — Content hashing for change detection
 
-### forge_server.py v2.3
+### forge_server.py v2.4
 - `/api/chat` — LLM chat endpoint
 - `/api/sessions` — Session CRUD
 - `/api/ingots` — Ingot queue management
@@ -123,6 +124,13 @@
 - `/api/mana/pricing` — Available tiers
 - `/api/mana/history` — Purchase and usage history
 - `/api/mana/api-keys` — BYOK key management
+- `/api/recog/status` — ReCog scheduler status
+- `/api/recog/pending` — Operations awaiting confirmation
+- `/api/recog/confirm/<id>` — Confirm operation
+- `/api/recog/cancel/<id>` — Cancel operation
+- `/api/recog/process` — Process confirmed operations
+- `/api/recog/reports` — ReCog report snapshots
+- `/api/recog/progression` — Ehko progression status
 
 ### provider_factory.py
 - `get_provider(role)` — Returns appropriate LLM for role
@@ -166,6 +174,7 @@
 ---
 
 **Changelog:**
+- v1.7 — 2025-12-06 — Added scheduler.py, ReCog API endpoints, updated forge_server to v2.4.
 - v1.6 — 2025-12-05 — Added EhkoForge adapter: ehkoforge.py, test script.
 - v1.5 — 2025-12-05 — Added Phase 3-4: correlator.py, synthesizer.py. Added test scripts.
 - v1.4 — 2025-12-05 — Added Phase 2: config.py, llm.py, extractor.py. Added test_recog_extractor.py.

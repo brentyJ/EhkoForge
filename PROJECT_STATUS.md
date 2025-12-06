@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-06  
-**Version:** 1.38  
+**Version:** 1.39  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -19,7 +19,10 @@
   - API endpoints: /api/recog/* (status, check, pending, confirm, cancel, process, reports, progression)
   - forge_server.py v2.4 with scheduler integration
 - [ ] **Phase 4: Progression Tracking** — Stage advancement (nascent→sovereign)
-- [ ] **Phase 5: ReCog Forge UI** — Red palette, animated processing visualisation
+- [x] **Phase 5: ReCog Forge UI** — Red palette, animated processing visualisation
+  - recog.css: Red palette (#c94a4a), operation cards, processing animation
+  - recog.js: API interactions, queue/reports/progression tabs
+  - Updated index.html with ReCog drawer, overlays, toast notifications
 - [ ] **Phase 6: Report System** — ReCog → Ehko snapshots
 
 ### Reorientation (Creative Direction Shift)
@@ -200,7 +203,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
-- **2025-12-06 Session 26:** Memory Tiers & Progression System Phases 1+3 complete — Schema migration (5 tables), ReCog Scheduler v1.0 with confirmation flow, 8 new API endpoints (/api/recog/*), forge_server.py v2.4.
+- **2025-12-06 Session 26:** Memory Tiers & Progression System Phases 1+3+5 complete — Schema migration (5 tables), ReCog Scheduler v1.0 with confirmation flow, 8 new API endpoints (/api/recog/*), ReCog UI (red palette, queue/reports/progression tabs, processing animation), forge_server.py v2.4.
 - **2025-12-05 Session 25:** ReCog Core v1.0 complete — All 4 tiers + EhkoForge adapter. Integration test passed (9 insights, 1 pattern, 2 syntheses from real content).
 
 - **2025-12-05 Session 24:** Actually removed stale `recog/` folder (Session 23 crashed mid-operation). Fixed README repository structure (frontend templates/, split css/js, migration files). Corrected changelogs.
@@ -270,6 +273,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.39 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css (red palette), recog.js (API interactions), index.html updates (drawer, overlays, toast).
 - v1.38 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: Confirmation flow, queue management, 8 API endpoints, forge_server.py v2.4.
 - v1.37 — 2025-12-06 Session 26 — Memory Tiers & Progression System Phase 1: Schema migration with 5 new tables, 173 sessions marked 'hot'.
 - v1.36 — 2025-12-05 Session 25 — EhkoForge adapter complete: ehkoforge.py bridges ReCog to database (ingots, patterns, personality_layers).

@@ -6,6 +6,7 @@
     <title>EhkoForge</title>
     
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/recog.css">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,6 +86,11 @@
             </div>
             
             <div class="header-right">
+                <button class="recog-link" id="recog-btn" title="ReCog Engine">
+                    <span class="recog-icon">⚙</span>
+                    <span class="recog-label">ReCog</span>
+                    <span class="recog-badge" id="recog-badge" style="display: none;">0</span>
+                </button>
                 <a href="/forge" class="forge-link" title="Review Insites">
                     <span class="forge-icon">⚡</span>
                     <span class="forge-label">Forge</span>
@@ -403,6 +409,112 @@
         </div>
     </div>
 
+    <!-- ReCog Drawer -->
+    <div class="drawer-overlay" id="recog-overlay">
+        <div class="drawer recog-drawer">
+            <div class="drawer-header">
+                <h2>ReCog Engine</h2>
+                <button class="drawer-close" id="recog-close">×</button>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="recog-tabs">
+                <button class="recog-tab active" data-tab="queue">Queue</button>
+                <button class="recog-tab" data-tab="reports">Reports</button>
+                <button class="recog-tab" data-tab="progression">Progression</button>
+            </div>
+            
+            <!-- Queue Pane -->
+            <div class="recog-pane active" id="recog-pane-queue">
+                <!-- Status Card -->
+                <div class="recog-status-card">
+                    <div class="recog-status-header">
+                        <span class="recog-status-title">Engine Status</span>
+                        <div class="recog-status-indicator">
+                            <span class="recog-status-dot" id="recog-status-dot"></span>
+                            <span id="recog-status-text">Checking...</span>
+                        </div>
+                    </div>
+                    <div class="recog-stats">
+                        <div class="recog-stat">
+                            <div class="recog-stat-value" id="stat-hot">0</div>
+                            <div class="recog-stat-label">Hot Sessions</div>
+                        </div>
+                        <div class="recog-stat">
+                            <div class="recog-stat-value" id="stat-insights">0</div>
+                            <div class="recog-stat-label">Pending Insights</div>
+                        </div>
+                        <div class="recog-stat">
+                            <div class="recog-stat-value" id="stat-patterns">0</div>
+                            <div class="recog-stat-label">Patterns</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Operations -->
+                <div class="pending-operations">
+                    <div class="pending-header">
+                        <span class="pending-title">Pending Operations</span>
+                        <button class="pending-check-btn" id="recog-check-btn">Check Now</button>
+                    </div>
+                    <div class="pending-list" id="pending-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Pane -->
+            <div class="recog-pane" id="recog-pane-reports">
+                <div class="reports-list" id="reports-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            
+            <!-- Progression Pane -->
+            <div class="recog-pane" id="recog-pane-progression">
+                <div class="progression-card">
+                    <div class="progression-stage" id="progression-stage">Nascent</div>
+                    <div class="progression-entered" id="progression-entered"></div>
+                    
+                    <div class="progression-pillars" id="pillars-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div class="progression-stats">
+                        <div class="progression-stat">
+                            <div class="progression-stat-value" id="core-memory-count">0</div>
+                            <div class="progression-stat-label">Core Memories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Process Button -->
+            <div class="process-section">
+                <button class="process-btn" id="recog-process-btn" disabled>
+                    <span>▶</span>
+                    <span>Process Confirmed (<span id="confirmed-count">0</span>)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ReCog Processing Overlay -->
+    <div class="processing-overlay" id="processing-overlay">
+        <div class="processing-animation">
+            <div class="processing-ring"></div>
+            <div class="processing-ring"></div>
+            <div class="processing-ring"></div>
+            <div class="processing-core"></div>
+        </div>
+        <div class="processing-text" id="processing-text">Processing...</div>
+        <div class="processing-subtext" id="processing-subtext"></div>
+    </div>
+
+    <!-- ReCog Toast -->
+    <div class="recog-toast" id="recog-toast"></div>
+
     <script src="/js/main.js"></script>
+    <script src="/js/recog.js"></script>
 </body>
 </html>

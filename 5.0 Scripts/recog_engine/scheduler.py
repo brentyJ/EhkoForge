@@ -94,6 +94,7 @@ class PendingOperation:
     estimated_tokens: int
     queued_at: str
     description: str
+    status: str = "pending"
     
     def to_dict(self) -> Dict:
         return {
@@ -105,6 +106,7 @@ class PendingOperation:
             "estimated_tokens": self.estimated_tokens,
             "queued_at": self.queued_at,
             "description": self.description,
+            "status": self.status,
         }
 
 
@@ -318,17 +320,29 @@ class RecogScheduler:
         result = cursor.fetchone()
         pending_count = result["count"] if result else 0
         
-        # Also check if there's already a pending extract operation
+        # Check for existing pending/ready extract OR recent completion
         cursor.execute("""
-            SELECT id FROM recog_queue 
+            SELECT id, status, completed_at FROM recog_queue 
             WHERE operation_type = 'extract' 
-            AND status IN ('pending', 'ready')
+            ORDER BY queued_at DESC
+            LIMIT 1
         """)
         existing = cursor.fetchone()
         
         conn.close()
         
-        if pending_count > 0 and not existing:
+        # Don't queue if pending/ready exists
+        if existing and existing["status"] in ('pending', 'ready', 'processing'):
+            return None
+        
+        # Don't queue if completed within last hour
+        if existing and existing["status"] == 'complete' and existing["completed_at"]:
+            completed = datetime.fromisoformat(existing["completed_at"].replace("Z", ""))
+            hours_since = (datetime.utcnow() - completed).total_seconds() / 3600
+            if hours_since < 1:
+                return None
+        
+        if pending_count > 0:
             # Queue extraction
             return self._queue_operation(
                 operation_type=OperationType.EXTRACT,
@@ -353,17 +367,29 @@ class RecogScheduler:
         result = cursor.fetchone()
         insight_count = result["count"] if result else 0
         
-        # Check for existing pending correlate
+        # Check for existing pending/ready correlate OR recent completion
         cursor.execute("""
-            SELECT id FROM recog_queue 
+            SELECT id, status, completed_at FROM recog_queue 
             WHERE operation_type = 'correlate' 
-            AND status IN ('pending', 'ready')
+            ORDER BY queued_at DESC
+            LIMIT 1
         """)
         existing = cursor.fetchone()
         
         conn.close()
         
-        if insight_count >= MIN_INSIGHTS_FOR_SYNTHESIS and not existing:
+        # Don't queue if pending/ready exists
+        if existing and existing["status"] in ('pending', 'ready', 'processing'):
+            return None
+        
+        # Don't queue if completed within last hour
+        if existing and existing["status"] == 'complete' and existing["completed_at"]:
+            completed = datetime.fromisoformat(existing["completed_at"].replace("Z", ""))
+            hours_since = (datetime.utcnow() - completed).total_seconds() / 3600
+            if hours_since < 1:
+                return None
+        
+        if insight_count >= MIN_INSIGHTS_FOR_SYNTHESIS:
             return self._queue_operation(
                 operation_type=OperationType.CORRELATE,
                 source_type="insights",
@@ -385,33 +411,29 @@ class RecogScheduler:
         result = cursor.fetchone()
         pattern_count = result["count"] if result else 0
         
-        # Check last synthesis time
+        # Check for existing pending/ready synthesise OR recent completion
         cursor.execute("""
-            SELECT MAX(processed_at) as last_synth
-            FROM recog_processing_log
-            WHERE tier = 3
-        """)
-        result = cursor.fetchone()
-        last_synth = result["last_synth"] if result else None
-        
-        # Check for existing pending synthesise
-        cursor.execute("""
-            SELECT id FROM recog_queue 
+            SELECT id, status, completed_at FROM recog_queue 
             WHERE operation_type = 'synthesise' 
-            AND status IN ('pending', 'ready')
+            ORDER BY queued_at DESC
+            LIMIT 1
         """)
         existing = cursor.fetchone()
         
         conn.close()
         
-        # Synthesise if we have patterns and haven't synthesised recently (or ever)
-        should_synth = pattern_count > 0 and not existing
-        if last_synth:
-            last_synth_time = datetime.fromisoformat(last_synth.replace("Z", "+00:00"))
-            hours_since = (datetime.now(last_synth_time.tzinfo) - last_synth_time).total_seconds() / 3600
-            should_synth = should_synth and hours_since > 24
+        # Don't queue if pending/ready exists
+        if existing and existing["status"] in ('pending', 'ready', 'processing'):
+            return None
         
-        if should_synth:
+        # Don't queue if completed within last hour
+        if existing and existing["status"] == 'complete' and existing["completed_at"]:
+            completed = datetime.fromisoformat(existing["completed_at"].replace("Z", ""))
+            hours_since = (datetime.utcnow() - completed).total_seconds() / 3600
+            if hours_since < 1:
+                return None
+        
+        if pattern_count > 0:
             return self._queue_operation(
                 operation_type=OperationType.SYNTHESISE,
                 source_type="patterns",
@@ -482,15 +504,15 @@ class RecogScheduler:
     # =========================================================================
     
     def get_pending_confirmations(self) -> List[PendingOperation]:
-        """Get operations awaiting user confirmation."""
+        """Get operations awaiting user confirmation or ready for processing."""
         conn = self.get_db()
         cursor = conn.cursor()
         
         cursor.execute("""
             SELECT id, operation_type, source_type, source_ids_json,
-                   estimated_tokens, estimated_mana, queued_at
+                   estimated_tokens, estimated_mana, queued_at, status
             FROM recog_queue
-            WHERE status = 'pending' AND requires_confirmation = 1
+            WHERE status IN ('pending', 'ready') AND requires_confirmation = 1
             ORDER BY queued_at ASC
         """)
         
@@ -518,6 +540,7 @@ class RecogScheduler:
                 estimated_tokens=row["estimated_tokens"],
                 queued_at=row["queued_at"],
                 description=descriptions.get(op_type, f"Process {op_type}"),
+                status=row["status"],
             ))
         
         conn.close()

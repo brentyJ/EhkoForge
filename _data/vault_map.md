@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.7"
+version: "3.8"
 created: 2025-11-29
 updated: 2025-12-06
 tags: [system, reference, navigation]
@@ -205,10 +205,12 @@ static/
 ├── app.js                        [v1.2, legacy] — Old combined logic
 ├── css/
 │   ├── main.css                  [v2.1] — Main terminal styles (retro aesthetic)
-│   └── forge.css                 — Forge area (gold/violet palette)
+│   ├── forge.css                 — Forge area (gold/violet palette)
+│   └── recog.css                 [v1.0] — ReCog UI (red palette, processing animation)
 └── js/
     ├── main.js                   [v2.1] — Main terminal logic (Authority, Mana, chat)
     ├── forge.js                  — Insite review logic
+    ├── recog.js                  [v1.0] — ReCog scheduler UI (queue/reports/progression)
     └── journal.js                [legacy] — Journal functionality
 ```
 
@@ -371,6 +373,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.8 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css, recog.js. Updated frontend section.
 - v3.7 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: scheduler.py, test_recog_scheduler.py, forge_server.py v2.4, 8 API endpoints.
 - v3.6 — 2025-12-06 Session 26 — Memory & Progression migration: memory_progression_v0_1.sql, run_memory_migration.py. 5 new tables.
 - v3.5 — 2025-12-05 Session 25 — EhkoForge adapter: ehkoforge.py bridges ReCog to database.
