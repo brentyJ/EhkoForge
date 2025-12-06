@@ -1,7 +1,7 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-06 (Session 26 - ReCog Forge UI)
+**Updated:** 2025-12-06 (Session 26 - Control Panel v3.0)
 
 ### recog_engine.adapters.ehkoforge (NEW)
 - `EhkoForgeAdapter(db_path)` — Connect to EhkoForge database
@@ -18,7 +18,7 @@
 |--------|---------|---------|
 | `ehko_refresh.py` | 2.0 | Vault indexing, transcription processing, DB sync |
 | `forge_server.py` | 2.4 | Flask API, LLM routing, mana system, chat sessions, ReCog scheduler |
-| `ehko_control.py` | 2.0 | Tkinter GUI, touch-optimized, Forge/Smelt controls |
+| `ehko_control.py` | 3.0 | Tkinter GUI — Server, ReCog, Index, Folders |
 
 ## Migration Scripts
 
@@ -174,6 +174,7 @@
 ---
 
 **Changelog:**
+- v1.8 — 2025-12-06 — ehko_control.py v3.0: Aligned theme, streamlined panels (Server/ReCog/Index/Folders).
 - v1.7 — 2025-12-06 — Added scheduler.py, ReCog API endpoints, updated forge_server to v2.4.
 - v1.6 — 2025-12-05 — Added EhkoForge adapter: ehkoforge.py, test script.
 - v1.5 — 2025-12-05 — Added Phase 3-4: correlator.py, synthesizer.py. Added test scripts.

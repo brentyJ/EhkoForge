@@ -23,6 +23,7 @@
   - recog.css: Red palette (#c94a4a), operation cards, processing animation
   - recog.js: API interactions, queue/reports/progression tabs
   - Updated index.html with ReCog drawer, overlays, toast notifications
+  - ehko_control.py v3.0: Aligned theme, Server/ReCog/Index/Folders panels
 - [ ] **Phase 6: Report System** — ReCog → Ehko snapshots
 
 ### Reorientation (Creative Direction Shift)
@@ -273,7 +274,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
-- v1.39 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css (red palette), recog.js (API interactions), index.html updates (drawer, overlays, toast).
+- v1.39 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css (red palette), recog.js (API interactions), index.html updates (drawer, overlays, toast), scheduler.py cooldown fix, ehko_control.py v3.0 (theme alignment, streamlined panels).
 - v1.38 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: Confirmation flow, queue management, 8 API endpoints, forge_server.py v2.4.
 - v1.37 — 2025-12-06 Session 26 — Memory Tiers & Progression System Phase 1: Schema migration with 5 new tables, 173 sessions marked 'hot'.
 - v1.36 — 2025-12-05 Session 25 — EhkoForge adapter complete: ehkoforge.py bridges ReCog to database (ingots, patterns, personality_layers).
