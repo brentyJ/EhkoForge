@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.5
+EhkoForge Server v2.6
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
@@ -94,6 +94,8 @@ TEMPLATES_PATH = EHKOFORGE_ROOT / "6.0 Frontend" / "templates"
 app = Flask(__name__, 
             static_folder=str(STATIC_PATH),
             template_folder=str(TEMPLATES_PATH))
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.logger.setLevel(logging.DEBUG)
 logging.basicConfig(level=logging.DEBUG)
 
@@ -1555,45 +1557,46 @@ def get_ehko_layers():
 # =============================================================================
 
 # Stage parameter templates from Visual Identity Spec v1.1
+# Shapes/eyes must match what EhkoGenerator in evolution_studio.html supports
 STAGE_TEMPLATES = {
     "Nascent": {
-        "opacity_range": [0.05, 0.30],
-        "blur_range": [6, 12],
+        "opacity_range": [0.15, 0.35],
+        "blur_range": [8, 12],
         "element_range": [1, 5],
-        "core_shapes": ["circle", "ellipse", "soft-polygon", "glyph", "rune"],
+        "core_shapes": ["circle", "ellipse", "glyph", "rune"],
         "eye_types": ["none", "simple-glow"],
         "colour": "#6b8cce",
     },
     "Signal": {
-        "opacity_range": [0.15, 0.50],
-        "blur_range": [4, 8],
+        "opacity_range": [0.25, 0.50],
+        "blur_range": [5, 9],
         "element_range": [3, 8],
-        "core_shapes": ["circle", "square", "hexagon", "triangle", "diamond"],
-        "eye_types": ["dots", "small-bars", "triangles"],
+        "core_shapes": ["circle", "hexagon", "diamond", "soft-polygon"],
+        "eye_types": ["simple-glow", "dual-dots"],
         "colour": "#7ed99b",
     },
     "Resonant": {
-        "opacity_range": [0.30, 0.70],
-        "blur_range": [2, 6],
-        "element_range": [6, 15],
-        "core_shapes": ["monitor", "hologram-frame", "crystal", "lantern", "sphere-cage"],
-        "eye_types": ["bars", "squares", "crescents", "dual-glow"],
+        "opacity_range": [0.35, 0.65],
+        "blur_range": [3, 6],
+        "element_range": [5, 12],
+        "core_shapes": ["hexagon", "diamond", "star", "soft-polygon"],
+        "eye_types": ["dual-dots", "expressive-bars"],
         "colour": "#d9c67e",
     },
     "Manifest": {
-        "opacity_range": [0.50, 0.90],
-        "blur_range": [0, 4],
-        "element_range": [10, 25],
-        "core_shapes": ["ornate-terminal", "cathedral-lattice", "clock-face", "nested-mandala"],
-        "eye_types": ["multi-part", "animated", "reactive"],
+        "opacity_range": [0.50, 0.80],
+        "blur_range": [1, 4],
+        "element_range": [8, 18],
+        "core_shapes": ["star", "hexagon", "diamond"],
+        "eye_types": ["expressive-bars", "focused-lens"],
         "colour": "#d97e9b",
     },
     "Anchored": {
-        "opacity_range": [0.70, 1.0],
+        "opacity_range": [0.65, 0.95],
         "blur_range": [0, 2],
-        "element_range": [15, 40],
-        "core_shapes": ["workstation", "shrine", "detailed-craft", "ornate-frame", "symbolic-totem"],
-        "eye_types": ["fully-articulated", "personality-driven"],
+        "element_range": [12, 25],
+        "core_shapes": ["star", "hexagon", "diamond"],
+        "eye_types": ["focused-lens", "full-presence"],
         "colour": "#c9a962",
     },
 }
@@ -1614,31 +1617,41 @@ def generate_avatar_params(stage: str, seed: str, description: str = None) -> di
     seed_hash = int(hashlib.sha256(seed.encode()).hexdigest()[:8], 16)
     random.seed(seed_hash)
     
+    # Pick 1-2 core shapes
+    num_shapes = random.randint(1, min(2, len(template["core_shapes"])))
+    core_shapes = random.sample(template["core_shapes"], num_shapes)
+    
     # Generate parameters within stage bounds
+    opacity = round(random.uniform(*template["opacity_range"]), 2)
+    blur = round(random.uniform(*template["blur_range"]), 1)
+    element_count = random.randint(*template["element_range"])
+    eye_type = random.choice(template["eye_types"])
+    hue_shift = random.randint(-15, 15)
+    
+    # Build stage extras
+    stage_extras = {}
+    if stage == "Nascent":
+        stage_extras["particles"] = random.randint(2, 4)
+        stage_extras["energy_lines"] = random.randint(2, 6)
+    elif stage == "Signal":
+        stage_extras["connection_nodes"] = random.randint(3, 6)
+    elif stage in ["Resonant", "Manifest", "Anchored"]:
+        stage_extras["thematic"] = True
+        if random.random() > 0.5:
+            stage_extras["frame"] = True
+    
     params = {
         "stage": stage,
         "seed": seed,
-        "core_shape": random.choice(template["core_shapes"]),
-        "opacity": round(random.uniform(*template["opacity_range"]), 2),
-        "blur_radius": round(random.uniform(*template["blur_range"]), 1),
-        "element_count": random.randint(*template["element_range"]),
-        "eye_type": random.choice(template["eye_types"]),
+        "core_shapes": core_shapes,
+        "opacity": opacity,
+        "blur": blur,
+        "element_count": element_count,
+        "eye_type": eye_type,
         "base_colour": template["colour"],
-        "hue_shift": random.randint(-15, 15),
+        "hue_shift": hue_shift,
+        "stage_extras": stage_extras,
     }
-    
-    # Add stage-specific extras
-    if stage == "Nascent":
-        params["particle_count"] = random.randint(0, 8)
-        params["energy_lines"] = random.randint(0, 4)
-    elif stage == "Signal":
-        params["connection_nodes"] = random.randint(0, 6)
-        params["nesting"] = random.choice([True, False])
-    elif stage in ["Resonant", "Manifest", "Anchored"]:
-        params["thematic_elements"] = random.sample(
-            ["antennas", "wings", "halo", "crown", "base-stand", "vents", "connectors"],
-            k=min(random.randint(1, 3), 3)
-        )
     
     # Reset random seed
     random.seed()
@@ -2312,7 +2325,7 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.5")
+    print("EHKOFORGE SERVER v2.6")
     print("Authority, Mana, ReCog Scheduler & Evolution Studio Active")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")

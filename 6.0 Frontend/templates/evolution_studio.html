@@ -6,70 +6,76 @@
     <title>Evolution Studio | EhkoForge</title>
     <link rel="stylesheet" href="/css/main.css">
     <style>
+        html, body {
+            overflow-y: auto !important;
+            height: auto !important;
+        }
+        
         .studio-container {
             max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
+            margin: 20px auto;
+            padding: 15px;
         }
         
         .studio-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
         
         .studio-header h1 {
             color: #6b8cce;
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             letter-spacing: 3px;
             text-shadow: 0 0 20px rgba(107, 140, 206, 0.5);
         }
         
         .studio-header p {
             color: #8aa4d6;
-            margin-top: 10px;
+            margin-top: 5px;
+            font-size: 0.9rem;
         }
         
         .studio-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
         }
         
         .control-panel {
             background: #161c28;
             border: 1px solid rgba(107, 140, 206, 0.3);
             border-radius: 8px;
-            padding: 25px;
+            padding: 15px;
         }
         
         .control-section {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
         
         .control-section h3 {
             color: #6b8cce;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
             letter-spacing: 1px;
         }
         
         .stage-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
         
         .stage-btn {
             background: #0c1018;
             border: 2px solid rgba(107, 140, 206, 0.3);
             color: #8aa4d6;
-            padding: 12px;
+            padding: 10px 8px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
             font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -91,15 +97,15 @@
             background: #0c1018;
             border: 2px solid rgba(107, 140, 206, 0.4);
             color: #6b8cce;
-            padding: 15px;
+            padding: 10px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
             font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
         }
         
         .action-btn:hover {
@@ -114,16 +120,16 @@
         
         .coached-input {
             width: 100%;
-            min-height: 100px;
+            min-height: 60px;
             background: #0c1018;
             border: 1px solid rgba(107, 140, 206, 0.3);
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px;
             color: #e8eef8;
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             resize: vertical;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         
         .coached-input:focus {
@@ -140,23 +146,23 @@
             background: #161c28;
             border: 1px solid rgba(107, 140, 206, 0.3);
             border-radius: 8px;
-            padding: 30px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
         }
         
         .preview-avatar {
-            width: 240px;
-            height: 240px;
+            width: 180px;
+            height: 180px;
             background: #0c1018;
             border: 2px solid rgba(107, 140, 206, 0.3);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             box-shadow: 0 0 30px rgba(107, 140, 206, 0.15);
         }
         
@@ -167,27 +173,27 @@
         
         .preview-info h3 {
             color: #6b8cce;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
             letter-spacing: 2px;
         }
         
         .preview-info .stage-name {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: #8aa4d6;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         
         .param-display {
             background: #0c1018;
             border: 1px solid rgba(107, 140, 206, 0.2);
             border-radius: 6px;
-            padding: 15px;
-            font-size: 0.8rem;
+            padding: 10px;
+            font-size: 0.7rem;
             color: #6b8cce;
             text-align: left;
             font-family: 'Courier New', monospace;
-            max-height: 200px;
+            max-height: 120px;
             overflow-y: auto;
         }
         
@@ -197,28 +203,28 @@
         }
         
         .reference-section {
-            margin-top: 40px;
+            margin-top: 20px;
         }
         
         .reference-section h2 {
             color: #6b8cce;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
             letter-spacing: 2px;
         }
         
         .reference-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
         }
         
         .reference-card {
             background: #161c28;
             border: 1px solid rgba(107, 140, 206, 0.3);
             border-radius: 8px;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
             transition: all 0.2s ease;
         }
@@ -230,15 +236,15 @@
         
         .reference-card h4 {
             color: #6b8cce;
-            margin-bottom: 15px;
-            font-size: 1rem;
+            margin-bottom: 8px;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
         .reference-card .avatar-mini {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             margin: 0 auto;
             background: #0c1018;
             border: 1px solid rgba(107, 140, 206, 0.2);
@@ -246,6 +252,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .reference-card .avatar-mini object {
+            width: 60px;
+            height: 60px;
         }
         
         .back-link {
@@ -285,6 +296,62 @@
             background: rgba(217, 126, 155, 0.1);
             border: 1px solid rgba(217, 126, 155, 0.3);
             color: #d97e9b;
+        }
+        
+        /* Tablet/Surface Pro responsive */
+        @media (max-width: 1024px) {
+            .studio-container {
+                margin: 10px auto;
+                padding: 10px;
+            }
+            
+            .studio-header {
+                margin-bottom: 15px;
+            }
+            
+            .studio-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .studio-grid {
+                grid-template-columns: 240px 1fr;
+                gap: 15px;
+            }
+            
+            .preview-avatar {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .reference-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+            
+            .reference-card {
+                padding: 8px;
+            }
+            
+            .reference-card .avatar-mini,
+            .reference-card .avatar-mini object {
+                width: 50px;
+                height: 50px;
+            }
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .studio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-panel {
+                order: -1;
+            }
+            
+            .reference-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
@@ -352,35 +419,35 @@
                 <div class="reference-card">
                     <h4>Nascent</h4>
                     <div class="avatar-mini">
-                        <object data="/reference_nascent.svg" type="image/svg+xml" width="80" height="80"></object>
+                        <object data="/reference_nascent.svg" type="image/svg+xml"></object>
                     </div>
                 </div>
                 
                 <div class="reference-card">
                     <h4>Signal</h4>
                     <div class="avatar-mini">
-                        <object data="/reference_signal.svg" type="image/svg+xml" width="80" height="80"></object>
+                        <object data="/reference_signal.svg" type="image/svg+xml"></object>
                     </div>
                 </div>
                 
                 <div class="reference-card">
                     <h4>Resonant</h4>
                     <div class="avatar-mini">
-                        <object data="/reference_resonant.svg" type="image/svg+xml" width="80" height="80"></object>
+                        <object data="/reference_resonant.svg" type="image/svg+xml"></object>
                     </div>
                 </div>
                 
                 <div class="reference-card">
                     <h4>Manifest</h4>
                     <div class="avatar-mini">
-                        <object data="/reference_manifest.svg" type="image/svg+xml" width="80" height="80"></object>
+                        <object data="/reference_manifest.svg" type="image/svg+xml"></object>
                     </div>
                 </div>
                 
                 <div class="reference-card">
                     <h4>Anchored</h4>
                     <div class="avatar-mini">
-                        <object data="/reference_anchored.svg" type="image/svg+xml" width="80" height="80"></object>
+                        <object data="/reference_anchored.svg" type="image/svg+xml"></object>
                     </div>
                 </div>
             </div>
@@ -388,8 +455,887 @@
     </div>
     
     <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        // EHKO AVATAR GENERATOR v2.0
+        // High-fidelity SVG avatar generation following Visual Design System
+        // ═══════════════════════════════════════════════════════════════════════
+        
+        const STAGE_PALETTES = {
+            Nascent: {
+                primary: '#6b8cce',
+                bright: '#a8c5f0',
+                muted: '#4a6a9e',
+                glow: '#8fa8d4'
+            },
+            Signal: {
+                primary: '#7ed99b',
+                bright: '#a8f0c4',
+                muted: '#5bc47d',
+                glow: '#6ecf8a'
+            },
+            Resonant: {
+                primary: '#d9c67e',
+                bright: '#f0e4b8',
+                muted: '#c4a855',
+                glow: '#e8d69a'
+            },
+            Manifest: {
+                primary: '#d97e9b',
+                bright: '#f5c2d3',
+                muted: '#c45577',
+                glow: '#e89ab2'
+            },
+            Anchored: {
+                primary: '#c9a962',
+                bright: '#f0d88c',
+                muted: '#a88940',
+                glow: '#ddc07a'
+            }
+        };
+        
+        class EhkoGenerator {
+            constructor(size = 240) {
+                this.size = size;
+            }
+            
+            // Utility: Create namespaced SVG element
+            el(tag, attrs = {}) {
+                const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                for (const [k, v] of Object.entries(attrs)) {
+                    elem.setAttribute(k, v);
+                }
+                return elem;
+            }
+            
+            // Utility: Add animation
+            animate(element, attr, values, dur, opts = {}) {
+                const anim = this.el('animate', {
+                    attributeName: attr,
+                    values: values,
+                    dur: `${dur}s`,
+                    repeatCount: opts.repeatCount || 'indefinite',
+                    calcMode: opts.calcMode || 'spline',
+                    keySplines: opts.keySplines || '0.4 0 0.6 1; 0.4 0 0.6 1'
+                });
+                if (opts.begin) anim.setAttribute('begin', opts.begin);
+                element.appendChild(anim);
+            }
+            
+            // Utility: Lighten/darken colour
+            adjustBrightness(hex, percent) {
+                const num = parseInt(hex.slice(1), 16);
+                const amt = Math.round(2.55 * percent);
+                const R = Math.min(255, Math.max(0, (num >> 16) + amt));
+                const G = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+                const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+                return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+            }
+            
+            // Create definitions (filters, gradients)
+            createDefs(palette, stage) {
+                const defs = this.el('defs');
+                
+                // Radial gradient for core glow
+                const coreGrad = this.el('radialGradient', { id: 'core-gradient', cx: '50%', cy: '50%', r: '50%' });
+                coreGrad.appendChild(this.el('stop', { offset: '0%', 'stop-color': palette.bright, 'stop-opacity': '1' }));
+                coreGrad.appendChild(this.el('stop', { offset: '50%', 'stop-color': palette.primary, 'stop-opacity': '0.8' }));
+                coreGrad.appendChild(this.el('stop', { offset: '100%', 'stop-color': palette.muted, 'stop-opacity': '0' }));
+                defs.appendChild(coreGrad);
+                
+                // Aura gradient (larger, softer)
+                const auraGrad = this.el('radialGradient', { id: 'aura-gradient', cx: '50%', cy: '50%', r: '60%' });
+                auraGrad.appendChild(this.el('stop', { offset: '0%', 'stop-color': palette.primary, 'stop-opacity': '0.3' }));
+                auraGrad.appendChild(this.el('stop', { offset: '70%', 'stop-color': palette.muted, 'stop-opacity': '0.1' }));
+                auraGrad.appendChild(this.el('stop', { offset: '100%', 'stop-color': palette.muted, 'stop-opacity': '0' }));
+                defs.appendChild(auraGrad);
+                
+                // Soft blur filter
+                const softBlur = this.el('filter', { id: 'soft-blur', x: '-50%', y: '-50%', width: '200%', height: '200%' });
+                softBlur.appendChild(this.el('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: '3' }));
+                defs.appendChild(softBlur);
+                
+                // Glow filter
+                const glowFilter = this.el('filter', { id: 'glow', x: '-50%', y: '-50%', width: '200%', height: '200%' });
+                const glowBlur = this.el('feGaussianBlur', { stdDeviation: '2', result: 'glow' });
+                glowFilter.appendChild(glowBlur);
+                const glowMerge = this.el('feMerge');
+                glowMerge.appendChild(this.el('feMergeNode', { in: 'glow' }));
+                glowMerge.appendChild(this.el('feMergeNode', { in: 'glow' }));
+                glowMerge.appendChild(this.el('feMergeNode', { in: 'SourceGraphic' }));
+                glowFilter.appendChild(glowMerge);
+                defs.appendChild(glowFilter);
+                
+                // Strong glow for inner light
+                const innerGlow = this.el('filter', { id: 'inner-glow', x: '-100%', y: '-100%', width: '300%', height: '300%' });
+                innerGlow.appendChild(this.el('feGaussianBlur', { stdDeviation: '4', result: 'blur' }));
+                const innerMerge = this.el('feMerge');
+                innerMerge.appendChild(this.el('feMergeNode', { in: 'blur' }));
+                innerMerge.appendChild(this.el('feMergeNode', { in: 'blur' }));
+                innerMerge.appendChild(this.el('feMergeNode', { in: 'blur' }));
+                innerMerge.appendChild(this.el('feMergeNode', { in: 'SourceGraphic' }));
+                innerGlow.appendChild(innerMerge);
+                defs.appendChild(innerGlow);
+                
+                return defs;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 1: BACKGROUND AURA
+            // ═══════════════════════════════════════════════════════════════════
+            createAura(palette, stage) {
+                const g = this.el('g', { class: 'layer-aura' });
+                
+                // Outer aura
+                const aura = this.el('circle', {
+                    cx: '40', cy: '40',
+                    r: stage === 'Nascent' ? '35' : '28',
+                    fill: 'url(#aura-gradient)'
+                });
+                this.animate(aura, 'r', 
+                    stage === 'Nascent' ? '33;36;33' : '26;29;26', 
+                    stage === 'Nascent' ? 6 : 5);
+                g.appendChild(aura);
+                
+                // Secondary aura for Nascent (extra diffuse)
+                if (stage === 'Nascent') {
+                    const aura2 = this.el('circle', {
+                        cx: '40', cy: '40', r: '30',
+                        fill: palette.primary,
+                        opacity: '0.08',
+                        filter: 'url(#soft-blur)'
+                    });
+                    this.animate(aura2, 'opacity', '0.05;0.12;0.05', 7);
+                    g.appendChild(aura2);
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 2: FRAME (stages Resonant+)
+            // ═══════════════════════════════════════════════════════════════════
+            createFrame(palette, stage, params) {
+                const g = this.el('g', { class: 'layer-frame' });
+                if (!['Resonant', 'Manifest', 'Anchored'].includes(stage)) return g;
+                
+                const opacity = stage === 'Resonant' ? 0.25 : stage === 'Manifest' ? 0.4 : 0.5;
+                const strokeWidth = stage === 'Anchored' ? '1.5' : '1';
+                
+                if (stage === 'Resonant') {
+                    // Subtle hexagonal frame
+                    const hex = this.el('polygon', {
+                        points: '40,12 60,26 60,54 40,68 20,54 20,26',
+                        fill: 'none',
+                        stroke: palette.muted,
+                        'stroke-width': strokeWidth,
+                        opacity: opacity
+                    });
+                    this.animate(hex, 'opacity', `${opacity-0.1};${opacity+0.1};${opacity-0.1}`, 5);
+                    g.appendChild(hex);
+                } else if (stage === 'Manifest') {
+                    // Ornate frame with corners
+                    const frame = this.el('rect', {
+                        x: '14', y: '14', width: '52', height: '52', rx: '4',
+                        fill: 'none',
+                        stroke: palette.muted,
+                        'stroke-width': strokeWidth,
+                        opacity: opacity
+                    });
+                    g.appendChild(frame);
+                    
+                    // Corner accents
+                    [[12,12], [56,12], [12,56], [56,56]].forEach(([x,y]) => {
+                        const corner = this.el('circle', {
+                            cx: x, cy: y, r: '2',
+                            fill: palette.primary,
+                            opacity: '0.6'
+                        });
+                        g.appendChild(corner);
+                    });
+                } else if (stage === 'Anchored') {
+                    // Architectural frame
+                    const outer = this.el('rect', {
+                        x: '10', y: '10', width: '60', height: '60', rx: '6',
+                        fill: 'none',
+                        stroke: palette.muted,
+                        'stroke-width': '1.5',
+                        opacity: opacity
+                    });
+                    g.appendChild(outer);
+                    
+                    // Inner detail frame
+                    const inner = this.el('rect', {
+                        x: '16', y: '16', width: '48', height: '48', rx: '3',
+                        fill: 'none',
+                        stroke: palette.primary,
+                        'stroke-width': '0.5',
+                        opacity: opacity * 0.7
+                    });
+                    g.appendChild(inner);
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 3: CORE BODY (multi-layered)
+            // ═══════════════════════════════════════════════════════════════════
+            createCore(palette, stage, params) {
+                const g = this.el('g', { class: 'layer-core' });
+                
+                if (stage === 'Nascent') {
+                    // Multiple overlapping translucent forms
+                    const offsets = [[0, -2], [3, 1], [-3, 1], [0, 3]];
+                    offsets.forEach(([ox, oy], i) => {
+                        const cloud = this.el('ellipse', {
+                            cx: 40 + ox, cy: 40 + oy,
+                            rx: 14 - i * 2, ry: 12 - i * 1.5,
+                            fill: palette.primary,
+                            opacity: 0.15 + i * 0.05,
+                            filter: 'url(#soft-blur)'
+                        });
+                        this.animate(cloud, 'opacity', 
+                            `${0.12 + i*0.04};${0.2 + i*0.05};${0.12 + i*0.04}`, 
+                            4 + i * 0.5);
+                        g.appendChild(cloud);
+                    });
+                    
+                    // Central condensing form
+                    const center = this.el('ellipse', {
+                        cx: '40', cy: '40', rx: '10', ry: '9',
+                        fill: palette.primary,
+                        opacity: '0.3'
+                    });
+                    this.animate(center, 'opacity', '0.25;0.4;0.25', 3.5);
+                    this.animate(center, 'rx', '9;11;9', 4);
+                    g.appendChild(center);
+                    
+                } else if (stage === 'Signal') {
+                    // Emerging geometric form
+                    // Back layer - soft
+                    const back = this.el('polygon', {
+                        points: '40,20 56,32 56,52 40,64 24,52 24,32',
+                        fill: palette.muted,
+                        opacity: '0.2',
+                        filter: 'url(#soft-blur)'
+                    });
+                    g.appendChild(back);
+                    
+                    // Mid layer
+                    const mid = this.el('polygon', {
+                        points: '40,24 52,34 52,50 40,60 28,50 28,34',
+                        fill: palette.primary,
+                        opacity: '0.4'
+                    });
+                    this.animate(mid, 'opacity', '0.35;0.5;0.35', 4);
+                    g.appendChild(mid);
+                    
+                    // Front layer - brighter
+                    const front = this.el('polygon', {
+                        points: '40,28 48,36 48,48 40,56 32,48 32,36',
+                        fill: palette.bright,
+                        opacity: '0.5'
+                    });
+                    this.animate(front, 'opacity', '0.4;0.6;0.4', 3.5);
+                    g.appendChild(front);
+                    
+                } else if (stage === 'Resonant') {
+                    // Stable, defined form
+                    // Outer glow
+                    const outer = this.el('polygon', {
+                        points: '40,18 58,29 58,51 40,62 22,51 22,29',
+                        fill: palette.muted,
+                        opacity: '0.25',
+                        filter: 'url(#glow)'
+                    });
+                    g.appendChild(outer);
+                    
+                    // Main body
+                    const main = this.el('polygon', {
+                        points: '40,22 54,31 54,49 40,58 26,49 26,31',
+                        fill: palette.primary,
+                        opacity: '0.6'
+                    });
+                    this.animate(main, 'opacity', '0.55;0.7;0.55', 4.5);
+                    g.appendChild(main);
+                    
+                    // Inner facet
+                    const inner = this.el('polygon', {
+                        points: '40,28 48,33 48,47 40,52 32,47 32,33',
+                        fill: palette.bright,
+                        opacity: '0.5'
+                    });
+                    g.appendChild(inner);
+                    
+                } else if (stage === 'Manifest') {
+                    // Complex layered form
+                    // Background glow
+                    const bg = this.el('circle', {
+                        cx: '40', cy: '40', r: '22',
+                        fill: palette.muted,
+                        opacity: '0.2',
+                        filter: 'url(#soft-blur)'
+                    });
+                    g.appendChild(bg);
+                    
+                    // Outer diamond
+                    const outer = this.el('polygon', {
+                        points: '40,16 62,40 40,64 18,40',
+                        fill: palette.muted,
+                        opacity: '0.35'
+                    });
+                    g.appendChild(outer);
+                    
+                    // Mid layer - rotated
+                    const mid = this.el('polygon', {
+                        points: '40,22 55,40 40,58 25,40',
+                        fill: palette.primary,
+                        opacity: '0.6'
+                    });
+                    this.animate(mid, 'opacity', '0.5;0.7;0.5', 4);
+                    g.appendChild(mid);
+                    
+                    // Inner star
+                    const star = this.el('polygon', {
+                        points: '40,28 44,38 54,38 46,44 49,54 40,48 31,54 34,44 26,38 36,38',
+                        fill: palette.bright,
+                        opacity: '0.5'
+                    });
+                    g.appendChild(star);
+                    
+                } else if (stage === 'Anchored') {
+                    // Refined, iconic form
+                    // Settled glow
+                    const glow = this.el('circle', {
+                        cx: '40', cy: '40', r: '24',
+                        fill: palette.muted,
+                        opacity: '0.15',
+                        filter: 'url(#soft-blur)'
+                    });
+                    g.appendChild(glow);
+                    
+                    // Outer boundary
+                    const outer = this.el('polygon', {
+                        points: '40,14 60,28 60,52 40,66 20,52 20,28',
+                        fill: 'none',
+                        stroke: palette.muted,
+                        'stroke-width': '2',
+                        opacity: '0.4'
+                    });
+                    g.appendChild(outer);
+                    
+                    // Primary form
+                    const primary = this.el('polygon', {
+                        points: '40,18 56,30 56,50 40,62 24,50 24,30',
+                        fill: palette.primary,
+                        opacity: '0.65'
+                    });
+                    this.animate(primary, 'opacity', '0.6;0.75;0.6', 5);
+                    g.appendChild(primary);
+                    
+                    // Inner detail
+                    const inner = this.el('polygon', {
+                        points: '40,26 50,34 50,48 40,56 30,48 30,34',
+                        fill: palette.bright,
+                        opacity: '0.5'
+                    });
+                    g.appendChild(inner);
+                    
+                    // Central jewel
+                    const jewel = this.el('circle', {
+                        cx: '40', cy: '40', r: '6',
+                        fill: palette.bright,
+                        opacity: '0.7'
+                    });
+                    g.appendChild(jewel);
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 4: INNER GLOW (the "soul")
+            // ═══════════════════════════════════════════════════════════════════
+            createInnerGlow(palette, stage) {
+                const g = this.el('g', { class: 'layer-glow' });
+                
+                const size = { Nascent: 4, Signal: 5, Resonant: 6, Manifest: 7, Anchored: 6 }[stage];
+                const brightness = { Nascent: 0.6, Signal: 0.7, Resonant: 0.8, Manifest: 0.85, Anchored: 0.9 }[stage];
+                
+                // Core light
+                const light = this.el('circle', {
+                    cx: '40', cy: '40', r: size,
+                    fill: palette.bright,
+                    opacity: brightness,
+                    filter: 'url(#inner-glow)'
+                });
+                this.animate(light, 'opacity', 
+                    `${brightness - 0.15};${brightness};${brightness - 0.15}`, 
+                    stage === 'Nascent' ? 2.5 : 3);
+                this.animate(light, 'r', `${size - 1};${size + 1};${size - 1}`, 3.5);
+                g.appendChild(light);
+                
+                // Secondary glow ring for later stages
+                if (['Resonant', 'Manifest', 'Anchored'].includes(stage)) {
+                    const ring = this.el('circle', {
+                        cx: '40', cy: '40', r: size + 3,
+                        fill: 'none',
+                        stroke: palette.bright,
+                        'stroke-width': '0.5',
+                        opacity: '0.4'
+                    });
+                    this.animate(ring, 'opacity', '0.3;0.5;0.3', 4);
+                    g.appendChild(ring);
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 5: ORBITAL ELEMENTS
+            // ═══════════════════════════════════════════════════════════════════
+            createOrbital(palette, stage, params) {
+                const g = this.el('g', { class: 'layer-orbital' });
+                
+                if (stage === 'Nascent') {
+                    // Drifting particles (attracted to center)
+                    const particleCount = 4;
+                    for (let i = 0; i < particleCount; i++) {
+                        const angle = (i / particleCount) * 360;
+                        const rad = angle * Math.PI / 180;
+                        const dist = 22 + Math.random() * 6;
+                        
+                        const particle = this.el('circle', {
+                            cx: 40 + Math.cos(rad) * dist,
+                            cy: 40 + Math.sin(rad) * dist,
+                            r: 1 + Math.random() * 0.5,
+                            fill: palette.glow,
+                            opacity: '0.5',
+                            filter: 'url(#glow)'
+                        });
+                        
+                        // Slow drift animation
+                        const orbit = this.el('animateTransform', {
+                            attributeName: 'transform',
+                            type: 'rotate',
+                            from: `${angle} 40 40`,
+                            to: `${angle + 360} 40 40`,
+                            dur: `${20 + i * 5}s`,
+                            repeatCount: 'indefinite'
+                        });
+                        particle.appendChild(orbit);
+                        
+                        this.animate(particle, 'opacity', '0.3;0.6;0.3', 4 + i);
+                        g.appendChild(particle);
+                    }
+                    
+                } else if (stage === 'Signal') {
+                    // Connection nodes with signal lines
+                    const nodes = [[25, 28], [55, 28], [25, 52], [55, 52], [40, 18]];
+                    
+                    // Draw connecting lines with animation
+                    for (let i = 0; i < nodes.length - 1; i++) {
+                        const line = this.el('line', {
+                            x1: nodes[i][0], y1: nodes[i][1],
+                            x2: nodes[i+1][0], y2: nodes[i+1][1],
+                            stroke: palette.glow,
+                            'stroke-width': '0.5',
+                            'stroke-dasharray': '2,2',
+                            opacity: '0.4'
+                        });
+                        // Dash animation
+                        const dashAnim = this.el('animate', {
+                            attributeName: 'stroke-dashoffset',
+                            values: '0;4',
+                            dur: '1s',
+                            repeatCount: 'indefinite'
+                        });
+                        line.appendChild(dashAnim);
+                        g.appendChild(line);
+                    }
+                    
+                    // Nodes
+                    nodes.forEach(([x, y], i) => {
+                        const node = this.el('circle', {
+                            cx: x, cy: y, r: '1.5',
+                            fill: palette.bright,
+                            opacity: '0.6'
+                        });
+                        this.animate(node, 'opacity', '0.4;0.8;0.4', 2 + i * 0.3);
+                        g.appendChild(node);
+                    });
+                    
+                } else if (stage === 'Resonant') {
+                    // Orbital ring
+                    const ring = this.el('ellipse', {
+                        cx: '40', cy: '40', rx: '26', ry: '10',
+                        fill: 'none',
+                        stroke: palette.glow,
+                        'stroke-width': '0.5',
+                        opacity: '0.35',
+                        transform: 'rotate(-20 40 40)'
+                    });
+                    g.appendChild(ring);
+                    
+                    // Orbital dots
+                    for (let i = 0; i < 3; i++) {
+                        const dot = this.el('circle', {
+                            cx: '66', cy: '40', r: '1.5',
+                            fill: palette.bright,
+                            opacity: '0.7'
+                        });
+                        const orbit = this.el('animateTransform', {
+                            attributeName: 'transform',
+                            type: 'rotate',
+                            from: `${i * 120 - 20} 40 40`,
+                            to: `${i * 120 + 340} 40 40`,
+                            dur: `${8 + i * 2}s`,
+                            repeatCount: 'indefinite'
+                        });
+                        dot.appendChild(orbit);
+                        g.appendChild(dot);
+                    }
+                    
+                } else if (stage === 'Manifest') {
+                    // Multiple orbital systems
+                    // Inner ring
+                    const inner = this.el('circle', {
+                        cx: '40', cy: '40', r: '18',
+                        fill: 'none',
+                        stroke: palette.glow,
+                        'stroke-width': '0.5',
+                        'stroke-dasharray': '3,3',
+                        opacity: '0.3'
+                    });
+                    g.appendChild(inner);
+                    
+                    // Outer ring
+                    const outer = this.el('circle', {
+                        cx: '40', cy: '40', r: '28',
+                        fill: 'none',
+                        stroke: palette.muted,
+                        'stroke-width': '0.3',
+                        opacity: '0.25'
+                    });
+                    g.appendChild(outer);
+                    
+                    // Orbiting symbols
+                    for (let i = 0; i < 4; i++) {
+                        const symbol = this.el('polygon', {
+                            points: '40,12 42,16 38,16',
+                            fill: palette.bright,
+                            opacity: '0.6'
+                        });
+                        const orbit = this.el('animateTransform', {
+                            attributeName: 'transform',
+                            type: 'rotate',
+                            from: `${i * 90} 40 40`,
+                            to: `${i * 90 + 360} 40 40`,
+                            dur: `${12 + i}s`,
+                            repeatCount: 'indefinite'
+                        });
+                        symbol.appendChild(orbit);
+                        g.appendChild(symbol);
+                    }
+                    
+                } else if (stage === 'Anchored') {
+                    // Settled, planetary orbital
+                    const ring = this.el('ellipse', {
+                        cx: '40', cy: '40', rx: '30', ry: '8',
+                        fill: 'none',
+                        stroke: palette.glow,
+                        'stroke-width': '0.75',
+                        opacity: '0.3',
+                        transform: 'rotate(-15 40 40)'
+                    });
+                    g.appendChild(ring);
+                    
+                    // Single prominent moon
+                    const moon = this.el('circle', {
+                        cx: '70', cy: '40', r: '3',
+                        fill: palette.bright,
+                        opacity: '0.8',
+                        filter: 'url(#glow)'
+                    });
+                    const moonOrbit = this.el('animateTransform', {
+                        attributeName: 'transform',
+                        type: 'rotate',
+                        from: '-15 40 40',
+                        to: '345 40 40',
+                        dur: '15s',
+                        repeatCount: 'indefinite'
+                    });
+                    moon.appendChild(moonOrbit);
+                    g.appendChild(moon);
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 6: EYES (the soul window)
+            // ═══════════════════════════════════════════════════════════════════
+            createEyes(palette, stage, params) {
+                const g = this.el('g', { class: 'layer-eyes' });
+                
+                if (stage === 'Nascent') {
+                    // Awakening - soft horizontal bar that pulses
+                    const eye = this.el('rect', {
+                        x: '34', y: '38', width: '12', height: '2', rx: '1',
+                        fill: palette.bright,
+                        opacity: '0.3',
+                        filter: 'url(#glow)'
+                    });
+                    // Slow awareness pulse
+                    this.animate(eye, 'opacity', '0.2;0.5;0.2', 3);
+                    this.animate(eye, 'width', '10;14;10', 4);
+                    g.appendChild(eye);
+                    
+                } else if (stage === 'Signal') {
+                    // Two dots - first true "looking"
+                    [-6, 6].forEach((offset, i) => {
+                        const eye = this.el('circle', {
+                            cx: 40 + offset, cy: '38', r: '2',
+                            fill: palette.bright,
+                            opacity: '0.7',
+                            filter: 'url(#glow)'
+                        });
+                        this.animate(eye, 'opacity', '0.6;0.9;0.6', 3 + i * 0.2);
+                        g.appendChild(eye);
+                        
+                        // Blink animation (less frequent)
+                        const blink = this.el('animate', {
+                            attributeName: 'ry',
+                            values: '2;0.3;2',
+                            dur: '0.2s',
+                            begin: `${5 + i * 0.1}s`,
+                            repeatCount: 'indefinite'
+                        });
+                        // Note: circles don't have ry, so we animate r for blink effect
+                    });
+                    
+                } else if (stage === 'Resonant') {
+                    // Expressive bars
+                    [-6, 6].forEach((offset, i) => {
+                        const eyeGroup = this.el('g');
+                        
+                        // Eye background/socket
+                        const socket = this.el('rect', {
+                            x: 40 + offset - 4, y: '36', width: '8', height: '5', rx: '2',
+                            fill: palette.muted,
+                            opacity: '0.3'
+                        });
+                        eyeGroup.appendChild(socket);
+                        
+                        // Eye bright part
+                        const eye = this.el('rect', {
+                            x: 40 + offset - 3, y: '37', width: '6', height: '3', rx: '1.5',
+                            fill: palette.bright,
+                            opacity: '0.85',
+                            filter: 'url(#glow)'
+                        });
+                        this.animate(eye, 'opacity', '0.75;0.95;0.75', 3.5);
+                        eyeGroup.appendChild(eye);
+                        
+                        // Subtle look animation
+                        const look = this.el('animateTransform', {
+                            attributeName: 'transform',
+                            type: 'translate',
+                            values: '0,0; 0.5,0; 0,0; -0.5,0; 0,0',
+                            dur: '6s',
+                            repeatCount: 'indefinite'
+                        });
+                        eyeGroup.appendChild(look);
+                        
+                        g.appendChild(eyeGroup);
+                    });
+                    
+                } else if (stage === 'Manifest') {
+                    // Full articulation with pupils
+                    [-7, 7].forEach((offset, i) => {
+                        const eyeGroup = this.el('g');
+                        
+                        // Eye outline
+                        const outline = this.el('ellipse', {
+                            cx: 40 + offset, cy: '37', rx: '5', ry: '3.5',
+                            fill: 'none',
+                            stroke: palette.muted,
+                            'stroke-width': '0.5',
+                            opacity: '0.5'
+                        });
+                        eyeGroup.appendChild(outline);
+                        
+                        // Eye fill
+                        const eyeFill = this.el('ellipse', {
+                            cx: 40 + offset, cy: '37', rx: '4', ry: '2.5',
+                            fill: palette.bright,
+                            opacity: '0.8',
+                            filter: 'url(#glow)'
+                        });
+                        eyeGroup.appendChild(eyeFill);
+                        
+                        // Pupil
+                        const pupil = this.el('circle', {
+                            cx: 40 + offset, cy: '37', r: '1.5',
+                            fill: palette.muted,
+                            opacity: '0.9'
+                        });
+                        // Pupil movement
+                        const pupilMove = this.el('animate', {
+                            attributeName: 'cx',
+                            values: `${40+offset};${40+offset+1};${40+offset};${40+offset-1};${40+offset}`,
+                            dur: '5s',
+                            repeatCount: 'indefinite'
+                        });
+                        pupil.appendChild(pupilMove);
+                        eyeGroup.appendChild(pupil);
+                        
+                        // Highlight
+                        const highlight = this.el('circle', {
+                            cx: 40 + offset + 1, cy: '36', r: '0.7',
+                            fill: '#ffffff',
+                            opacity: '0.6'
+                        });
+                        eyeGroup.appendChild(highlight);
+                        
+                        g.appendChild(eyeGroup);
+                    });
+                    
+                } else if (stage === 'Anchored') {
+                    // Personality-driven eyes - wise, settled
+                    [-7, 7].forEach((offset, i) => {
+                        const eyeGroup = this.el('g');
+                        
+                        // Outer ring (wisdom)
+                        const ring = this.el('ellipse', {
+                            cx: 40 + offset, cy: '36', rx: '6', ry: '4',
+                            fill: 'none',
+                            stroke: palette.primary,
+                            'stroke-width': '1',
+                            opacity: '0.5'
+                        });
+                        eyeGroup.appendChild(ring);
+                        
+                        // Main eye
+                        const eye = this.el('ellipse', {
+                            cx: 40 + offset, cy: '36', rx: '4.5', ry: '3',
+                            fill: palette.bright,
+                            opacity: '0.85',
+                            filter: 'url(#glow)'
+                        });
+                        this.animate(eye, 'opacity', '0.8;0.95;0.8', 4);
+                        eyeGroup.appendChild(eye);
+                        
+                        // Deep pupil
+                        const pupil = this.el('ellipse', {
+                            cx: 40 + offset, cy: '36', rx: '2', ry: '1.5',
+                            fill: palette.muted,
+                            opacity: '0.85'
+                        });
+                        eyeGroup.appendChild(pupil);
+                        
+                        // Inner light
+                        const light = this.el('circle', {
+                            cx: 40 + offset, cy: '36', r: '0.8',
+                            fill: palette.bright,
+                            opacity: '0.9'
+                        });
+                        eyeGroup.appendChild(light);
+                        
+                        // Dual highlights
+                        const hl1 = this.el('circle', {
+                            cx: 40 + offset + 1.5, cy: '35', r: '0.6',
+                            fill: '#ffffff',
+                            opacity: '0.7'
+                        });
+                        eyeGroup.appendChild(hl1);
+                        
+                        g.appendChild(eyeGroup);
+                    });
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // LAYER 7: HIGHLIGHTS & ACCENTS
+            // ═══════════════════════════════════════════════════════════════════
+            createHighlights(palette, stage) {
+                const g = this.el('g', { class: 'layer-highlights' });
+                
+                if (stage === 'Nascent') {
+                    // Occasional sparkle
+                    const sparkle = this.el('circle', {
+                        cx: '48', cy: '32', r: '1',
+                        fill: '#ffffff',
+                        opacity: '0'
+                    });
+                    // Fade in/out randomly
+                    this.animate(sparkle, 'opacity', '0;0;0.7;0', 5);
+                    g.appendChild(sparkle);
+                    
+                } else if (['Signal', 'Resonant'].includes(stage)) {
+                    // Corner highlights
+                    [[30, 25], [50, 25]].forEach(([x, y]) => {
+                        const hl = this.el('circle', {
+                            cx: x, cy: y, r: '0.8',
+                            fill: '#ffffff',
+                            opacity: '0.4'
+                        });
+                        this.animate(hl, 'opacity', '0.3;0.6;0.3', 3);
+                        g.appendChild(hl);
+                    });
+                    
+                } else if (['Manifest', 'Anchored'].includes(stage)) {
+                    // Multiple accent points
+                    const points = [[28, 22], [52, 22], [40, 12], [28, 58], [52, 58]];
+                    points.forEach(([x, y], i) => {
+                        const accent = this.el('circle', {
+                            cx: x, cy: y, r: '0.6',
+                            fill: palette.bright,
+                            opacity: '0.5'
+                        });
+                        this.animate(accent, 'opacity', '0.3;0.7;0.3', 2 + i * 0.5);
+                        g.appendChild(accent);
+                    });
+                }
+                
+                return g;
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // MAIN GENERATION
+            // ═══════════════════════════════════════════════════════════════════
+            generate(params, stage) {
+                const palette = STAGE_PALETTES[stage] || STAGE_PALETTES.Resonant;
+                
+                const svg = this.el('svg', {
+                    viewBox: '0 0 80 80',
+                    width: this.size,
+                    height: this.size
+                });
+                
+                // Build layers
+                svg.appendChild(this.createDefs(palette, stage));
+                svg.appendChild(this.createAura(palette, stage));
+                svg.appendChild(this.createFrame(palette, stage, params));
+                svg.appendChild(this.createCore(palette, stage, params));
+                svg.appendChild(this.createInnerGlow(palette, stage));
+                svg.appendChild(this.createOrbital(palette, stage, params));
+                svg.appendChild(this.createEyes(palette, stage, params));
+                svg.appendChild(this.createHighlights(palette, stage));
+                
+                return svg;
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════════
+        // STUDIO UI LOGIC
+        // ═══════════════════════════════════════════════════════════════════════
+        
         let currentStage = 'Resonant';
         let currentParameters = null;
+        const generator = new EhkoGenerator(160);
         
         // Stage button handling
         document.querySelectorAll('.stage-btn').forEach(btn => {
@@ -468,22 +1414,21 @@
         });
         
         function renderAvatar(params, stage) {
-            // For now, just show the parameters
-            // Later: generate actual SVG from parameters
+            // Generate actual SVG
+            const svg = generator.generate(params, stage);
+            
+            // Clear and insert
+            const previewEl = document.getElementById('previewAvatar');
+            previewEl.innerHTML = '';
+            previewEl.appendChild(svg);
+            
+            // Update info
             document.getElementById('previewTitle').textContent = `${stage} Avatar`;
             document.getElementById('previewStage').textContent = `Stage: ${stage}`;
             
+            // Show parameters
             document.getElementById('paramDisplay').style.display = 'block';
             document.getElementById('paramText').textContent = JSON.stringify(params, null, 2);
-            
-            // TODO: Generate actual SVG from parameters
-            document.getElementById('previewAvatar').innerHTML = `
-                <div style="color: #6b8cce; text-align: center;">
-                    <div style="font-size: 1.2rem; margin-bottom: 10px;">◆</div>
-                    <div style="font-size: 0.85rem; opacity: 0.7;">SVG rendering coming soon</div>
-                    <div style="font-size: 0.75rem; opacity: 0.5; margin-top: 5px;">See parameters below</div>
-                </div>
-            `;
         }
         
         function updatePreviewStage() {
