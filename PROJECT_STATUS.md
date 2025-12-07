@@ -257,7 +257,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 | Script | Version | Status |
 |--------|---------|--------|
 | ehko_refresh.py | v2.0 | ✅ Working |
-| forge_server.py | v2.4 | ✅ Working |
+| forge_server.py | v2.5 | ✅ Working |
 | ehko_control.py | v2.0 | ✅ Working |
 | run_ingot_migration.py | v1.0 | ✅ Applied |
 | run_reorientation_migration.py | v1.0 | ✅ Applied |

@@ -99,7 +99,7 @@ Universal/
 #### Root Scripts
 ```
 ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
-forge_server.py                   [v2.4, working] — Flask server + Mana system + LLM + ReCog scheduler
+forge_server.py                   [v2.5, working] — Flask server + Mana + LLM + ReCog + Evolution Studio
 ehko_control.py                   [v2.0, working] — GUI control panel (tkinter, touch-optimized)
 EhkoForge Control Panel.vbs       [v1.0, working] — Silent launcher (no console window)
 run_ingot_migration.py            [v1.0, applied]  — Ingot tables migration

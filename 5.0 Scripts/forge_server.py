@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.4
+EhkoForge Server v2.5
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
-and ReCog scheduler with user confirmation flow.
+ReCog scheduler with user confirmation flow, and Evolution Studio.
 
 Run: python forge_server.py
 Access: http://localhost:5000
@@ -12,8 +12,10 @@ Access: http://localhost:5000
 Routes:
     / -> Main terminal UI (consolidated)
     /forge -> Insite review page
+    /studio -> Evolution Studio (Ehko visual identity explorer)
     /reflect, /terminal -> Redirect to /
     /api/mana/* -> Mana management endpoints
+    /api/avatar/generate -> Avatar parameter generation
 """
 
 # Load environment variables FIRST, before any other imports
@@ -1549,6 +1551,136 @@ def get_ehko_layers():
 
 
 # =============================================================================
+# API ROUTES - AVATAR GENERATION
+# =============================================================================
+
+# Stage parameter templates from Visual Identity Spec v1.1
+STAGE_TEMPLATES = {
+    "Nascent": {
+        "opacity_range": [0.05, 0.30],
+        "blur_range": [6, 12],
+        "element_range": [1, 5],
+        "core_shapes": ["circle", "ellipse", "soft-polygon", "glyph", "rune"],
+        "eye_types": ["none", "simple-glow"],
+        "colour": "#6b8cce",
+    },
+    "Signal": {
+        "opacity_range": [0.15, 0.50],
+        "blur_range": [4, 8],
+        "element_range": [3, 8],
+        "core_shapes": ["circle", "square", "hexagon", "triangle", "diamond"],
+        "eye_types": ["dots", "small-bars", "triangles"],
+        "colour": "#7ed99b",
+    },
+    "Resonant": {
+        "opacity_range": [0.30, 0.70],
+        "blur_range": [2, 6],
+        "element_range": [6, 15],
+        "core_shapes": ["monitor", "hologram-frame", "crystal", "lantern", "sphere-cage"],
+        "eye_types": ["bars", "squares", "crescents", "dual-glow"],
+        "colour": "#d9c67e",
+    },
+    "Manifest": {
+        "opacity_range": [0.50, 0.90],
+        "blur_range": [0, 4],
+        "element_range": [10, 25],
+        "core_shapes": ["ornate-terminal", "cathedral-lattice", "clock-face", "nested-mandala"],
+        "eye_types": ["multi-part", "animated", "reactive"],
+        "colour": "#d97e9b",
+    },
+    "Anchored": {
+        "opacity_range": [0.70, 1.0],
+        "blur_range": [0, 2],
+        "element_range": [15, 40],
+        "core_shapes": ["workstation", "shrine", "detailed-craft", "ornate-frame", "symbolic-totem"],
+        "eye_types": ["fully-articulated", "personality-driven"],
+        "colour": "#c9a962",
+    },
+}
+
+
+def generate_avatar_params(stage: str, seed: str, description: str = None) -> dict:
+    """
+    Generate avatar parameters within stage constraints.
+    
+    For now, uses deterministic random based on seed.
+    Future: LLM-assisted coached evolution from description.
+    """
+    import hashlib
+    
+    template = STAGE_TEMPLATES.get(stage, STAGE_TEMPLATES["Resonant"])
+    
+    # Create deterministic seed from string
+    seed_hash = int(hashlib.sha256(seed.encode()).hexdigest()[:8], 16)
+    random.seed(seed_hash)
+    
+    # Generate parameters within stage bounds
+    params = {
+        "stage": stage,
+        "seed": seed,
+        "core_shape": random.choice(template["core_shapes"]),
+        "opacity": round(random.uniform(*template["opacity_range"]), 2),
+        "blur_radius": round(random.uniform(*template["blur_range"]), 1),
+        "element_count": random.randint(*template["element_range"]),
+        "eye_type": random.choice(template["eye_types"]),
+        "base_colour": template["colour"],
+        "hue_shift": random.randint(-15, 15),
+    }
+    
+    # Add stage-specific extras
+    if stage == "Nascent":
+        params["particle_count"] = random.randint(0, 8)
+        params["energy_lines"] = random.randint(0, 4)
+    elif stage == "Signal":
+        params["connection_nodes"] = random.randint(0, 6)
+        params["nesting"] = random.choice([True, False])
+    elif stage in ["Resonant", "Manifest", "Anchored"]:
+        params["thematic_elements"] = random.sample(
+            ["antennas", "wings", "halo", "crown", "base-stand", "vents", "connectors"],
+            k=min(random.randint(1, 3), 3)
+        )
+    
+    # Reset random seed
+    random.seed()
+    
+    return params
+
+
+@app.route("/api/avatar/generate", methods=["POST"])
+def generate_avatar():
+    """
+    Generate avatar parameters for Evolution Studio.
+    
+    Request body:
+    - stage: Authority stage (Nascent, Signal, Resonant, Manifest, Anchored)
+    - seed: Optional seed string for deterministic generation
+    - description: Optional description for coached evolution (future LLM feature)
+    """
+    data = request.get_json() or {}
+    
+    stage = data.get("stage", "Resonant")
+    seed = data.get("seed", f"random-{uuid4().hex[:8]}")
+    description = data.get("description")
+    
+    if stage not in STAGE_TEMPLATES:
+        return jsonify({"success": False, "error": f"Unknown stage: {stage}"}), 400
+    
+    try:
+        params = generate_avatar_params(stage, seed, description)
+        
+        method = "coached" if description else "random"
+        
+        return jsonify({
+            "success": True,
+            "parameters": params,
+            "stage": stage,
+            "method": method,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
 # LLM STATUS ENDPOINTS
 # =============================================================================
 
@@ -2146,6 +2278,12 @@ def terminal():
     return redirect("/")
 
 
+@app.route("/studio")
+def evolution_studio():
+    """Serve Evolution Studio (Ehko visual identity explorer)."""
+    return render_template("evolution_studio.html")
+
+
 # =============================================================================
 # STATIC FILE SERVING
 # =============================================================================
@@ -2174,8 +2312,8 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.4")
-    print("Authority, Mana & ReCog Scheduler Active")
+    print("EHKOFORGE SERVER v2.5")
+    print("Authority, Mana, ReCog Scheduler & Evolution Studio Active")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")
     print(f"Static files: {STATIC_PATH}")
