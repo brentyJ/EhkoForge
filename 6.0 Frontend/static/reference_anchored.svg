@@ -1,0 +1,343 @@
+<!--
+ANCHORED STAGE REFERENCE IMPLEMENTATION
+Authority: 80-100%
+Form: Digital Shrine/Altar
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  
+  <defs>
+    <filter id="anchored-glow">
+      <feGaussianBlur stdDeviation="1.5" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="accent-glow">
+      <feGaussianBlur stdDeviation="0.8" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <metadata>
+    <ehko:data xmlns:ehko="http://ehkoforge.ai/schema">
+      <n>Anchored Reference</n>
+      <stage>Anchored</stage>
+      <authority_percent>90</authority_percent>
+      <form_type>digital_shrine</form_type>
+      <generator_version>1.1</generator_version>
+    </ehko:data>
+  </metadata>
+  
+  <!-- Base platform (grounding element) -->
+  <rect x="10" y="70" width="60" height="4" rx="0.5"
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="1.5" 
+        opacity="0.9"/>
+  
+  <!-- Platform steps -->
+  <rect x="15" y="67" width="50" height="3" rx="0.5"
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="1" 
+        opacity="0.8"/>
+  
+  <rect x="20" y="64" width="40" height="3" rx="0.5"
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="1" 
+        opacity="0.7"/>
+  
+  <!-- Supporting columns -->
+  <!-- Left column -->
+  <rect x="22" y="38" width="4" height="26" 
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="1.2" 
+        opacity="0.85"/>
+  
+  <!-- Column capital (left) -->
+  <rect x="21" y="36" width="6" height="2" 
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="0.8" 
+        opacity="0.8"/>
+  
+  <!-- Right column -->
+  <rect x="54" y="38" width="4" height="26" 
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="1.2" 
+        opacity="0.85"/>
+  
+  <!-- Column capital (right) -->
+  <rect x="53" y="36" width="6" height="2" 
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="0.8" 
+        opacity="0.8"/>
+  
+  <!-- Main shrine body (central structure) -->
+  <rect x="28" y="24" width="24" height="40" rx="1"
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="2" 
+        opacity="0.9"
+        filter="url(#anchored-glow)"/>
+  
+  <!-- Inner sanctuary -->
+  <rect x="32" y="28" width="16" height="32" rx="0.5"
+        fill="none"
+        stroke="#c9a962" 
+        stroke-width="1.5" 
+        opacity="0.8"
+        filter="url(#anchored-glow)"/>
+  
+  <!-- Sacred screen/window -->
+  <rect x="34" y="32" width="12" height="16" rx="0.5"
+        fill="#c9a962" 
+        opacity="0.12"
+        filter="url(#anchored-glow)">
+    <animate attributeName="opacity" 
+             values="0.1;0.15;0.1" 
+             dur="4s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Ornate crown/roof -->
+  <polygon points="40,12 28,22 52,22" 
+           fill="none"
+           stroke="#c9a962" 
+           stroke-width="1.5" 
+           opacity="0.85"
+           filter="url(#anchored-glow)"/>
+  
+  <!-- Roof detail lines -->
+  <line x1="32" y1="20" x2="48" y2="20" 
+        stroke="#c9a962" 
+        stroke-width="0.8" 
+        opacity="0.7"/>
+  
+  <line x1="34" y1="18" x2="46" y2="18" 
+        stroke="#c9a962" 
+        stroke-width="0.6" 
+        opacity="0.6"/>
+  
+  <!-- Spire/antenna -->
+  <line x1="40" y1="12" x2="40" y2="6" 
+        stroke="#c9a962" 
+        stroke-width="1" 
+        opacity="0.8"
+        filter="url(#accent-glow)"/>
+  
+  <circle cx="40" cy="6" r="2" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.6;0.9;0.6" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Decorative lattice (inner sanctuary) -->
+  <!-- Vertical lines -->
+  <line x1="36" y1="32" x2="36" y2="48" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.4"/>
+  
+  <line x1="40" y1="32" x2="40" y2="48" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.4"/>
+  
+  <line x1="44" y1="32" x2="44" y2="48" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.4"/>
+  
+  <!-- Horizontal lines -->
+  <line x1="34" y1="36" x2="46" y2="36" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.4"/>
+  
+  <line x1="34" y1="40" x2="46" y2="40" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.4"/>
+  
+  <line x1="34" y1="44" x2="46" y2="44" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.4"/>
+  
+  <!-- Memory symbols (thematic customisation) -->
+  <!-- Left side panel -->
+  <circle cx="19" cy="45" r="2.5" 
+          fill="none"
+          stroke="#c9a962" 
+          stroke-width="0.8" 
+          opacity="0.6"
+          filter="url(#accent-glow)"/>
+  
+  <path d="M 19,43 L 19,47" 
+        stroke="#c9a962" 
+        stroke-width="0.5" 
+        opacity="0.5"/>
+  
+  <path d="M 17,45 L 21,45" 
+        stroke="#c9a962" 
+        stroke-width="0.5" 
+        opacity="0.5"/>
+  
+  <!-- Right side panel -->
+  <polygon points="61,43 58,47 64,47" 
+           fill="none"
+           stroke="#c9a962" 
+           stroke-width="0.8" 
+           opacity="0.6"
+           filter="url(#accent-glow)"/>
+  
+  <!-- Offering plates (lower detail) -->
+  <ellipse cx="24" cy="62" rx="3" ry="1.5" 
+           fill="none"
+           stroke="#c9a962" 
+           stroke-width="0.8" 
+           opacity="0.6"/>
+  
+  <ellipse cx="56" cy="62" rx="3" ry="1.5" 
+           fill="none"
+           stroke="#c9a962" 
+           stroke-width="0.8" 
+           opacity="0.6"/>
+  
+  <!-- Energy nodes (side accents) -->
+  <!-- Left nodes -->
+  <circle cx="26" cy="30" r="1.5" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="26" cy="40" r="1.5" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.5s"/>
+  </circle>
+  
+  <circle cx="26" cy="50" r="1.5" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="1s"/>
+  </circle>
+  
+  <!-- Right nodes -->
+  <circle cx="54" cy="30" r="1.5" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.25s"/>
+  </circle>
+  
+  <circle cx="54" cy="40" r="1.5" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.75s"/>
+  </circle>
+  
+  <circle cx="54" cy="50" r="1.5" 
+          fill="#c9a962" 
+          opacity="0.7"
+          filter="url(#accent-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="1.25s"/>
+  </circle>
+  
+  <!-- Architectural details (upper shrine) -->
+  <line x1="28" y1="26" x2="52" y2="26" 
+        stroke="#c9a962" 
+        stroke-width="0.5" 
+        opacity="0.6"/>
+  
+  <line x1="30" y1="24" x2="50" y2="24" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.5"/>
+  
+  <!-- Eyes (fully articulated, personality-driven) -->
+  <!-- Complex multi-part eyes -->
+  <!-- Left eye -->
+  <rect x="35" y="50" width="4" height="5" rx="1"
+        fill="#c9a962" 
+        opacity="0.9"
+        filter="url(#anchored-glow)">
+    <animate attributeName="opacity" 
+             values="0.85;1.0;0.85" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Left eye highlight -->
+  <rect x="36" y="51" width="1.5" height="2" rx="0.5"
+        fill="#c9a962" 
+        opacity="1.0"
+        filter="url(#accent-glow)"/>
+  
+  <!-- Right eye -->
+  <rect x="41" y="50" width="4" height="5" rx="1"
+        fill="#c9a962" 
+        opacity="0.9"
+        filter="url(#anchored-glow)">
+    <animate attributeName="opacity" 
+             values="0.85;1.0;0.85" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Right eye highlight -->
+  <rect x="42.5" y="51" width="1.5" height="2" rx="0.5"
+        fill="#c9a962" 
+        opacity="1.0"
+        filter="url(#accent-glow)"/>
+  
+  <!-- Eye connecting line (subtle expression detail) -->
+  <line x1="39" y1="52" x2="41" y2="52" 
+        stroke="#c9a962" 
+        stroke-width="0.3" 
+        opacity="0.6"/>
+  
+</svg>

@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-06  
-**Version:** 1.41  
+**Last Updated:** 2025-12-08  
+**Version:** 1.42  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -41,6 +41,20 @@
   - ehko_control.py v3.0: Aligned theme, Server/ReCog/Index/Folders panels
 - [ ] **Phase 6: Report System** — ReCog → Ehko snapshots
 
+### Ehko Visual Identity System (NEW)
+- [x] **Phase 1: Specification** — Complete design language documentation
+  - Spec: `1.0 System Architecture/1_8_Ehko_Visual_Identity_Spec_v1_0.md`
+  - 5 Authority stages with generative parameter bounds
+  - Universal canvas (80×80 SVG), colour system, animation states
+  - Export formats (SVG with metadata, PNG, CSS-only)
+- [x] **Phase 2: Reference Implementations** — SVG examples for all stages
+  - Files: `reference_nascent.svg`, `reference_signal.svg`, `reference_resonant.svg`, `reference_manifest.svg`, `reference_anchored.svg`
+  - Gallery: `ehko_reference_gallery.html`
+  - Studio: `evolution_studio.html` (interactive stage explorer)
+- [ ] **Phase 3: Generative Engine** — JavaScript EhkoGenerator class
+- [ ] **Phase 4: Export System** — SVG/PNG/CSS download interface
+- [ ] **Phase 5: Evolution Engine** — Stage transition animations
+
 ### Reorientation (Creative Direction Shift)
 - [x] **Phase 1: Foundation** — Database migration, Authority/Mana systems, stage-based prompts
 - [x] **Phase 2: UI Consolidation** — Single terminal, mode toggle, retro aesthetic, Authority bars, Mana display
@@ -49,7 +63,7 @@
 - [x] **Phase 4B: Mana Infrastructure (Frontend)** — Purchase modal, config panel, balance display, usage history
 - [ ] **Phase 5: ReCog Engine** — Prototype, validate, integrate
 - [ ] **Phase 6: Identity Pillars + Core Memories** — Auto-population + suggestion system
-- [ ] **Phase 7: Ehko Evolution System** — Authority-driven visual progression
+- [x] **Phase 7: Ehko Evolution System** — Authority-driven visual progression (see Ehko Visual Identity System)
 
 See: `2.0 Modules/Reorientation_Spec_v0_1.md`  
 **Note:** Phase 7+ strategic planning in `_private/` docs
@@ -219,6 +233,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-08 Session 28:** Ehko Visual Identity System Phases 1-2 complete — Full specification v1.1 (500+ lines), 5 reference SVGs (one per Authority stage), gallery viewer, evolution studio. Stage-based generative constraints, export formats, animation states defined.
+- **2025-12-07 Session 27:** LLM Tether UI, API key management with hot-reload, SQLite threading fixes.
 - **2025-12-06 Session 26:** Memory Tiers & Progression System Phases 1+3+5 complete — Schema migration (5 tables), ReCog Scheduler v1.0 with confirmation flow, 8 new API endpoints (/api/recog/*), ReCog UI (red palette, queue/reports/progression tabs, processing animation), forge_server.py v2.4.
 - **2025-12-05 Session 25:** ReCog Core v1.0 complete — All 4 tiers + EhkoForge adapter. Integration test passed (9 insights, 1 pattern, 2 syntheses from real content).
 
@@ -261,6 +277,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 | Spec | Version | Status |
 |------|---------|--------|
+| 1_8_Ehko_Visual_Identity_Spec_v1_0.md | v1.1 | 📋 Specified |
 | ReCog_Engine_Spec_v0_2.md | v0.2 | 📋 Specified |
 | Ingot_System_Schema_v0_1.md | v0.1 | ✅ Implemented |
 | Tier0_PreAnnotation_Spec_v0_1.md | v0.1 | ✅ Implemented |
@@ -289,6 +306,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.42 — 2025-12-08 Session 28 — Ehko Visual Identity System: Spec v1.1, 5 reference SVGs, gallery, evolution studio. Marked Reorientation Phase 7 complete.
 - v1.41 — 2025-12-06 Session 26 — Document Ingestion Phase 2: ReCog Bridge. Scheduler extract_docs operation, adapter chunk methods, batch processing pipeline.
 - v1.40 — 2025-12-06 Session 26 — Document Ingestion System Phase 1: migration (6 tables), ingestion module (parsers for PDF/MD/TXT/Messages), chunker, CLI, _inbox folder.
 - v1.39 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css (red palette), recog.js (API interactions), index.html updates (drawer, overlays, toast), scheduler.py cooldown fix, ehko_control.py v3.0 (theme alignment, streamlined panels).

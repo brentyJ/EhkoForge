@@ -1,0 +1,278 @@
+<!--
+MANIFEST STAGE REFERENCE IMPLEMENTATION
+Authority: 60-80%
+Form: Mechanical Clock Face
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  
+  <defs>
+    <filter id="manifest-glow">
+      <feGaussianBlur stdDeviation="2" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="subtle-glow">
+      <feGaussianBlur stdDeviation="1" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <metadata>
+    <ehko:data xmlns:ehko="http://ehkoforge.ai/schema">
+      <n>Manifest Reference</n>
+      <stage>Manifest</stage>
+      <authority_percent>70</authority_percent>
+      <form_type>mechanical_clock</form_type>
+      <generator_version>1.1</generator_version>
+    </ehko:data>
+  </metadata>
+  
+  <!-- Outer ornate frame -->
+  <circle cx="40" cy="40" r="28" 
+          fill="none"
+          stroke="#d97e9b" 
+          stroke-width="2" 
+          opacity="0.7"
+          filter="url(#manifest-glow)"/>
+  
+  <!-- Inner clock face -->
+  <circle cx="40" cy="40" r="24" 
+          fill="none"
+          stroke="#d97e9b" 
+          stroke-width="1.5" 
+          opacity="0.6"
+          filter="url(#manifest-glow)"/>
+  
+  <!-- Decorative outer ring -->
+  <circle cx="40" cy="40" r="30" 
+          fill="none"
+          stroke="#d97e9b" 
+          stroke-width="0.5" 
+          opacity="0.4"/>
+  
+  <!-- Hour markers (12 positions) -->
+  <!-- 12 o'clock -->
+  <line x1="40" y1="18" x2="40" y2="22" 
+        stroke="#d97e9b" 
+        stroke-width="1.5" 
+        opacity="0.7"
+        filter="url(#subtle-glow)"/>
+  
+  <!-- 3 o'clock -->
+  <line x1="62" y1="40" x2="58" y2="40" 
+        stroke="#d97e9b" 
+        stroke-width="1.5" 
+        opacity="0.7"
+        filter="url(#subtle-glow)"/>
+  
+  <!-- 6 o'clock -->
+  <line x1="40" y1="62" x2="40" y2="58" 
+        stroke="#d97e9b" 
+        stroke-width="1.5" 
+        opacity="0.7"
+        filter="url(#subtle-glow)"/>
+  
+  <!-- 9 o'clock -->
+  <line x1="18" y1="40" x2="22" y2="40" 
+        stroke="#d97e9b" 
+        stroke-width="1.5" 
+        opacity="0.7"
+        filter="url(#subtle-glow)"/>
+  
+  <!-- Secondary markers (smaller) -->
+  <!-- 1 o'clock -->
+  <line x1="51" y1="24" x2="49" y2="26" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 2 o'clock -->
+  <line x1="58" y1="31" x2="56" y2="32.5" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 4 o'clock -->
+  <line x1="58" y1="49" x2="56" y2="47.5" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 5 o'clock -->
+  <line x1="51" y1="56" x2="49" y2="54" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 7 o'clock -->
+  <line x1="29" y1="56" x2="31" y2="54" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 8 o'clock -->
+  <line x1="22" y1="49" x2="24" y2="47.5" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 10 o'clock -->
+  <line x1="22" y1="31" x2="24" y2="32.5" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- 11 o'clock -->
+  <line x1="29" y1="24" x2="31" y2="26" 
+        stroke="#d97e9b" 
+        stroke-width="0.8" 
+        opacity="0.5"/>
+  
+  <!-- Center gear mechanism -->
+  <circle cx="40" cy="40" r="5" 
+          fill="none"
+          stroke="#d97e9b" 
+          stroke-width="1" 
+          opacity="0.8"
+          filter="url(#manifest-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="0 40 40"
+                      to="360 40 40"
+                      dur="20s"
+                      repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Gear teeth (simplified) -->
+  <g opacity="0.6">
+    <line x1="40" y1="35" x2="40" y2="34" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="44" y1="36" x2="45" y2="35" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="45" y1="40" x2="46" y2="40" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="44" y1="44" x2="45" y2="45" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="40" y1="45" x2="40" y2="46" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="36" y1="44" x2="35" y2="45" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="35" y1="40" x2="34" y2="40" stroke="#d97e9b" stroke-width="0.8"/>
+    <line x1="36" y1="36" x2="35" y2="35" stroke="#d97e9b" stroke-width="0.8"/>
+    
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="0 40 40"
+                      to="360 40 40"
+                      dur="20s"
+                      repeatCount="indefinite"/>
+  </g>
+  
+  <!-- Secondary gear (smaller, offset) -->
+  <circle cx="52" cy="28" r="3" 
+          fill="none"
+          stroke="#d97e9b" 
+          stroke-width="0.8" 
+          opacity="0.5">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="0 52 28"
+                      to="-360 52 28"
+                      dur="15s"
+                      repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Corner ornaments -->
+  <!-- Top-left -->
+  <path d="M 15,15 L 20,15 L 20,20" 
+        fill="none"
+        stroke="#d97e9b" 
+        stroke-width="1" 
+        opacity="0.4"/>
+  
+  <!-- Top-right -->
+  <path d="M 65,15 L 60,15 L 60,20" 
+        fill="none"
+        stroke="#d97e9b" 
+        stroke-width="1" 
+        opacity="0.4"/>
+  
+  <!-- Bottom-left -->
+  <path d="M 15,65 L 20,65 L 20,60" 
+        fill="none"
+        stroke="#d97e9b" 
+        stroke-width="1" 
+        opacity="0.4"/>
+  
+  <!-- Bottom-right -->
+  <path d="M 65,65 L 60,65 L 60,60" 
+        fill="none"
+        stroke="#d97e9b" 
+        stroke-width="1" 
+        opacity="0.4"/>
+  
+  <!-- Clock hands -->
+  <!-- Hour hand (pointing to 2) -->
+  <line x1="40" y1="40" x2="48" y2="34" 
+        stroke="#d97e9b" 
+        stroke-width="1.5" 
+        opacity="0.8"
+        filter="url(#manifest-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="0 40 40"
+                      to="360 40 40"
+                      dur="60s"
+                      repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Minute hand (pointing to 10) -->
+  <line x1="40" y1="40" x2="32" y2="28" 
+        stroke="#d97e9b" 
+        stroke-width="1" 
+        opacity="0.7"
+        filter="url(#manifest-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="0 40 40"
+                      to="360 40 40"
+                      dur="5s"
+                      repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Base pedestal -->
+  <rect x="35" y="68" width="10" height="3" 
+        fill="none"
+        stroke="#d97e9b" 
+        stroke-width="1" 
+        opacity="0.6"/>
+  
+  <polygon points="40,71 32,74 48,74" 
+           fill="none"
+           stroke="#d97e9b" 
+           stroke-width="1" 
+           opacity="0.6"/>
+  
+  <!-- Eyes (highly expressive, integrated into design) -->
+  <rect x="33" y="38" width="5" height="4" rx="1"
+        fill="#d97e9b" 
+        opacity="0.85"
+        filter="url(#manifest-glow)">
+    <animate attributeName="opacity" 
+             values="0.75;0.95;0.75" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <rect x="42" y="38" width="5" height="4" rx="1"
+        fill="#d97e9b" 
+        opacity="0.85"
+        filter="url(#manifest-glow)">
+    <animate attributeName="opacity" 
+             values="0.75;0.95;0.75" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+</svg>

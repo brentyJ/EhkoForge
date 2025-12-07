@@ -1,0 +1,205 @@
+<!--
+SIGNAL STAGE REFERENCE IMPLEMENTATION
+Authority: 20-40%
+Form: Hexagon with Corner Nodes
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  
+  <defs>
+    <filter id="signal-glow">
+      <feGaussianBlur stdDeviation="6" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="node-glow">
+      <feGaussianBlur stdDeviation="3" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <metadata>
+    <ehko:data xmlns:ehko="http://ehkoforge.ai/schema">
+      <n>Signal Reference</n>
+      <stage>Signal</stage>
+      <authority_percent>30</authority_percent>
+      <form_type>hexagon_nodes</form_type>
+      <generator_version>1.1</generator_version>
+    </ehko:data>
+  </metadata>
+  
+  <!-- Primary hexagon -->
+  <polygon points="40,20 56,30 56,50 40,60 24,50 24,30" 
+           fill="none"
+           stroke="#7ed99b" 
+           stroke-width="1.5" 
+           opacity="0.4"
+           filter="url(#signal-glow)">
+    <animate attributeName="opacity" 
+             values="0.35;0.45;0.35" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </polygon>
+  
+  <!-- Inner hexagon (nested) -->
+  <polygon points="40,28 50,34 50,46 40,52 30,46 30,34" 
+           fill="none"
+           stroke="#7ed99b" 
+           stroke-width="1" 
+           opacity="0.3"
+           filter="url(#signal-glow)">
+    <animate attributeName="opacity" 
+             values="0.25;0.35;0.25" 
+             dur="4s" 
+             repeatCount="indefinite"/>
+  </polygon>
+  
+  <!-- Center glow -->
+  <circle cx="40" cy="40" r="6" 
+          fill="#7ed99b" 
+          opacity="0.15"
+          filter="url(#signal-glow)">
+    <animate attributeName="opacity" 
+             values="0.1;0.2;0.1" 
+             dur="3.5s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Corner nodes -->
+  <!-- Top -->
+  <circle cx="40" cy="20" r="2.5" 
+          fill="#7ed99b" 
+          opacity="0.6"
+          filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0s"/>
+  </circle>
+  
+  <!-- Top-right -->
+  <circle cx="56" cy="30" r="2.5" 
+          fill="#7ed99b" 
+          opacity="0.6"
+          filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.3s"/>
+  </circle>
+  
+  <!-- Bottom-right -->
+  <circle cx="56" cy="50" r="2.5" 
+          fill="#7ed99b" 
+          opacity="0.6"
+          filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.6s"/>
+  </circle>
+  
+  <!-- Bottom -->
+  <circle cx="40" cy="60" r="2.5" 
+          fill="#7ed99b" 
+          opacity="0.6"
+          filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.9s"/>
+  </circle>
+  
+  <!-- Bottom-left -->
+  <circle cx="24" cy="50" r="2.5" 
+          fill="#7ed99b" 
+          opacity="0.6"
+          filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="1.2s"/>
+  </circle>
+  
+  <!-- Top-left -->
+  <circle cx="24" cy="30" r="2.5" 
+          fill="#7ed99b" 
+          opacity="0.6"
+          filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="1.5s"/>
+  </circle>
+  
+  <!-- Connection lines (faint) -->
+  <line x1="40" y1="40" x2="40" y2="20" 
+        stroke="#7ed99b" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#signal-glow)"/>
+  
+  <line x1="40" y1="40" x2="56" y2="30" 
+        stroke="#7ed99b" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#signal-glow)"/>
+  
+  <line x1="40" y1="40" x2="56" y2="50" 
+        stroke="#7ed99b" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#signal-glow)"/>
+  
+  <line x1="40" y1="40" x2="40" y2="60" 
+        stroke="#7ed99b" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#signal-glow)"/>
+  
+  <line x1="40" y1="40" x2="24" y2="50" 
+        stroke="#7ed99b" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#signal-glow)"/>
+  
+  <line x1="40" y1="40" x2="24" y2="30" 
+        stroke="#7ed99b" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#signal-glow)"/>
+  
+  <!-- Eyes (simple bars) -->
+  <rect x="35" y="39" width="3" height="2" 
+        fill="#7ed99b" 
+        opacity="0.7"
+        filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.6;0.8;0.6" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <rect x="42" y="39" width="3" height="2" 
+        fill="#7ed99b" 
+        opacity="0.7"
+        filter="url(#node-glow)">
+    <animate attributeName="opacity" 
+             values="0.6;0.8;0.6" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+</svg>

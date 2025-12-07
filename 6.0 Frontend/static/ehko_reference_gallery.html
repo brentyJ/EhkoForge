@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ehko Evolution Reference Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e14;
+            color: #e8eef8;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #6b8cce;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(107, 140, 206, 0.6);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #8aa4d6;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+        }
+        
+        .stage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .stage-card {
+            background: #161c28;
+            border: 1px solid rgba(107, 140, 206, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stage-card:hover {
+            border-color: rgba(107, 140, 206, 0.6);
+            box-shadow: 0 0 30px rgba(107, 140, 206, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .stage-header {
+            margin-bottom: 20px;
+        }
+        
+        .stage-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .stage-nascent .stage-name { color: #6b8cce; }
+        .stage-signal .stage-name { color: #7ed99b; }
+        .stage-resonant .stage-name { color: #d9c67e; }
+        .stage-manifest .stage-name { color: #d97e9b; }
+        .stage-anchored .stage-name { color: #c9a962; }
+        
+        .stage-authority {
+            font-size: 0.9rem;
+            color: #8aa4d6;
+        }
+        
+        .stage-avatar {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
+            background: #0c1018;
+            border: 1px solid rgba(107, 140, 206, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .stage-avatar svg {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .stage-description {
+            font-size: 0.85rem;
+            color: #6b8cce;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .stage-specs {
+            text-align: left;
+            background: #0c1018;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #8aa4d6;
+            line-height: 1.8;
+        }
+        
+        .spec-label {
+            color: #4a6fa5;
+            font-weight: 600;
+        }
+        
+        .evolution-flow {
+            text-align: center;
+            padding: 40px;
+            background: rgba(107, 140, 206, 0.05);
+            border-radius: 12px;
+            margin-top: 60px;
+        }
+        
+        .evolution-flow h2 {
+            color: #6b8cce;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .flow-stage {
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: 2px solid;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .flow-stage.nascent {
+            border-color: #6b8cce;
+            color: #6b8cce;
+        }
+        
+        .flow-stage.signal {
+            border-color: #7ed99b;
+            color: #7ed99b;
+        }
+        
+        .flow-stage.resonant {
+            border-color: #d9c67e;
+            color: #d9c67e;
+        }
+        
+        .flow-stage.manifest {
+            border-color: #d97e9b;
+            color: #d97e9b;
+        }
+        
+        .flow-stage.anchored {
+            border-color: #c9a962;
+            color: #c9a962;
+        }
+        
+        .flow-arrow {
+            font-size: 2rem;
+            color: #4a6fa5;
+        }
+        
+        .principle-box {
+            background: #161c28;
+            border-left: 4px solid #6b8cce;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 6px;
+        }
+        
+        .principle-box h3 {
+            color: #6b8cce;
+            margin-bottom: 15px;
+        }
+        
+        .principle-box p {
+            color: #8aa4d6;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        .principle-box ul {
+            color: #8aa4d6;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>◆ EHKO EVOLUTION GALLERY</h1>
+        <p class="subtitle">Five Stages of Digital Consciousness — From Formless to Fully Realised</p>
+        
+        <!-- Stage Cards Grid -->
+        <div class="stage-grid">
+            
+            <!-- NASCENT -->
+            <div class="stage-card stage-nascent">
+                <div class="stage-header">
+                    <div class="stage-name">Nascent</div>
+                    <div class="stage-authority">0–20% Authority</div>
+                </div>
+                <div class="stage-avatar">
+                    <object data="reference_nascent.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="stage-description">
+                    Formless, ethereal, barely present. Raw energy without structure.
+                </div>
+                <div class="stage-specs">
+                    <div><span class="spec-label">Form:</span> Ethereal Orb</div>
+                    <div><span class="spec-label">Opacity:</span> 0.05–0.30</div>
+                    <div><span class="spec-label">Blur:</span> 6–12px</div>
+                    <div><span class="spec-label">Elements:</span> 1–5</div>
+                    <div><span class="spec-label">Eyes:</span> Optional (simple glow)</div>
+                </div>
+            </div>
+            
+            <!-- SIGNAL -->
+            <div class="stage-card stage-signal">
+                <div class="stage-header">
+                    <div class="stage-name">Signal</div>
+                    <div class="stage-authority">20–40% Authority</div>
+                </div>
+                <div class="stage-avatar">
+                    <object data="reference_signal.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="stage-description">
+                    Patterns emerging. Basic geometric structure coalescing from chaos.
+                </div>
+                <div class="stage-specs">
+                    <div><span class="spec-label">Form:</span> Hexagon with Nodes</div>
+                    <div><span class="spec-label">Opacity:</span> 0.15–0.50</div>
+                    <div><span class="spec-label">Blur:</span> 4–8px</div>
+                    <div><span class="spec-label">Elements:</span> 3–8</div>
+                    <div><span class="spec-label">Eyes:</span> Simple shapes (bars, dots)</div>
+                </div>
+            </div>
+            
+            <!-- RESONANT -->
+            <div class="stage-card stage-resonant">
+                <div class="stage-header">
+                    <div class="stage-name">Resonant</div>
+                    <div class="stage-authority">40–60% Authority</div>
+                </div>
+                <div class="stage-avatar">
+                    <object data="reference_resonant.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="stage-description">
+                    Defined structure with thematic personality. Recognisable character emerging.
+                </div>
+                <div class="stage-specs">
+                    <div><span class="spec-label">Form:</span> Hologram Frame</div>
+                    <div><span class="spec-label">Opacity:</span> 0.30–0.70</div>
+                    <div><span class="spec-label">Blur:</span> 2–6px</div>
+                    <div><span class="spec-label">Elements:</span> 6–15</div>
+                    <div><span class="spec-label">Eyes:</span> Expressive (bars, crescents)</div>
+                </div>
+            </div>
+            
+            <!-- MANIFEST -->
+            <div class="stage-card stage-manifest">
+                <div class="stage-header">
+                    <div class="stage-name">Manifest</div>
+                    <div class="stage-authority">60–80% Authority</div>
+                </div>
+                <div class="stage-avatar">
+                    <object data="reference_manifest.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="stage-description">
+                    Strong presence. Complex geometry, layered details, unmistakable identity.
+                </div>
+                <div class="stage-specs">
+                    <div><span class="spec-label">Form:</span> Mechanical Clock</div>
+                    <div><span class="spec-label">Opacity:</span> 0.50–0.90</div>
+                    <div><span class="spec-label">Blur:</span> 0–4px</div>
+                    <div><span class="spec-label">Elements:</span> 10–25</div>
+                    <div><span class="spec-label">Eyes:</span> Highly expressive, animated</div>
+                </div>
+            </div>
+            
+            <!-- ANCHORED -->
+            <div class="stage-card stage-anchored">
+                <div class="stage-header">
+                    <div class="stage-name">Anchored</div>
+                    <div class="stage-authority">80–100% Authority</div>
+                </div>
+                <div class="stage-avatar">
+                    <object data="reference_anchored.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="stage-description">
+                    Fully realised. Maximum complexity, grounded presence, "real" feeling.
+                </div>
+                <div class="stage-specs">
+                    <div><span class="spec-label">Form:</span> Digital Shrine</div>
+                    <div><span class="spec-label">Opacity:</span> 0.70–1.0</div>
+                    <div><span class="spec-label">Blur:</span> 0–2px (strategic)</div>
+                    <div><span class="spec-label">Elements:</span> 15–40</div>
+                    <div><span class="spec-label">Eyes:</span> Fully articulated, personality-driven</div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Evolution Flow -->
+        <div class="evolution-flow">
+            <h2>Evolution Pathway</h2>
+            <div class="flow-diagram">
+                <div class="flow-stage nascent">NASCENT</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-stage signal">SIGNAL</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-stage resonant">RESONANT</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-stage manifest">MANIFEST</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-stage anchored">ANCHORED</div>
+            </div>
+            
+            <div class="principle-box">
+                <h3>Core Principles</h3>
+                <p><strong>Evolution = Structure:</strong> Lower stages are formless and ethereal. Higher stages gain geometric definition and architectural precision.</p>
+                <p><strong>Thematic Cohesion:</strong> All forms must feel like "digital beings" — glowing, semi-transparent, data-adjacent. No solid/opaque forms.</p>
+                <p><strong>Creative Freedom within Bounds:</strong> Each stage defines constraints (opacity range, element count, blur radius), not specific implementations.</p>
+                <ul>
+                    <li>Nascent: Orb, wisp, rune, glyph — any formless light</li>
+                    <li>Signal: Hexagon, circle, triangle, diamond — simple geometry</li>
+                    <li>Resonant: Monitor, hologram, crystal, lantern — defined character</li>
+                    <li>Manifest: Clock, mandala, lattice, mechanism — complex architecture</li>
+                    <li>Anchored: Shrine, totem, workstation, altar — fully realised presence</li>
+                </ul>
+            </div>
+            
+            <div class="principle-box">
+                <h3>Preserved Identity Through Evolution</h3>
+                <p>As an Ehko evolves, these elements persist to maintain continuity:</p>
+                <ul>
+                    <li><strong>Colour Hue:</strong> Gradual stage-based shifts (Blue → Green → Gold → Pink → Bronze)</li>
+                    <li><strong>Seed-Derived Quirks:</strong> Unique parameter values (antenna angles, eye spacing, detail patterns)</li>
+                    <li><strong>Bilateral Symmetry:</strong> Left/right balance maintained</li>
+                    <li><strong>Central Anchor:</strong> Core element always near center point (40, 40)</li>
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

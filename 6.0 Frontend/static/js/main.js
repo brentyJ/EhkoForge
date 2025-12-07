@@ -836,6 +836,7 @@ function closeHistoryDrawer() {
 async function openSettingsDrawer() {
     document.getElementById('settings-overlay').classList.add('active');
     await loadManaConfig();
+    await loadApiKeys();
 }
 
 function closeSettingsDrawer() {
@@ -899,6 +900,7 @@ async function fetchManaBalance() {
         
         if (data.success) {
             updateManaDisplay(data.balance, data.limits);
+            updateTetherDisplay(data.config);
         }
     } catch (error) {
         console.error('[MANA] Failed to fetch balance:', error);
@@ -931,6 +933,41 @@ function updateManaDisplay(balance, limits) {
     // Check for low mana warning
     if (limits && limits.daily_alert) {
         console.warn('[MANA] Daily spending limit alert');
+    }
+}
+
+function updateTetherDisplay(config) {
+    if (!config) return;
+    
+    const claudeBar = document.getElementById('tether-claude');
+    const openaiBar = document.getElementById('tether-openai');
+    const statusEl = document.getElementById('tether-status');
+    
+    // Check which providers have API keys configured
+    const hasClaudeKey = config.has_claude_key || false;
+    const hasOpenAIKey = config.has_openai_key || false;
+    
+    // Update tether bar states
+    claudeBar.classList.toggle('active', hasClaudeKey);
+    claudeBar.setAttribute('data-provider', 'claude');
+    
+    openaiBar.classList.toggle('active', hasOpenAIKey);
+    openaiBar.setAttribute('data-provider', 'openai');
+    
+    // Update status message based on active tethers
+    statusEl.classList.remove('twin-active', 'single-active');
+    
+    if (hasClaudeKey && hasOpenAIKey) {
+        statusEl.textContent = 'Twin LLM tether in place. 100% negation of mana requirement';
+        statusEl.classList.add('twin-active');
+    } else if (hasClaudeKey) {
+        statusEl.textContent = 'Claude tether active. Partial mana negation';
+        statusEl.classList.add('single-active');
+    } else if (hasOpenAIKey) {
+        statusEl.textContent = 'OpenAI tether active. Partial mana negation';
+        statusEl.classList.add('single-active');
+    } else {
+        statusEl.textContent = 'No LLM tethers active. Using purchased mana-cores only';
     }
 }
 
@@ -1143,6 +1180,164 @@ async function saveManaConfig() {
     }
 }
 
+// =============================================================================
+// API KEY MANAGEMENT
+// =============================================================================
+
+async function loadApiKeys() {
+    try {
+        const response = await fetch('/api/mana/api-keys');
+        const data = await response.json();
+        
+        if (data.success && data.keys) {
+            // Update status indicators
+            const claudeStatus = document.getElementById('claude-key-status');
+            const openaiStatus = document.getElementById('openai-key-status');
+            
+            if (data.keys.claude) {
+                claudeStatus.textContent = `Configured: ${data.keys.claude}`;
+                claudeStatus.classList.add('configured');
+            } else {
+                claudeStatus.textContent = 'No key configured';
+                claudeStatus.classList.remove('configured');
+            }
+            
+            if (data.keys.openai) {
+                openaiStatus.textContent = `Configured: ${data.keys.openai}`;
+                openaiStatus.classList.add('configured');
+            } else {
+                openaiStatus.textContent = 'No key configured';
+                openaiStatus.classList.remove('configured');
+            }
+        }
+    } catch (error) {
+        console.error('[API KEYS] Failed to load:', error);
+    }
+}
+
+function toggleApiKeyVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}
+
+async function saveApiKeys() {
+    const claudeKey = document.getElementById('api-key-claude').value.trim();
+    const openaiKey = document.getElementById('api-key-openai').value.trim();
+    
+    // Validate key format (basic check)
+    if (claudeKey && !claudeKey.startsWith('sk-ant-')) {
+        showNotification('Claude API key should start with sk-ant-', 'warning');
+        return;
+    }
+    
+    if (openaiKey && !openaiKey.startsWith('sk-')) {
+        showNotification('OpenAI API key should start with sk-', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/mana/api-keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                claude_key: claudeKey || null,
+                openai_key: openaiKey || null
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('API keys saved! Reloading LLM config...', 'success');
+            
+            // Clear input fields
+            document.getElementById('api-key-claude').value = '';
+            document.getElementById('api-key-openai').value = '';
+            
+            // Reload LLM configuration to use new keys immediately
+            try {
+                const reloadResponse = await fetch('/api/llm/reload', {
+                    method: 'POST'
+                });
+                const reloadData = await reloadResponse.json();
+                
+                if (reloadData.success) {
+                    showNotification('Tethers activated! Config reloaded', 'success');
+                    console.log('[API KEYS] LLM config reloaded:', reloadData);
+                } else {
+                    showNotification('Keys saved but reload failed. Restart server.', 'warning');
+                }
+            } catch (reloadError) {
+                console.error('[API KEYS] Reload failed:', reloadError);
+                showNotification('Keys saved but reload failed. Restart server.', 'warning');
+            }
+            
+            // Reload key status and tether display
+            await loadApiKeys();
+            await fetchManaBalance();
+        } else {
+            showNotification('Failed to save API keys', 'error');
+        }
+    } catch (error) {
+        console.error('[API KEYS] Failed to save:', error);
+        showNotification('Failed to save API keys', 'error');
+    }
+}
+
+async function clearApiKeys() {
+    if (!confirm('Are you sure you want to clear all API keys? This will disable your LLM tethers.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/mana/api-keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                claude_key: null,
+                openai_key: null
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('All API keys cleared', 'success');
+            
+            // Clear input fields
+            document.getElementById('api-key-claude').value = '';
+            document.getElementById('api-key-openai').value = '';
+            
+            // Reload LLM configuration
+            try {
+                const reloadResponse = await fetch('/api/llm/reload', {
+                    method: 'POST'
+                });
+                const reloadData = await reloadResponse.json();
+                
+                if (reloadData.success) {
+                    console.log('[API KEYS] LLM config reloaded after clear');
+                }
+            } catch (reloadError) {
+                console.error('[API KEYS] Reload failed:', reloadError);
+            }
+            
+            // Reload status
+            await loadApiKeys();
+            await fetchManaBalance();
+        } else {
+            showNotification('Failed to clear API keys', 'error');
+        }
+    } catch (error) {
+        console.error('[API KEYS] Failed to clear:', error);
+        showNotification('Failed to clear API keys', 'error');
+    }
+}
+
 function showNotification(message, type = 'info') {
     // Create toast container if it doesn't exist
     let container = document.querySelector('.toast-container');
@@ -1273,6 +1468,16 @@ function initEventListeners() {
     document.getElementById('purchase-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'purchase-overlay') closePurchaseModal();
     });
+    
+    // API keys
+    document.querySelectorAll('.api-key-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetId = e.currentTarget.dataset.target;
+            toggleApiKeyVisibility(targetId);
+        });
+    });
+    document.getElementById('save-api-keys').addEventListener('click', saveApiKeys);
+    document.getElementById('clear-api-keys').addEventListener('click', clearApiKeys);
     
     // Mana config
     document.getElementById('mana-mode').addEventListener('change', (e) => {

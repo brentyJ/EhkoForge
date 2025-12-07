@@ -1,0 +1,167 @@
+<!--
+NASCENT STAGE REFERENCE IMPLEMENTATION
+Authority: 0-20%
+Form: Ethereal Orb with Firefly Particles
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  
+  <defs>
+    <!-- Heavy blur for ethereal effect -->
+    <filter id="nascent-glow">
+      <feGaussianBlur stdDeviation="10" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="particle-glow">
+      <feGaussianBlur stdDeviation="2" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <metadata>
+    <ehko:data xmlns:ehko="http://ehkoforge.ai/schema">
+      <name>Nascent Reference</name>
+      <stage>Nascent</stage>
+      <authority_percent>10</authority_percent>
+      <form_type>ethereal_orb</form_type>
+      <generator_version>1.1</generator_version>
+    </ehko:data>
+  </metadata>
+  
+  <!-- Core orb - primary presence -->
+  <circle cx="40" cy="40" r="12" 
+          fill="#6b8cce" 
+          opacity="0.2"
+          filter="url(#nascent-glow)">
+    <animate attributeName="opacity" 
+             values="0.15;0.25;0.15" 
+             dur="4s" 
+             repeatCount="indefinite"/>
+    <animate attributeName="r" 
+             values="11;13;11" 
+             dur="5s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Inner glow layer -->
+  <circle cx="40" cy="40" r="8" 
+          fill="#6b8cce" 
+          opacity="0.3"
+          filter="url(#nascent-glow)">
+    <animate attributeName="opacity" 
+             values="0.2;0.4;0.2" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Orbiting particles (fireflies) -->
+  <!-- Particle 1 - top orbit -->
+  <circle cx="40" cy="20" r="1.5" 
+          fill="#6b8cce" 
+          opacity="0.6"
+          filter="url(#particle-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="0 40 40"
+                      to="360 40 40"
+                      dur="8s"
+                      repeatCount="indefinite"/>
+    <animate attributeName="opacity" 
+             values="0.4;0.8;0.4" 
+             dur="2s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Particle 2 - right orbit -->
+  <circle cx="58" cy="40" r="1.2" 
+          fill="#6b8cce" 
+          opacity="0.5"
+          filter="url(#particle-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="90 40 40"
+                      to="450 40 40"
+                      dur="10s"
+                      repeatCount="indefinite"/>
+    <animate attributeName="opacity" 
+             values="0.3;0.7;0.3" 
+             dur="2.5s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Particle 3 - bottom orbit -->
+  <circle cx="40" cy="60" r="1.8" 
+          fill="#6b8cce" 
+          opacity="0.7"
+          filter="url(#particle-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="180 40 40"
+                      to="540 40 40"
+                      dur="12s"
+                      repeatCount="indefinite"/>
+    <animate attributeName="opacity" 
+             values="0.5;0.9;0.5" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Particle 4 - left orbit -->
+  <circle cx="22" cy="40" r="1.4" 
+          fill="#6b8cce" 
+          opacity="0.55"
+          filter="url(#particle-glow)">
+    <animateTransform attributeName="transform"
+                      type="rotate"
+                      from="270 40 40"
+                      to="630 40 40"
+                      dur="9s"
+                      repeatCount="indefinite"/>
+    <animate attributeName="opacity" 
+             values="0.35;0.75;0.35" 
+             dur="2.2s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Energy tendrils (very faint) -->
+  <line x1="40" y1="40" x2="40" y2="15" 
+        stroke="#6b8cce" 
+        stroke-width="0.5" 
+        opacity="0.1"
+        filter="url(#particle-glow)">
+    <animate attributeName="opacity" 
+             values="0.05;0.15;0.05" 
+             dur="3.5s" 
+             repeatCount="indefinite"/>
+  </line>
+  
+  <line x1="40" y1="40" x2="65" y2="40" 
+        stroke="#6b8cce" 
+        stroke-width="0.5" 
+        opacity="0.08"
+        filter="url(#particle-glow)">
+    <animate attributeName="opacity" 
+             values="0.04;0.12;0.04" 
+             dur="4s" 
+             repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Eye (optional, minimal - single soft glow) -->
+  <ellipse cx="40" cy="40" rx="3" ry="1" 
+           fill="#6b8cce" 
+           opacity="0.4"
+           filter="url(#particle-glow)">
+    <animate attributeName="opacity" 
+             values="0.3;0.5;0.3" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </ellipse>
+  
+</svg>

@@ -204,11 +204,11 @@ def process_inbox(service: IngestService, move_after: bool):
         print(f"\nDetails:")
         for f in results['files']:
             if f.get('error'):
-                print(f"  ✗ {f['filename']}: {f['error']}")
+                print(f"  [ERR] {f['filename']}: {f['error']}")
             elif f.get('skipped'):
                 print(f"  - {f['filename']}: skipped ({f.get('reason', '?')})")
             else:
-                print(f"  ✓ {f['filename']}: {f.get('chunks', 0)} chunks")
+                print(f"  [OK] {f['filename']}: {f.get('chunks', 0)} chunks")
     
     print()
 

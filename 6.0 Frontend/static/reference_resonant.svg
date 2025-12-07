@@ -1,0 +1,243 @@
+<!--
+RESONANT STAGE REFERENCE IMPLEMENTATION
+Authority: 40-60%
+Form: Holographic Projection Frame
+(Alternative to PC Monitor - demonstrates range)
+-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  
+  <defs>
+    <filter id="resonant-glow">
+      <feGaussianBlur stdDeviation="4" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="detail-glow">
+      <feGaussianBlur stdDeviation="2" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <metadata>
+    <ehko:data xmlns:ehko="http://ehkoforge.ai/schema">
+      <n>Resonant Reference</n>
+      <stage>Resonant</stage>
+      <authority_percent>50</authority_percent>
+      <form_type>hologram_frame</form_type>
+      <generator_version>1.1</generator_version>
+    </ehko:data>
+  </metadata>
+  
+  <!-- Outer projection frame -->
+  <rect x="14" y="20" width="52" height="44" rx="2"
+        fill="none"
+        stroke="#d9c67e" 
+        stroke-width="1.5" 
+        opacity="0.5"
+        filter="url(#resonant-glow)"/>
+  
+  <!-- Inner hologram boundary -->
+  <rect x="20" y="26" width="40" height="32" rx="1"
+        fill="none"
+        stroke="#d9c67e" 
+        stroke-width="1" 
+        opacity="0.4"
+        filter="url(#resonant-glow)"/>
+  
+  <!-- Projection field (glow) -->
+  <rect x="22" y="28" width="36" height="28" 
+        fill="#d9c67e" 
+        opacity="0.08"
+        filter="url(#resonant-glow)">
+    <animate attributeName="opacity" 
+             values="0.06;0.1;0.06" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Corner emitters (top-left, top-right, bottom-left, bottom-right) -->
+  <!-- Top-left -->
+  <circle cx="14" cy="20" r="2" 
+          fill="#d9c67e" 
+          opacity="0.6"
+          filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Top-right -->
+  <circle cx="66" cy="20" r="2" 
+          fill="#d9c67e" 
+          opacity="0.6"
+          filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="0.5s"/>
+  </circle>
+  
+  <!-- Bottom-left -->
+  <circle cx="14" cy="64" r="2" 
+          fill="#d9c67e" 
+          opacity="0.6"
+          filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="1s"/>
+  </circle>
+  
+  <!-- Bottom-right -->
+  <circle cx="66" cy="64" r="2" 
+          fill="#d9c67e" 
+          opacity="0.6"
+          filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.5;0.7;0.5" 
+             dur="2s" 
+             repeatCount="indefinite"
+             begin="1.5s"/>
+  </circle>
+  
+  <!-- Projection beams (faint lines from corners to center) -->
+  <line x1="14" y1="20" x2="40" y2="42" 
+        stroke="#d9c67e" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#detail-glow)"/>
+  
+  <line x1="66" y1="20" x2="40" y2="42" 
+        stroke="#d9c67e" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#detail-glow)"/>
+  
+  <line x1="14" y1="64" x2="40" y2="42" 
+        stroke="#d9c67e" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#detail-glow)"/>
+  
+  <line x1="66" y1="64" x2="40" y2="42" 
+        stroke="#d9c67e" 
+        stroke-width="0.5" 
+        opacity="0.15"
+        filter="url(#detail-glow)"/>
+  
+  <!-- Horizontal scan lines -->
+  <line x1="20" y1="32" x2="60" y2="32" 
+        stroke="#d9c67e" 
+        stroke-width="0.3" 
+        opacity="0.2"
+        filter="url(#detail-glow)"/>
+  
+  <line x1="20" y1="38" x2="60" y2="38" 
+        stroke="#d9c67e" 
+        stroke-width="0.3" 
+        opacity="0.2"
+        filter="url(#detail-glow)"/>
+  
+  <line x1="20" y1="44" x2="60" y2="44" 
+        stroke="#d9c67e" 
+        stroke-width="0.3" 
+        opacity="0.2"
+        filter="url(#detail-glow)"/>
+  
+  <line x1="20" y1="50" x2="60" y2="50" 
+        stroke="#d9c67e" 
+        stroke-width="0.3" 
+        opacity="0.2"
+        filter="url(#detail-glow)"/>
+  
+  <!-- Side vents (detail accents) -->
+  <!-- Left side -->
+  <line x1="16" y1="35" x2="18" y2="35" 
+        stroke="#d9c67e" 
+        stroke-width="0.8" 
+        opacity="0.3"/>
+  
+  <line x1="16" y1="40" x2="18" y2="40" 
+        stroke="#d9c67e" 
+        stroke-width="0.8" 
+        opacity="0.3"/>
+  
+  <line x1="16" y1="45" x2="18" y2="45" 
+        stroke="#d9c67e" 
+        stroke-width="0.8" 
+        opacity="0.3"/>
+  
+  <!-- Right side -->
+  <line x1="62" y1="35" x2="64" y2="35" 
+        stroke="#d9c67e" 
+        stroke-width="0.8" 
+        opacity="0.3"/>
+  
+  <line x1="62" y1="40" x2="64" y2="40" 
+        stroke="#d9c67e" 
+        stroke-width="0.8" 
+        opacity="0.3"/>
+  
+  <line x1="62" y1="45" x2="64" y2="45" 
+        stroke="#d9c67e" 
+        stroke-width="0.8" 
+        opacity="0.3"/>
+  
+  <!-- Base stand -->
+  <rect x="35" y="64" width="10" height="3" rx="0.5"
+        fill="none"
+        stroke="#d9c67e" 
+        stroke-width="1" 
+        opacity="0.35"/>
+  
+  <rect x="32" y="67" width="16" height="2" rx="0.5"
+        fill="none"
+        stroke="#d9c67e" 
+        stroke-width="1" 
+        opacity="0.35"/>
+  
+  <!-- Halo accent (thematic element) -->
+  <circle cx="40" cy="15" r="3" 
+          fill="none"
+          stroke="#d9c67e" 
+          stroke-width="0.5" 
+          opacity="0.3"
+          filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.2;0.4;0.2" 
+             dur="4s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Eyes (expressive bars) -->
+  <rect x="33" y="41" width="6" height="3" rx="1"
+        fill="#d9c67e" 
+        opacity="0.7"
+        filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.6;0.8;0.6" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+  <rect x="41" y="41" width="6" height="3" rx="1"
+        fill="#d9c67e" 
+        opacity="0.7"
+        filter="url(#detail-glow)">
+    <animate attributeName="opacity" 
+             values="0.6;0.8;0.6" 
+             dur="3s" 
+             repeatCount="indefinite"/>
+  </rect>
+  
+</svg>

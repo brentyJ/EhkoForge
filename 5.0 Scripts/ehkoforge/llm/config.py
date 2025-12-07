@@ -328,44 +328,78 @@ class LLMConfig:
         return True
 
 
-def create_default_config(config_dir: Path) -> LLMConfig:
+def create_default_config(config_dir: Path, db_path: Optional[Path] = None) -> LLMConfig:
     """
     Create default configuration with environment variable fallbacks.
     
     Checks:
     1. Config file at config_dir/llm_config.json
-    2. Environment variables
-    3. Returns empty config if nothing found
+    2. Database API keys (if db_path provided)
+    3. Environment variables
+    4. Returns empty config if nothing found
+    
+    Priority: Database > Environment > Config File
     """
     config_path = config_dir / "llm_config.json"
     
     # Try file first
     if config_path.exists():
         config = LLMConfig.from_file(config_path)
-        # Merge with environment variables (env takes precedence for keys)
-        env_config = LLMConfig.from_env()
-        for name, env_provider in env_config.providers.items():
-            if env_provider.api_key:
-                if name in config.providers:
-                    config.providers[name].api_key = env_provider.api_key
-                else:
-                    config.providers[name] = env_provider
-        
-        # Also merge role settings from env if explicitly set
-        if os.environ.get("EHKO_PROCESSING_PROVIDER"):
-            config.processing_provider = env_config.processing_provider
-        if os.environ.get("EHKO_PROCESSING_MODEL"):
-            config.processing_model = env_config.processing_model
-        if os.environ.get("EHKO_CONVERSATION_PROVIDER"):
-            config.conversation_provider = env_config.conversation_provider
-        if os.environ.get("EHKO_CONVERSATION_MODEL"):
-            config.conversation_model = env_config.conversation_model
-        if os.environ.get("EHKO_EHKO_PROVIDER"):
-            config.ehko_provider = env_config.ehko_provider
-        if os.environ.get("EHKO_EHKO_MODEL"):
-            config.ehko_model = env_config.ehko_model
-        
-        return config
+    else:
+        config = LLMConfig()
     
-    # Fall back to environment only
-    return LLMConfig.from_env()
+    # Merge with environment variables (env takes precedence over file)
+    env_config = LLMConfig.from_env()
+    for name, env_provider in env_config.providers.items():
+        if env_provider.api_key:
+            if name in config.providers:
+                config.providers[name].api_key = env_provider.api_key
+            else:
+                config.providers[name] = env_provider
+    
+    # Also merge role settings from env if explicitly set
+    if os.environ.get("EHKO_PROCESSING_PROVIDER"):
+        config.processing_provider = env_config.processing_provider
+    if os.environ.get("EHKO_PROCESSING_MODEL"):
+        config.processing_model = env_config.processing_model
+    if os.environ.get("EHKO_CONVERSATION_PROVIDER"):
+        config.conversation_provider = env_config.conversation_provider
+    if os.environ.get("EHKO_CONVERSATION_MODEL"):
+        config.conversation_model = env_config.conversation_model
+    if os.environ.get("EHKO_EHKO_PROVIDER"):
+        config.ehko_provider = env_config.ehko_provider
+    if os.environ.get("EHKO_EHKO_MODEL"):
+        config.ehko_model = env_config.ehko_model
+    
+    # Database keys take HIGHEST priority (allows runtime configuration via UI)
+    if db_path and db_path.exists():
+        try:
+            from recog_engine.mana_manager import get_api_keys
+            db_keys = get_api_keys(db_path)
+            
+            # Claude key from database
+            if db_keys.get('claude'):
+                if 'claude' in config.providers:
+                    config.providers['claude'].api_key = db_keys['claude']
+                else:
+                    config.providers['claude'] = ProviderConfig(
+                        name='claude',
+                        api_key=db_keys['claude'],
+                        priority=0,
+                    )
+            
+            # OpenAI key from database
+            if db_keys.get('openai'):
+                if 'openai' in config.providers:
+                    config.providers['openai'].api_key = db_keys['openai']
+                else:
+                    config.providers['openai'] = ProviderConfig(
+                        name='openai',
+                        api_key=db_keys['openai'],
+                        priority=1,
+                    )
+        except Exception as e:
+            # Database keys unavailable, continue with env/file keys
+            print(f"[LLM CONFIG] Could not load database keys: {e}")
+    
+    return config

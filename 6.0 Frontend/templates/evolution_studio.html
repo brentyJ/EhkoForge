@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolution Studio | EhkoForge</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .studio-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        .studio-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .studio-header h1 {
+            color: #6b8cce;
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(107, 140, 206, 0.5);
+        }
+        
+        .studio-header p {
+            color: #8aa4d6;
+            margin-top: 10px;
+        }
+        
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .control-panel {
+            background: #161c28;
+            border: 1px solid rgba(107, 140, 206, 0.3);
+            border-radius: 8px;
+            padding: 25px;
+        }
+        
+        .control-section {
+            margin-bottom: 25px;
+        }
+        
+        .control-section h3 {
+            color: #6b8cce;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .stage-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stage-btn {
+            background: #0c1018;
+            border: 2px solid rgba(107, 140, 206, 0.3);
+            color: #8aa4d6;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stage-btn:hover {
+            border-color: rgba(107, 140, 206, 0.6);
+            background: #161c28;
+        }
+        
+        .stage-btn.active {
+            border-color: #6b8cce;
+            background: rgba(107, 140, 206, 0.15);
+            color: #6b8cce;
+            box-shadow: 0 0 15px rgba(107, 140, 206, 0.3);
+        }
+        
+        .action-btn {
+            width: 100%;
+            background: #0c1018;
+            border: 2px solid rgba(107, 140, 206, 0.4);
+            color: #6b8cce;
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        .action-btn:hover {
+            border-color: #6b8cce;
+            background: rgba(107, 140, 206, 0.1);
+            box-shadow: 0 0 20px rgba(107, 140, 206, 0.3);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .coached-input {
+            width: 100%;
+            min-height: 100px;
+            background: #0c1018;
+            border: 1px solid rgba(107, 140, 206, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            color: #e8eef8;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+        
+        .coached-input:focus {
+            outline: none;
+            border-color: #6b8cce;
+            box-shadow: 0 0 15px rgba(107, 140, 206, 0.2);
+        }
+        
+        .coached-input::placeholder {
+            color: #4a6fa5;
+        }
+        
+        .preview-panel {
+            background: #161c28;
+            border: 1px solid rgba(107, 140, 206, 0.3);
+            border-radius: 8px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview-avatar {
+            width: 240px;
+            height: 240px;
+            background: #0c1018;
+            border: 2px solid rgba(107, 140, 206, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(107, 140, 206, 0.15);
+        }
+        
+        .preview-info {
+            text-align: center;
+            width: 100%;
+        }
+        
+        .preview-info h3 {
+            color: #6b8cce;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .preview-info .stage-name {
+            font-size: 1.1rem;
+            color: #8aa4d6;
+            margin-bottom: 20px;
+        }
+        
+        .param-display {
+            background: #0c1018;
+            border: 1px solid rgba(107, 140, 206, 0.2);
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #6b8cce;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .param-display pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .reference-section {
+            margin-top: 40px;
+        }
+        
+        .reference-section h2 {
+            color: #6b8cce;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+        
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .reference-card {
+            background: #161c28;
+            border: 1px solid rgba(107, 140, 206, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .reference-card:hover {
+            border-color: rgba(107, 140, 206, 0.6);
+            box-shadow: 0 0 20px rgba(107, 140, 206, 0.2);
+        }
+        
+        .reference-card h4 {
+            color: #6b8cce;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .reference-card .avatar-mini {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            background: #0c1018;
+            border: 1px solid rgba(107, 140, 206, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(22, 28, 40, 0.9);
+            border: 1px solid rgba(107, 140, 206, 0.3);
+            border-radius: 6px;
+            color: #6b8cce;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s ease;
+        }
+        
+        .back-link:hover {
+            border-color: #6b8cce;
+            box-shadow: 0 0 15px rgba(107, 140, 206, 0.3);
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        .status-message.success {
+            background: rgba(126, 217, 155, 0.1);
+            border: 1px solid rgba(126, 217, 155, 0.3);
+            color: #7ed99b;
+        }
+        
+        .status-message.error {
+            background: rgba(217, 126, 155, 0.1);
+            border: 1px solid rgba(217, 126, 155, 0.3);
+            color: #d97e9b;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← Back to Terminal</a>
+    
+    <div class="studio-container">
+        <div class="studio-header">
+            <h1>◆ EVOLUTION STUDIO</h1>
+            <p>Design and explore Ehko avatar forms across all five evolutionary stages</p>
+        </div>
+        
+        <div class="studio-grid">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3>Select Stage</h3>
+                    <div class="stage-selector">
+                        <button class="stage-btn" data-stage="Nascent">Nascent</button>
+                        <button class="stage-btn" data-stage="Signal">Signal</button>
+                        <button class="stage-btn active" data-stage="Resonant">Resonant</button>
+                        <button class="stage-btn" data-stage="Manifest">Manifest</button>
+                        <button class="stage-btn" data-stage="Anchored">Anchored</button>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h3>Generate</h3>
+                    <button class="action-btn" id="randomBtn">⚡ Random Evolution</button>
+                </div>
+                
+                <div class="control-section">
+                    <h3>Coached Evolution</h3>
+                    <textarea 
+                        class="coached-input" 
+                        id="coachInput"
+                        placeholder="Describe what you want... (e.g., 'make it more angular with sharp edges' or 'softer, glowing, mystical feeling')"></textarea>
+                    <button class="action-btn" id="coachBtn">🎨 Generate from Description</button>
+                </div>
+                
+                <div id="statusMessage"></div>
+            </div>
+            
+            <!-- Preview Panel -->
+            <div class="preview-panel">
+                <div class="preview-avatar" id="previewAvatar">
+                    <div style="color: #4a6fa5; font-size: 0.9rem;">Generate an avatar to preview</div>
+                </div>
+                
+                <div class="preview-info">
+                    <h3 id="previewTitle">No Avatar Generated</h3>
+                    <div class="stage-name" id="previewStage">—</div>
+                    
+                    <div class="param-display" id="paramDisplay" style="display: none;">
+                        <pre id="paramText"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reference Gallery -->
+        <div class="reference-section">
+            <h2>Reference Forms</h2>
+            <div class="reference-grid">
+                <div class="reference-card">
+                    <h4>Nascent</h4>
+                    <div class="avatar-mini">
+                        <object data="/reference_nascent.svg" type="image/svg+xml" width="80" height="80"></object>
+                    </div>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>Signal</h4>
+                    <div class="avatar-mini">
+                        <object data="/reference_signal.svg" type="image/svg+xml" width="80" height="80"></object>
+                    </div>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>Resonant</h4>
+                    <div class="avatar-mini">
+                        <object data="/reference_resonant.svg" type="image/svg+xml" width="80" height="80"></object>
+                    </div>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>Manifest</h4>
+                    <div class="avatar-mini">
+                        <object data="/reference_manifest.svg" type="image/svg+xml" width="80" height="80"></object>
+                    </div>
+                </div>
+                
+                <div class="reference-card">
+                    <h4>Anchored</h4>
+                    <div class="avatar-mini">
+                        <object data="/reference_anchored.svg" type="image/svg+xml" width="80" height="80"></object>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStage = 'Resonant';
+        let currentParameters = null;
+        
+        // Stage button handling
+        document.querySelectorAll('.stage-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentStage = btn.dataset.stage;
+                updatePreviewStage();
+            });
+        });
+        
+        // Random Evolution
+        document.getElementById('randomBtn').addEventListener('click', async () => {
+            showStatus('Generating random avatar...', 'info');
+            
+            try {
+                const response = await fetch('/api/avatar/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        stage: currentStage,
+                        seed: `random-${Date.now()}`
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentParameters = data.parameters;
+                    renderAvatar(data.parameters, data.stage);
+                    showStatus(`✓ Generated ${data.method} avatar for ${data.stage}`, 'success');
+                } else {
+                    showStatus('⚠ Generation failed', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showStatus('⚠ Network error', 'error');
+            }
+        });
+        
+        // Coached Evolution
+        document.getElementById('coachBtn').addEventListener('click', async () => {
+            const description = document.getElementById('coachInput').value.trim();
+            
+            if (!description) {
+                showStatus('⚠ Please enter a description first', 'error');
+                return;
+            }
+            
+            showStatus('🎨 AI is interpreting your description...', 'info');
+            
+            try {
+                const response = await fetch('/api/avatar/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        stage: currentStage,
+                        description: description,
+                        seed: `coached-${Date.now()}`
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentParameters = data.parameters;
+                    renderAvatar(data.parameters, data.stage);
+                    showStatus(`✓ Generated ${data.method} avatar based on your description`, 'success');
+                } else {
+                    showStatus('⚠ AI generation failed, falling back to random', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showStatus('⚠ Network error', 'error');
+            }
+        });
+        
+        function renderAvatar(params, stage) {
+            // For now, just show the parameters
+            // Later: generate actual SVG from parameters
+            document.getElementById('previewTitle').textContent = `${stage} Avatar`;
+            document.getElementById('previewStage').textContent = `Stage: ${stage}`;
+            
+            document.getElementById('paramDisplay').style.display = 'block';
+            document.getElementById('paramText').textContent = JSON.stringify(params, null, 2);
+            
+            // TODO: Generate actual SVG from parameters
+            document.getElementById('previewAvatar').innerHTML = `
+                <div style="color: #6b8cce; text-align: center;">
+                    <div style="font-size: 1.2rem; margin-bottom: 10px;">◆</div>
+                    <div style="font-size: 0.85rem; opacity: 0.7;">SVG rendering coming soon</div>
+                    <div style="font-size: 0.75rem; opacity: 0.5; margin-top: 5px;">See parameters below</div>
+                </div>
+            `;
+        }
+        
+        function updatePreviewStage() {
+            document.getElementById('previewStage').textContent = `Stage: ${currentStage}`;
+        }
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                    statusEl.className = 'status-message';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -146,6 +146,22 @@
                     <div class="mana-fill" id="mana-fill" style="width: 100%"></div>
                     <div class="mana-fill-purchased" id="mana-fill-purchased" style="width: 0%"></div>
                 </div>
+                
+                <!-- LLM Tether System -->
+                <div class="tether-container">
+                    <div class="tether-bar" id="tether-claude">
+                        <div class="tether-label">CLAUDE</div>
+                        <div class="tether-fill" data-tether="claude"></div>
+                        <div class="tether-crackle" data-tether="claude"></div>
+                    </div>
+                    <div class="tether-bar" id="tether-openai">
+                        <div class="tether-label">OPENAI</div>
+                        <div class="tether-fill" data-tether="openai"></div>
+                        <div class="tether-crackle" data-tether="openai"></div>
+                    </div>
+                </div>
+                <div class="tether-status" id="tether-status">No LLM tethers active</div>
+                
                 <div class="mana-breakdown" id="mana-breakdown">
                     <span class="mana-regen" id="mana-regen" title="Regenerative (BYOK)">Regen: 100</span>
                     <span class="mana-purchased" id="mana-purchased" title="Purchased">Bought: 0</span>
@@ -263,6 +279,30 @@
                 <button class="drawer-close" id="settings-close">×</button>
             </div>
             <div class="drawer-content">
+                <div class="setting-group">
+                    <label class="setting-label">LLM Tethers (API Keys)</label>
+                    <div class="tether-info">
+                        <p>Connect to external LLM power sources by providing your API keys.</p>
+                    </div>
+                    <div class="setting-item api-key-item">
+                        <label for="api-key-claude">Claude API Key:</label>
+                        <div class="api-key-input-group">
+                            <input type="password" id="api-key-claude" class="setting-input api-key-input" placeholder="sk-ant-...">
+                            <button class="api-key-toggle" data-target="api-key-claude" title="Show/hide key">👁</button>
+                        </div>
+                        <span class="api-key-status" id="claude-key-status">No key configured</span>
+                    </div>
+                    <div class="setting-item api-key-item">
+                        <label for="api-key-openai">OpenAI API Key:</label>
+                        <div class="api-key-input-group">
+                            <input type="password" id="api-key-openai" class="setting-input api-key-input" placeholder="sk-proj-...">
+                            <button class="api-key-toggle" data-target="api-key-openai" title="Show/hide key">👁</button>
+                        </div>
+                        <span class="api-key-status" id="openai-key-status">No key configured</span>
+                    </div>
+                    <button class="setting-action" id="save-api-keys">Save API Keys</button>
+                    <button class="setting-action setting-secondary" id="clear-api-keys">Clear All Keys</button>
+                </div>
                 <div class="setting-group">
                     <label class="setting-label">Mana Configuration</label>
                     <div class="setting-item">

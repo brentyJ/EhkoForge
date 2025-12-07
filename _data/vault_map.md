@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.8"
+version: "3.9"
 created: 2025-11-29
-updated: 2025-12-06
+updated: 2025-12-08
 tags: [system, reference, navigation]
 ---
 
@@ -53,6 +53,7 @@ Single LICENSE file at repository root.
 1_5_Behaviour_Engine_v1_1.md                      [module, v1.1]
 1_6_Identity_Pillars_Scientific_Basis_v1_0.md     [module, v1.0]
 1_7_Core_Memory_Index_Framework_v1_0.md           [module, v1.0]
+1_8_Ehko_Visual_Identity_Spec_v1_0.md             [spec, v1.1] — Generative avatar system
 Data_Model_Core_Tables_v1_0.md                    [module, v1.0] — MIT schema
 _Index.md                                         [navigation, v1.0]
 ```
@@ -197,21 +198,24 @@ System Logs/
 
 ```
 templates/
-└── index.html                    [v2.1] — Main terminal UI (Phase 2 consolidated)
+├── index.html                    [v2.1] — Main terminal UI (Phase 2 consolidated)
+└── evolution_studio.html         [v1.0] — Interactive Ehko stage explorer
 
 static/
-├── index.html                    [v1.2, legacy] — Old static single-page UI
-├── styles.css                    [v1.2, legacy] — Old combined styles
-├── app.js                        [v1.2, legacy] — Old combined logic
 ├── css/
 │   ├── main.css                  [v2.1] — Main terminal styles (retro aesthetic)
 │   ├── forge.css                 — Forge area (gold/violet palette)
 │   └── recog.css                 [v1.0] — ReCog UI (red palette, processing animation)
-└── js/
-    ├── main.js                   [v2.1] — Main terminal logic (Authority, Mana, chat)
-    ├── forge.js                  — Insite review logic
-    ├── recog.js                  [v1.0] — ReCog scheduler UI (queue/reports/progression)
-    └── journal.js                [legacy] — Journal functionality
+├── js/
+│   ├── main.js                   [v2.1] — Main terminal logic (Authority, Mana, chat)
+│   ├── forge.js                  — Insite review logic
+│   └── recog.js                  [v1.0] — ReCog scheduler UI (queue/reports/progression)
+├── reference_nascent.svg         [v1.0] — Stage 1 Ehko reference
+├── reference_signal.svg          [v1.0] — Stage 2 Ehko reference
+├── reference_resonant.svg        [v1.0] — Stage 3 Ehko reference
+├── reference_manifest.svg        [v1.0] — Stage 4 Ehko reference
+├── reference_anchored.svg        [v1.0] — Stage 5 Ehko reference
+└── ehko_reference_gallery.html   [v1.0] — All-stage visual gallery
 ```
 
 **Architecture (v2.1 - Phase 2 Reorientation):**
@@ -373,6 +377,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v3.9 — 2025-12-08 Session 28 — Ehko Visual Identity System: Added 1_8 spec, 5 reference SVGs, gallery, evolution studio.
 - v3.8 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css, recog.js. Updated frontend section.
 - v3.7 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: scheduler.py, test_recog_scheduler.py, forge_server.py v2.4, 8 API endpoints.
 - v3.6 — 2025-12-06 Session 26 — Memory & Progression migration: memory_progression_v0_1.sql, run_memory_migration.py. 5 new tables.

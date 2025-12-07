@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
+import xml.etree.ElementTree as ET
 
 from .base import BaseParser
 from ..types import ParsedContent
@@ -48,7 +49,7 @@ class MessageParser(BaseParser):
     
     def can_parse(self, path: Path) -> bool:
         """Check if file looks like a message export."""
-        if path.suffix.lower() not in (".txt", ".json", ".csv"):
+        if path.suffix.lower() not in (".txt", ".json", ".csv", ".xml"):
             return False
         
         # Quick content check
@@ -70,7 +71,9 @@ class MessageParser(BaseParser):
         # Detect format
         format_type = self._detect_message_format(content)
         
-        if format_type == "whatsapp":
+        if format_type == "sms_xml":
+            messages, participants = self._parse_sms_backup_xml(content)
+        elif format_type == "whatsapp":
             messages, participants = self._parse_whatsapp(content)
         elif format_type == "json":
             messages, participants = self._parse_json_messages(content)
@@ -111,6 +114,10 @@ class MessageParser(BaseParser):
     
     def _detect_message_format(self, content: str) -> Optional[str]:
         """Detect the message format from content."""
+        # Check for SMS Backup & Restore XML format
+        if "<smses" in content[:500] or "SMS Backup & Restore" in content[:500]:
+            return "sms_xml"
+        
         # Check for JSON
         if content.strip().startswith(("{", "[")):
             try:
@@ -138,6 +145,62 @@ class MessageParser(BaseParser):
                 return "whatsapp"
         
         return None
+    
+    def _parse_sms_backup_xml(self, content: str) -> Tuple[List[Dict], List[str]]:
+        """Parse SMS Backup & Restore XML format."""
+        messages = []
+        participants = set()
+        
+        try:
+            root = ET.fromstring(content)
+        except ET.ParseError:
+            return [], []
+        
+        # Find all sms elements
+        for sms in root.findall('.//sms'):
+            msg_type = sms.get('type', '1')  # 1=received, 2=sent
+            body = sms.get('body', '')
+            contact_name = sms.get('contact_name', 'Unknown')
+            readable_date = sms.get('readable_date', '')
+            date_ms = sms.get('date', '')
+            
+            # Skip empty messages
+            if not body or body == 'null':
+                continue
+            
+            # Decode HTML entities
+            body = body.replace('&#10;', '\n')
+            
+            # Determine sender
+            if msg_type == '2':  # Sent by user
+                sender = 'Me'
+            else:  # Received
+                sender = contact_name if contact_name != '(Unknown)' else 'Unknown'
+            
+            participants.add(contact_name)
+            
+            # Parse timestamp
+            timestamp = None
+            if date_ms and date_ms.isdigit():
+                try:
+                    timestamp = datetime.fromtimestamp(int(date_ms) / 1000).isoformat()
+                except:
+                    timestamp = readable_date
+            else:
+                timestamp = readable_date
+            
+            messages.append({
+                "timestamp": timestamp,
+                "sender": sender,
+                "text": body,
+                "contact": contact_name,
+                "direction": "sent" if msg_type == '2' else "received",
+            })
+        
+        # Sort by timestamp
+        messages.sort(key=lambda m: m.get('timestamp', '') or '')
+        
+        return messages, list(participants)
     
     def _parse_whatsapp(self, content: str) -> Tuple[List[Dict], List[str]]:
         """Parse WhatsApp export format."""
