@@ -127,8 +127,8 @@ def get_llm_provider():
 # =============================================================================
 
 def get_db():
-    """Get database connection with row factory."""
-    conn = sqlite3.connect(str(DATABASE_PATH))
+    """Get database connection with row factory (thread-safe)."""
+    conn = sqlite3.connect(str(DATABASE_PATH), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -1929,18 +1929,13 @@ def api_mana_keys():
 # API ROUTES - RECOG SCHEDULER
 # =============================================================================
 
-# Lazy-loaded scheduler instance
-_recog_scheduler = None
-
+# Scheduler factory (creates fresh instances for thread safety)
 def get_recog_scheduler():
-    """Get or create ReCog scheduler instance."""
-    global _recog_scheduler
-    if _recog_scheduler is None:
-        _recog_scheduler = RecogScheduler(
-            db_path=DATABASE_PATH,
-            config_path=EHKOFORGE_ROOT / "Config",
-        )
-    return _recog_scheduler
+    """Create fresh ReCog scheduler instance (thread-safe)."""
+    return RecogScheduler(
+        db_path=DATABASE_PATH,
+        config_path=EHKOFORGE_ROOT / "Config",
+    )
 
 
 @app.route("/api/recog/status", methods=["GET"])
@@ -1954,6 +1949,16 @@ def recog_status():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@app.route("/api/recog/test", methods=["GET"])
+def recog_test():
+    """Minimal test endpoint."""
+    import threading
+    return jsonify({
+        "thread": threading.current_thread().ident,
+        "message": "test ok"
+    })
+
+
 @app.route("/api/recog/check", methods=["POST"])
 def recog_check():
     """
@@ -1963,6 +1968,7 @@ def recog_check():
     try:
         scheduler = get_recog_scheduler()
         queued = scheduler.check_and_queue()
+        
         return jsonify({
             "success": True,
             "queued": [op.to_dict() for op in queued],
@@ -2197,4 +2203,4 @@ if __name__ == "__main__":
     print("Press Ctrl+C to stop")
     print("=" * 60)
     
-    app.run(host="127.0.0.1", port=5000, debug=True, use_reloader=False)
+    app.run(host="127.0.0.1", port=5000, debug=False, threaded=False)

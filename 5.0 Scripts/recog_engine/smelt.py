@@ -146,8 +146,8 @@ class SmeltProcessor:
             logger.warning("No LLM configured — smelt processor disabled")
     
     def get_db(self) -> sqlite3.Connection:
-        """Get database connection with row factory."""
-        conn = sqlite3.connect(str(self.db_path))
+        """Get database connection with row factory (thread-safe)."""
+        conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
         conn.row_factory = sqlite3.Row
         return conn
     
@@ -690,7 +690,7 @@ def queue_for_smelt(db_path: Path, source_type: str, source_id: str,
     Returns:
         Queue entry ID
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     now = datetime.utcnow().isoformat() + "Z"
@@ -711,7 +711,7 @@ def queue_for_smelt(db_path: Path, source_type: str, source_id: str,
 
 def get_queue_stats(db_path: Path) -> Dict:
     """Get smelt queue statistics."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     

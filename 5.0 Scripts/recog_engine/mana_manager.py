@@ -31,7 +31,7 @@ except ImportError:
 
 def get_user_config(db_path: Path, user_id: int = 1) -> Dict:
     """Get user's mana configuration and preferences."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -64,7 +64,7 @@ def get_user_config(db_path: Path, user_id: int = 1) -> Dict:
 
 def set_user_config(db_path: Path, user_id: int = 1, **config) -> bool:
     """Update user configuration."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -116,7 +116,7 @@ def get_mana_balance(db_path: Path, user_id: int = 1) -> Dict:
     
     Returns both regenerative (BYOK) and purchased mana.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -148,7 +148,7 @@ def add_purchased_mana(db_path: Path, amount: float, user_id: int = 1) -> bool:
     
     Called after successful payment processing.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -225,7 +225,7 @@ def spend_mana_smart(db_path: Path, operation: str, amount: float,
             return (False, f"Insufficient mana in both pools. Need {amount:.1f}", {})
     
     # Deduct from appropriate pool
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -282,7 +282,7 @@ def spend_mana_smart(db_path: Path, operation: str, amount: float,
 
 def get_pricing_tiers(db_path: Path) -> List[Dict]:
     """Get available mana-core pricing tiers."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -305,7 +305,7 @@ def record_purchase(db_path: Path, user_id: int, tier_id: int,
     
     Returns purchase_id if successful, None otherwise.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -364,7 +364,7 @@ def record_purchase(db_path: Path, user_id: int, tier_id: int,
 
 def get_purchase_history(db_path: Path, user_id: int = 1, limit: int = 10) -> List[Dict]:
     """Get user's purchase history."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -386,7 +386,7 @@ def get_purchase_history(db_path: Path, user_id: int = 1, limit: int = 10) -> Li
 
 def get_usage_stats(db_path: Path, user_id: int = 1, days: int = 30) -> Dict:
     """Get usage statistics for the past N days."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -452,7 +452,7 @@ def check_spending_limits(db_path: Path, user_id: int = 1) -> Dict:
     # Get today's usage
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + "Z"
     
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -504,7 +504,7 @@ def set_api_keys(db_path: Path, user_id: int = 1,
     NOTE: Keys should be encrypted before storage.
     Currently stores plaintext - implement encryption if needed.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -549,7 +549,7 @@ def get_api_keys(db_path: Path, user_id: int = 1) -> Dict[str, Optional[str]]:
     
     Returns decrypted keys (currently plaintext).
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     

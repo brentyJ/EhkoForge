@@ -147,11 +147,11 @@ class EhkoForgeAdapter(RecogAdapter):
                 run_migrations(conn)
     
     def _get_connection(self) -> sqlite3.Connection:
-        """Get database connection."""
-        if self._conn is None:
-            self._conn = sqlite3.connect(str(self.db_path))
-            self._conn.row_factory = sqlite3.Row
-        return self._conn
+        """Get database connection (thread-safe)."""
+        # Always create fresh connection for thread safety
+        conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
     
     def close(self) -> None:
         """Close database connection."""
@@ -737,7 +737,251 @@ class EhkoForgeAdapter(RecogAdapter):
         cursor.execute("SELECT COUNT(*) FROM ehko_personality_layers")
         stats["syntheses"] = cursor.fetchone()[0]
         
+        # Document ingestion stats
+        try:
+            cursor.execute("SELECT COUNT(*) FROM ingested_documents")
+            stats["ingested_documents"] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM document_chunks WHERE recog_processed = 0")
+            stats["unprocessed_chunks"] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM document_chunks WHERE recog_processed = 1")
+            stats["processed_chunks"] = cursor.fetchone()[0]
+        except:
+            stats["ingested_documents"] = 0
+            stats["unprocessed_chunks"] = 0
+            stats["processed_chunks"] = 0
+        
         return stats
+    
+    # =========================================================================
+    # DOCUMENT CHUNK METHODS
+    # =========================================================================
+    
+    def load_unprocessed_chunks(self, limit: int = 50) -> List[Document]:
+        """
+        Load unprocessed document chunks as ReCog Documents.
+        
+        Args:
+            limit: Maximum chunks to return
+            
+        Returns:
+            List of Document objects ready for ReCog processing
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT 
+                c.id, c.document_id, c.chunk_index, c.content, c.token_count,
+                c.preceding_context, c.following_context,
+                d.filename, d.file_type, d.doc_subject, d.doc_date, d.doc_author,
+                d.metadata as doc_metadata
+            FROM document_chunks c
+            JOIN ingested_documents d ON c.document_id = d.id
+            WHERE c.recog_processed = 0
+            ORDER BY d.ingested_at ASC, c.chunk_index ASC
+            LIMIT ?
+        """, (limit,))
+        
+        # Collect all results before returning (thread safety)
+        rows = cursor.fetchall()
+        conn.close()
+        
+        documents = []
+        for row in rows:
+            # Build content with context
+            content_parts = []
+            if row["preceding_context"]:
+                content_parts.append(f"[...] {row['preceding_context']}")
+            content_parts.append(row["content"])
+            if row["following_context"]:
+                content_parts.append(f"{row['following_context']} [...]")
+            
+            full_content = "\n".join(content_parts)
+            
+            # Parse doc metadata
+            doc_meta = {}
+            if row["doc_metadata"]:
+                try:
+                    doc_meta = json.loads(row["doc_metadata"])
+                except:
+                    pass
+            
+            documents.append(Document(
+                id=f"chunk:{row['id']}",
+                content=full_content,
+                source_type="document_chunk",
+                source_ref=f"doc:{row['document_id']}:chunk:{row['chunk_index']}",
+                metadata={
+                    "chunk_id": row["id"],
+                    "document_id": row["document_id"],
+                    "chunk_index": row["chunk_index"],
+                    "filename": row["filename"],
+                    "file_type": row["file_type"],
+                    "title": row["doc_subject"] or row["filename"],
+                    "author": row["doc_author"],
+                    "date": row["doc_date"],
+                    **doc_meta,
+                },
+                created_at=datetime.utcnow(),
+            ))
+        
+        return documents
+    
+    def get_unprocessed_chunk_count(self) -> int:
+        """Get count of unprocessed document chunks."""
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM document_chunks WHERE recog_processed = 0")
+        result = cursor.fetchone()[0]
+        conn.close()
+        return result
+    
+    def get_chunk_token_estimate(self, limit: int = 50) -> int:
+        """Estimate total tokens for unprocessed chunks."""
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT COALESCE(SUM(token_count), 0) 
+            FROM (
+                SELECT token_count FROM document_chunks 
+                WHERE recog_processed = 0 
+                ORDER BY document_id, chunk_index 
+                LIMIT ?
+            )
+        """, (limit,))
+        result = cursor.fetchone()[0]
+        conn.close()
+        return result
+    
+    def mark_chunk_processed(
+        self, 
+        chunk_id: int, 
+        tier0_signals: Dict = None,
+        insight_id: str = None
+    ) -> None:
+        """
+        Mark a document chunk as processed.
+        
+        Args:
+            chunk_id: The chunk ID (from metadata)
+            tier0_signals: Tier 0 signals extracted
+            insight_id: ID of insight created from this chunk
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE document_chunks SET
+                recog_processed = 1,
+                tier0_signals = ?,
+                recog_insight_id = ?
+            WHERE id = ?
+        """, (
+            json.dumps(tier0_signals) if tier0_signals else None,
+            insight_id,
+            chunk_id,
+        ))
+        conn.commit()
+        conn.close()
+    
+    def mark_document_complete(self, document_id: int) -> None:
+        """Mark a document as fully processed if all chunks are done."""
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        
+        # Check if all chunks are processed
+        cursor.execute("""
+            SELECT COUNT(*) FROM document_chunks 
+            WHERE document_id = ? AND recog_processed = 0
+        """, (document_id,))
+        unprocessed = cursor.fetchone()[0]
+        
+        if unprocessed == 0:
+            # Count insights extracted
+            cursor.execute("""
+                SELECT COUNT(*) FROM document_chunks 
+                WHERE document_id = ? AND recog_insight_id IS NOT NULL
+            """, (document_id,))
+            insights = cursor.fetchone()[0]
+            
+            cursor.execute("""
+                UPDATE ingested_documents SET
+                    status = 'complete',
+                    insights_extracted = ?,
+                    completed_at = ?
+                WHERE id = ?
+            """, (insights, datetime.utcnow().isoformat(), document_id))
+            conn.commit()
+        
+        conn.close()
+    
+    def save_chunk_insight(self, chunk_id: int, insight: Insight) -> str:
+        """
+        Save insight from a document chunk and link it.
+        
+        Args:
+            chunk_id: Source chunk ID
+            insight: The insight to save
+            
+        Returns:
+            The ingot ID
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        
+        # Get chunk metadata for source tracking
+        cursor.execute("""
+            SELECT c.document_id, d.filename 
+            FROM document_chunks c
+            JOIN ingested_documents d ON c.document_id = d.id
+            WHERE c.id = ?
+        """, (chunk_id,))
+        row = cursor.fetchone()
+        document_id = row["document_id"] if row else None
+        filename = row["filename"] if row else "unknown"
+        
+        # Create ingot
+        ingot_id = str(uuid4())
+        cursor.execute("""
+            INSERT INTO ingots (
+                id, summary, themes_json, significance, 
+                confidence, status, created_at, updated_at, recog_insight_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            ingot_id,
+            insight.summary,
+            json.dumps(insight.themes),
+            insight.significance,
+            insight.confidence,
+            "raw",
+            insight.created_at.isoformat(),
+            datetime.utcnow().isoformat(),
+            insight.id,
+        ))
+        
+        # Link to document source
+        cursor.execute("""
+            INSERT OR IGNORE INTO ingot_sources (ingot_id, source_type, source_id, added_at)
+            VALUES (?, ?, ?, ?)
+        """, (ingot_id, "document_chunk", str(chunk_id), datetime.utcnow().isoformat()))
+        
+        # Mark chunk as processed with insight link
+        cursor.execute("""
+            UPDATE document_chunks SET
+                recog_processed = 1,
+                recog_insight_id = ?
+            WHERE id = ?
+        """, (ingot_id, chunk_id))
+        
+        conn.commit()
+        conn.close()
+        
+        # Check if document is complete
+        if document_id:
+            self.mark_document_complete(document_id)
+        
+        return ingot_id
 
 
 # =============================================================================

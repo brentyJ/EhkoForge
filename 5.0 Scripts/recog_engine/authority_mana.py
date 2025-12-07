@@ -37,7 +37,7 @@ def calculate_authority_components(db_path: Path) -> Dict[str, float]:
     
     Returns dict with component scores (0.0 - 1.0) and total Authority.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -208,7 +208,7 @@ def update_authority(db_path: Path) -> Dict[str, float]:
     authority_total = calculate_total_authority(components)
     stage = get_stage_for_authority(authority_total)
     
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -276,7 +276,7 @@ def get_current_authority(db_path: Path) -> Dict[str, float]:
     
     If not calculated yet, calculates and stores it.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -315,7 +315,7 @@ def get_mana_state(db_path: Path) -> Dict[str, float]:
     
     Regeneration is calculated based on time since last update.
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -386,7 +386,7 @@ def get_mana_state(db_path: Path) -> Dict[str, float]:
 
 def get_mana_cost(db_path: Path, operation: str) -> float:
     """Get mana cost for an operation."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -447,7 +447,7 @@ def spend_mana(db_path: Path, operation: str, amount: Optional[float] = None) ->
     # Deduct mana
     new_mana = state['current_mana'] - amount
     
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -520,7 +520,7 @@ def set_mana_config(db_path: Path, max_mana: float = None, regen_rate: float = N
         max_mana: Maximum mana capacity
         regen_rate: Mana regeneration per hour
     """
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:
@@ -569,7 +569,7 @@ def refill_mana(db_path: Path, amount: float = None):
     else:
         new_mana = min(state['max_mana'], state['current_mana'] + amount)
     
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
     cursor = conn.cursor()
     
     try:

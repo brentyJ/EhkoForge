@@ -46,8 +46,8 @@ class EhkoContextBuilder:
         self._has_mirrorwell_extensions = None
     
     def _get_db(self) -> sqlite3.Connection:
-        """Get database connection with row factory."""
-        conn = sqlite3.connect(str(self.database_path))
+        """Get database connection with row factory (thread-safe)."""
+        conn = sqlite3.connect(str(self.database_path), check_same_thread=False)
         conn.row_factory = sqlite3.Row
         return conn
     

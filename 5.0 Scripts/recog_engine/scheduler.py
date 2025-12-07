@@ -52,15 +52,17 @@ logger = logging.getLogger(__name__)
 # =============================================================================
 
 class OperationType(Enum):
-    EXTRACT = "extract"         # Tier 1
-    CORRELATE = "correlate"     # Tier 2
-    SYNTHESISE = "synthesise"   # Tier 3
-    FULL_SWEEP = "full_sweep"   # All tiers
+    EXTRACT = "extract"                 # Tier 1 from sessions
+    EXTRACT_DOCS = "extract_docs"       # Tier 1 from document chunks
+    CORRELATE = "correlate"             # Tier 2
+    SYNTHESISE = "synthesise"           # Tier 3
+    FULL_SWEEP = "full_sweep"           # All tiers
 
 
 # Mana costs per operation (configurable)
 MANA_COSTS = {
-    OperationType.EXTRACT: 2,       # Per document
+    OperationType.EXTRACT: 2,       # Per session
+    OperationType.EXTRACT_DOCS: 1,  # Per chunk (cheaper, higher volume)
     OperationType.CORRELATE: 8,     # Per batch
     OperationType.SYNTHESISE: 12,   # Per synthesis run
     OperationType.FULL_SWEEP: 20,   # Discounted bundle
@@ -68,10 +70,14 @@ MANA_COSTS = {
 
 # Token estimates for cost calculation
 TOKEN_ESTIMATES = {
-    OperationType.EXTRACT: 4000,      # Per document
+    OperationType.EXTRACT: 4000,      # Per session
+    OperationType.EXTRACT_DOCS: 3000, # Per chunk
     OperationType.CORRELATE: 10000,   # Per batch
     OperationType.SYNTHESISE: 12000,  # Per run
 }
+
+# Batch sizes for document processing
+DOC_CHUNK_BATCH_SIZE = 20  # Process 20 chunks at a time
 
 # Thresholds for auto-queuing
 HOT_TIER_MAX_AGE_HOURS = 48  # Sessions older than this need processing
@@ -172,14 +178,13 @@ class RecogScheduler:
     
     @property
     def adapter(self):
-        """Lazy-load EhkoForge adapter."""
-        if self._adapter is None:
-            self._adapter = EhkoForgeAdapter(self.db_path)
-        return self._adapter
+        """Get fresh EhkoForge adapter (thread-safe)."""
+        # Always create fresh adapter for thread safety
+        return EhkoForgeAdapter(self.db_path, run_migrations_on_init=False)
     
     def get_db(self) -> sqlite3.Connection:
-        """Get database connection."""
-        conn = sqlite3.connect(str(self.db_path))
+        """Get database connection (thread-safe)."""
+        conn = sqlite3.connect(str(self.db_path), check_same_thread=False)
         conn.row_factory = sqlite3.Row
         return conn
     
@@ -277,15 +282,20 @@ class RecogScheduler:
         Returns:
             List of newly queued operations
         """
-        # First run Tier 0 on anything new
-        self.run_tier0_automatic()
+        # Skip Tier 0 for now - debugging threading
+        # self.run_tier0_automatic()
         
         queued = []
         
-        # Check for extraction opportunities (Tier 1)
+        # Check for session extraction (Tier 1)
         extract_op = self._check_extraction_needed()
         if extract_op:
             queued.append(extract_op)
+        
+        # Check for document chunk extraction (Tier 1)
+        doc_extract_op = self._check_doc_extraction_needed()
+        if doc_extract_op:
+            queued.append(doc_extract_op)
         
         # Check for correlation opportunities (Tier 2)
         correlate_op = self._check_correlation_needed()
@@ -352,6 +362,49 @@ class RecogScheduler:
             )
         
         return None
+    
+    def _check_doc_extraction_needed(self) -> Optional[PendingOperation]:
+        """Check if document chunk extraction should be queued."""
+        # Get unprocessed chunk count from adapter
+        unprocessed_count = self.adapter.get_unprocessed_chunk_count()
+        
+        if unprocessed_count == 0:
+            return None
+        
+        conn = self.get_db()
+        cursor = conn.cursor()
+        
+        # Check for existing pending/ready extract_docs OR recent completion
+        cursor.execute("""
+            SELECT id, status, completed_at FROM recog_queue 
+            WHERE operation_type = 'extract_docs' 
+            ORDER BY queued_at DESC
+            LIMIT 1
+        """)
+        existing = cursor.fetchone()
+        
+        conn.close()
+        
+        # Don't queue if pending/ready exists
+        if existing and existing["status"] in ('pending', 'ready', 'processing'):
+            return None
+        
+        # Don't queue if completed within last hour
+        if existing and existing["status"] == 'complete' and existing["completed_at"]:
+            completed = datetime.fromisoformat(existing["completed_at"].replace("Z", ""))
+            hours_since = (datetime.utcnow() - completed).total_seconds() / 3600
+            if hours_since < 1:
+                return None
+        
+        # Batch size for processing
+        batch_count = min(unprocessed_count, DOC_CHUNK_BATCH_SIZE)
+        
+        return self._queue_operation(
+            operation_type=OperationType.EXTRACT_DOCS,
+            source_type="document_chunk",
+            source_ids=[],
+            source_count=batch_count,
+        )
     
     def _check_correlation_needed(self) -> Optional[PendingOperation]:
         """Check if Tier 2 correlation should be queued."""
@@ -462,6 +515,7 @@ class RecogScheduler:
         # Build description
         descriptions = {
             OperationType.EXTRACT: f"Extract insights from {source_count} session(s)",
+            OperationType.EXTRACT_DOCS: f"Extract insights from {source_count} document chunk(s)",
             OperationType.CORRELATE: f"Find patterns across {source_count} insight(s)",
             OperationType.SYNTHESISE: f"Synthesise personality from {source_count} pattern(s)",
             OperationType.FULL_SWEEP: f"Full analysis of {source_count} item(s)",
@@ -526,6 +580,7 @@ class RecogScheduler:
             
             descriptions = {
                 "extract": f"Extract insights from {source_count} session(s)",
+                "extract_docs": f"Extract insights from {source_count} document chunk(s)",
                 "correlate": f"Find patterns across {source_count} insight(s)",
                 "synthesise": f"Synthesise personality from {source_count} pattern(s)",
                 "full_sweep": f"Full analysis sweep",
@@ -557,6 +612,8 @@ class RecogScheduler:
                     AND t1.tier = 1
                 WHERE t0.tier = 0 AND t1.id IS NULL
             """)
+        elif op_type == "extract_docs":
+            cursor.execute("SELECT COUNT(*) FROM document_chunks WHERE recog_processed = 0")
         elif op_type == "correlate":
             cursor.execute("SELECT COUNT(*) FROM ingots WHERE status IN ('raw', 'refined')")
         elif op_type == "synthesise":
@@ -679,6 +736,8 @@ class RecogScheduler:
         try:
             if op_type == "extract":
                 result = self._run_extraction(op_id)
+            elif op_type == "extract_docs":
+                result = self._run_doc_extraction(op_id)
             elif op_type == "correlate":
                 result = self._run_correlation(op_id)
             elif op_type == "synthesise":
@@ -767,6 +826,77 @@ class RecogScheduler:
             success=True,
             insights_created=len(all_insights),
             mana_spent=MANA_COSTS[OperationType.EXTRACT] * len(documents),
+        )
+    
+    def _run_doc_extraction(self, op_id: int) -> ProcessingResult:
+        """Run Tier 1 extraction on document chunks."""
+        if not self.llm:
+            return ProcessingResult(op_id, "extract_docs", False, error="No LLM configured")
+        
+        # Load unprocessed chunks
+        documents = list(self.adapter.load_unprocessed_chunks(limit=DOC_CHUNK_BATCH_SIZE))
+        
+        if not documents:
+            return ProcessingResult(op_id, "extract_docs", True, insights_created=0)
+        
+        logger.info(f"Processing {len(documents)} document chunks")
+        
+        # Extract insights from each chunk
+        extractor = Extractor(llm=self.llm, config=self.config)
+        all_insights = []
+        
+        for doc in documents:
+            try:
+                # Run Tier 0 signal processing first
+                self.signal_processor.process(doc)
+                
+                # Extract insights (Tier 1)
+                insights = extractor.extract(doc)
+                
+                # Get chunk_id from metadata
+                chunk_id = doc.metadata.get("chunk_id")
+                
+                for insight in insights:
+                    # Save insight linked to chunk
+                    if chunk_id:
+                        self.adapter.save_chunk_insight(chunk_id, insight)
+                    else:
+                        self.adapter.save_insight(insight)
+                    all_insights.append(insight)
+                
+                # Mark chunk as processed (even if no insights extracted)
+                if chunk_id and not insights:
+                    self.adapter.mark_chunk_processed(
+                        chunk_id,
+                        tier0_signals=doc.signals,
+                        insight_id=None
+                    )
+                
+                logger.debug(f"Chunk {chunk_id}: {len(insights)} insights")
+                
+            except Exception as e:
+                logger.error(f"Error processing chunk {doc.id}: {e}")
+                # Mark as processed anyway to avoid infinite retries
+                chunk_id = doc.metadata.get("chunk_id")
+                if chunk_id:
+                    self.adapter.mark_chunk_processed(chunk_id)
+        
+        # Log processing
+        self._log_processing(
+            source_type="document_batch",
+            source_id=f"doc_extract_{op_id}",
+            tier=1,
+            result=f"{len(all_insights)} insights from {len(documents)} chunks",
+        )
+        
+        logger.info(f"Document extraction complete: {len(all_insights)} insights from {len(documents)} chunks")
+        
+        return ProcessingResult(
+            operation_id=op_id,
+            operation_type="extract_docs",
+            success=True,
+            insights_created=len(all_insights),
+            mana_spent=MANA_COSTS[OperationType.EXTRACT_DOCS] * len(documents),
         )
     
     def _run_correlation(self, op_id: int) -> ProcessingResult:
@@ -981,6 +1111,17 @@ class RecogScheduler:
         cursor.execute("SELECT COUNT(*) FROM ingot_patterns")
         patterns = cursor.fetchone()[0]
         
+        # Document ingestion counts
+        try:
+            cursor.execute("SELECT COUNT(*) FROM document_chunks WHERE recog_processed = 0")
+            unprocessed_chunks = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM ingested_documents")
+            ingested_docs = cursor.fetchone()[0]
+        except:
+            unprocessed_chunks = 0
+            ingested_docs = 0
+        
         # Current report
         cursor.execute("""
             SELECT id, created_at, summary
@@ -999,6 +1140,8 @@ class RecogScheduler:
             "hot_sessions": hot_sessions,
             "pending_insights": pending_insights,
             "patterns": patterns,
+            "ingested_documents": ingested_docs,
+            "unprocessed_chunks": unprocessed_chunks,
             "current_report": dict(current_report) if current_report else None,
             "llm_available": self.llm is not None,
         }
@@ -1014,4 +1157,5 @@ __all__ = [
     "ProcessingResult",
     "OperationType",
     "MANA_COSTS",
+    "DOC_CHUNK_BATCH_SIZE",
 ]

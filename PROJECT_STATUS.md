@@ -1,14 +1,29 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-06  
-**Version:** 1.39  
+**Version:** 1.41  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
 ## IN PROGRESS
 
-### Memory Tiers & Progression System (NEW)
+### Document Ingestion System (NEW)
+- [x] **Phase 1: Core Pipeline** — Folder watch, parsers, chunking, database
+  - Migration: `document_ingestion_v0_1.sql` (6 tables)
+  - Module: `ingestion/` with service, chunker, parsers
+  - Parsers: PDF, Markdown, Plaintext, Messages (WhatsApp/SMS/iMessage)
+  - CLI: `ingest.py` for manual processing
+  - Inbox: `_inbox/` folder for drop zone
+- [x] **Phase 2: ReCog Bridge** — Connect ingestion to ReCog processing
+  - Scheduler: `extract_docs` operation type for document chunks
+  - Adapter: `load_unprocessed_chunks()`, `save_chunk_insight()`, `mark_chunk_processed()`
+  - Batch processing: 20 chunks per run, linked to ingots
+- [ ] **Phase 3: Entity Extraction** — People, dates, places, events
+- [ ] **Phase 4: Cross-Document Correlation** — Thread detection, chain reconstruction
+- [ ] **Phase 5: UI Integration** — Drag-drop, progress, history
+
+### Memory Tiers & Progression System
 - [x] **Phase 1: Schema** — Memory tier tables, progression tracking, ReCog queue
   - Tables: `session_summaries`, `ehko_progression`, `recog_processing_log`, `recog_reports`, `recog_queue`
   - Extended: `forge_sessions` with memory_tier (hot/warm/cold)
@@ -274,6 +289,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.41 — 2025-12-06 Session 26 — Document Ingestion Phase 2: ReCog Bridge. Scheduler extract_docs operation, adapter chunk methods, batch processing pipeline.
+- v1.40 — 2025-12-06 Session 26 — Document Ingestion System Phase 1: migration (6 tables), ingestion module (parsers for PDF/MD/TXT/Messages), chunker, CLI, _inbox folder.
 - v1.39 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css (red palette), recog.js (API interactions), index.html updates (drawer, overlays, toast), scheduler.py cooldown fix, ehko_control.py v3.0 (theme alignment, streamlined panels).
 - v1.38 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: Confirmation flow, queue management, 8 API endpoints, forge_server.py v2.4.
 - v1.37 — 2025-12-06 Session 26 — Memory Tiers & Progression System Phase 1: Schema migration with 5 new tables, 173 sessions marked 'hot'.

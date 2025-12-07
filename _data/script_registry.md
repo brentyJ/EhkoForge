@@ -1,9 +1,25 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-06 (Session 26 - Control Panel v3.0)
+**Updated:** 2025-12-06 (Session 26 - Document Ingestion)
 
-### recog_engine.adapters.ehkoforge (NEW)
+### ingestion/ Module (NEW)
+```
+ingestion/
+├── __init__.py           [v1.0] — Package exports
+├── types.py              [v1.0] — IngestedDocument, DocumentChunk, ParsedContent
+├── service.py            [v1.0] — IngestService: inbox processing, DB ops
+├── chunker.py            [v1.0] — Document chunking with context preservation
+└── parsers/
+    ├── __init__.py
+    ├── base.py           [v1.0] — BaseParser interface, get_parser()
+    ├── pdf.py            [v1.0] — PDF parsing (PyPDF2)
+    ├── markdown.py       [v1.0] — Markdown + YAML frontmatter
+    ├── plaintext.py      [v1.0] — Plain text files
+    └── messages.py       [v1.0] — WhatsApp, SMS, iMessage exports
+```
+
+### recog_engine.adapters.ehkoforge
 - `EhkoForgeAdapter(db_path)` — Connect to EhkoForge database
 - `adapter.load_documents(source_type, limit)` — Load from reflection_objects, sessions
 - `adapter.save_insight(insight)` — Save to ingots table
@@ -19,6 +35,7 @@
 | `ehko_refresh.py` | 2.0 | Vault indexing, transcription processing, DB sync |
 | `forge_server.py` | 2.4 | Flask API, LLM routing, mana system, chat sessions, ReCog scheduler |
 | `ehko_control.py` | 3.0 | Tkinter GUI — Server, ReCog, Index, Folders |
+| `ingest.py` | 1.0 | Document ingestion CLI — inbox processing, stats |
 
 ## Migration Scripts
 
@@ -28,6 +45,7 @@
 | `run_reorientation_migration.py` | Authority/Mana tables | Applied |
 | `run_mana_migration.py` | Mana purchase tables | Applied |
 | `run_memory_migration.py` | Memory tiers + progression | Applied |
+| `run_ingestion_migration.py` | Document ingestion tables | **New** |
 
 ## Test Scripts
 
@@ -174,6 +192,7 @@
 ---
 
 **Changelog:**
+- v1.9 — 2025-12-06 — Document Ingestion System: ingestion/ module, ingest.py CLI, run_ingestion_migration.py.
 - v1.8 — 2025-12-06 — ehko_control.py v3.0: Aligned theme, streamlined panels (Server/ReCog/Index/Folders).
 - v1.7 — 2025-12-06 — Added scheduler.py, ReCog API endpoints, updated forge_server to v2.4.
 - v1.6 — 2025-12-05 — Added EhkoForge adapter: ehkoforge.py, test script.
