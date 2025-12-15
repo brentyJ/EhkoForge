@@ -1,7 +1,13 @@
 /*
- * EhkoForge Main Styles v2.0
+ * EhkoForge Main Styles v2.1
  * Retro Terminal / Ghost-in-the-Machine Aesthetic
- * Phase 2: UI Consolidation
+ * Phase 2: Web Components Migration Complete
+ * 
+ * Removed obsolete CSS now handled by Web Components:
+ * - Avatar styles → <ehko-avatar>
+ * - Message styles → <ehko-message>
+ * - Typing indicator → <ehko-message>
+ * - Toast notifications → <ehko-toast>
  */
 
 /* =============================================================================
@@ -1080,204 +1086,9 @@ body.avatar-hidden .avatar-zone {
         0 0 10px rgba(107, 140, 206, 0.1);
 }
 
-.avatar {
-    width: 80px;
-    height: 80px;
-    position: relative;
-    z-index: 1;
-}
-
-.avatar-status {
-    margin-top: var(--gap-sm);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    z-index: 2;
-}
-
-/* Ghostly Form - 1950s Retro Monitor */
-.avatar-form {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.monitor-body {
-    fill: none;
-    stroke: var(--accent-primary);
-    stroke-width: 1.5;
-    opacity: 0.5;
-}
-
-.screen-bezel {
-    fill: none;
-    stroke: var(--accent-primary);
-    stroke-width: 1;
-    opacity: 0.4;
-}
-
-.screen-glow {
-    fill: var(--accent-primary);
-    opacity: 0.05;
-    filter: blur(6px);
-    animation: screen-pulse 3s ease-in-out infinite;
-}
-
-@keyframes screen-pulse {
-    0%, 100% { opacity: 0.05; }
-    50% { opacity: 0.08; }
-}
-
-.antenna {
-    stroke: var(--accent-primary);
-    stroke-width: 1;
-    opacity: 0.4;
-    stroke-linecap: round;
-}
-
-.antenna-tip {
-    fill: var(--accent-primary);
-    opacity: 0.5;
-}
-
-.vent-line {
-    stroke: var(--accent-primary);
-    stroke-width: 0.8;
-    opacity: 0.3;
-    stroke-linecap: round;
-}
-
-.monitor-stand,
-.monitor-base {
-    fill: none;
-    stroke: var(--accent-primary);
-    stroke-width: 1;
-    opacity: 0.3;
-}
-
-/* Eyes */
-.avatar-eyes {
-    position: absolute;
-    top: 36px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 14px;
-    z-index: 2;
-}
-
-.eye {
-    width: 14px;
-    height: 3px;
-    background: var(--accent-primary);
-    border-radius: 2px;
-    box-shadow: 
-        0 0 4px var(--accent-glow),
-        0 0 8px var(--accent-glow),
-        0 0 12px var(--accent-glow);
-    animation: eye-glow 3s ease-in-out infinite;
-    transition: all 0.1s ease;
-}
-
-@keyframes eye-glow {
-    0%, 100% { 
-        box-shadow: 
-            0 0 4px var(--accent-glow),
-            0 0 8px var(--accent-glow),
-            0 0 12px var(--accent-glow);
-        opacity: 1;
-    }
-    50% { 
-        box-shadow: 
-            0 0 6px var(--accent-glow),
-            0 0 12px var(--accent-glow),
-            0 0 18px var(--accent-glow);
-        opacity: 0.9;
-    }
-}
-
-/* Blinking */
-.eye.blinking {
-    height: 0.5px;
-    opacity: 0.3;
-}
-
-.avatar-status {
-    margin-top: var(--gap-sm);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    z-index: 2;
-}
-
-/* Avatar states */
-.avatar.thinking .monitor-body {
-    animation: monitor-thinking 0.6s ease-in-out infinite;
-}
-
-.avatar.thinking .screen-glow {
-    animation: screen-thinking 0.8s ease-in-out infinite;
-}
-
-.avatar.thinking .eye {
-    animation: eye-thinking 0.8s ease-in-out infinite;
-}
-
-@keyframes monitor-thinking {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.7; }
-}
-
-@keyframes screen-thinking {
-    0%, 100% { opacity: 0.08; }
-    50% { opacity: 0.12; }
-}
-
-@keyframes eye-thinking {
-    0%, 100% { 
-        box-shadow: 
-            0 0 6px var(--accent-glow),
-            0 0 14px var(--accent-glow),
-            0 0 20px var(--accent-glow);
-    }
-    50% { 
-        box-shadow: 
-            0 0 8px var(--accent-glow),
-            0 0 18px var(--accent-glow),
-            0 0 28px var(--accent-glow);
-    }
-}
-
-.avatar.dormant .monitor-body {
-    opacity: 0.2;
-}
-
-.avatar.dormant .screen-bezel {
-    opacity: 0.15;
-}
-
-.avatar.dormant .screen-glow {
-    opacity: 0.02;
-    animation: none;
-}
-
-.avatar.dormant .antenna,
-.avatar.dormant .antenna-tip {
-    opacity: 0.15;
-}
-
-.avatar.dormant .eye {
-    height: 1px;
-    opacity: 0.2;
-    box-shadow: 0 0 2px var(--accent-glow);
-    animation: none;
-}
+/* Avatar - NOW HANDLED BY <ehko-avatar> WEB COMPONENT */
+/* See: /components/ehko-avatar.js */
+/* Layout containers (.avatar-zone, .matrix-code-bg, .monitor-screen) retained above */
 
 /* =============================================================================
    TERMINAL OUTPUT
@@ -1304,87 +1115,11 @@ body.avatar-hidden .avatar-zone {
     font-style: italic;
 }
 
-/* Messages */
-.message {
-    padding: var(--gap-sm) var(--gap-md);
-    margin: var(--gap-sm) 0;
-    border-left: 2px solid var(--accent-dim);
-    background: var(--bg-tertiary);
-    border-radius: 0 6px 6px 0;
-    animation: message-appear 0.2s ease-out;
-}
+/* Messages - NOW HANDLED BY <ehko-message> WEB COMPONENT */
+/* See: /components/ehko-message.js */
 
-@keyframes message-appear {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.message.user {
-    border-left-color: var(--accent-primary);
-}
-
-.message.user::before {
-    content: '> ';
-    color: var(--accent-primary);
-    font-weight: 600;
-}
-
-.message.ehko {
-    background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
-}
-
-.message.ehko::before {
-    content: '< ';
-    color: var(--accent-dim);
-    font-weight: 600;
-}
-
-.message-content {
-    color: var(--text-primary);
-    line-height: 1.6;
-}
-
-.message-timestamp {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    margin-top: var(--gap-xs);
-    text-align: right;
-}
-
-/* Typing indicator */
-.typing-indicator {
-    display: flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    padding: var(--gap-sm) var(--gap-md);
-    color: var(--text-dim);
-}
-
-.typing-indicator::before {
-    content: '< ';
-    color: var(--accent-dim);
-}
-
-.typing-dots {
-    display: flex;
-    gap: 3px;
-}
-
-.typing-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent-dim);
-    border-radius: 50%;
-    animation: typing-pulse 1.4s infinite;
-}
-
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typing-pulse {
-    0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
-    30% { opacity: 1; transform: scale(1.2); }
-}
+/* Typing indicator - NOW HANDLED BY <ehko-message> WEB COMPONENT */
+/* See: /components/ehko-message.js (typing attribute) */
 
 /* =============================================================================
    INPUT BAR

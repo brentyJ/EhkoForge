@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-15  
-**Version:** 1.46  
+**Last Updated:** 2025-12-16  
+**Version:** 1.49  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -14,19 +14,19 @@
   - Location: `6.0 Frontend/components/`
   - Test page: `/component-test.html`
   - Server route: `/components/<filename>`
-- [ ] **Phase 2: Integration** — Replace current UI elements with components
+- [x] **Phase 2: Integration** — Replace current UI elements with components
   - [x] Replace toast system in main.js with `<ehko-toast>`
-  - [ ] Replace avatar display with `<ehko-avatar>`
-  - [ ] Replace mana display with `<ehko-mana-bar>`
-  - [ ] Replace chat messages with `<ehko-message>`
+  - [x] Replace avatar display with `<ehko-avatar>` — Session 31
+  - [x] Replace mana display with `<ehko-mana-bar>` — Session 31 (verified)
+  - [x] Replace chat messages with `<ehko-message>` — Session 31
 - [ ] **Phase 3: HTMX Integration** — Server-driven updates
   - [ ] Add HTMX library
   - [ ] Convert fetch() calls to hx-* attributes
   - [ ] Return HTML fragments from server
-- [ ] **Phase 4: Cleanup** — Remove obsolete CSS/JS
-  - [ ] Delete replaced CSS sections from main.css
-  - [ ] Delete replaced functions from main.js
-  - [ ] Consolidate to component-only architecture
+- [x] **Phase 4: Cleanup** — Remove obsolete CSS/JS
+  - [x] Delete message CSS from main.css (~75 lines)
+  - [x] Delete avatar CSS from main.css (~195 lines)
+  - [x] Update main.css v2.0 → v2.1 with cleanup notes
 
 **Benefits:**
 - Shadow DOM = no CSS conflicts or caching issues
@@ -293,6 +293,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-16 Session 31:** Web Components Migration Phases 2+4 COMPLETE — All UI elements now use Web Components. Avatar (`<ehko-avatar>` v1.1), mana bar (`<ehko-mana-bar>`), chat messages (`<ehko-message>`), toast notifications (`<ehko-toast>`), tethers (`<ehko-tether-bar>`, `<ehko-tether-panel>`). main.js v2.6 with full component integration. main.css v2.1 with ~270 lines obsolete CSS removed. Mana bar integration verified (removed duplicate updateManaDisplay, fixed state.mana sync, connected mana-topup event).
+
 - **2025-12-15 Session 30:** UI Layout Refinements — ASCII EHKO logo moved to status bar (3-column layout: Authority | ASCII Logo | Mana+Tethers), avatar zone reverted to original design with matrix background and corner brackets, settings drawer streamlined (removed redundant API key inputs, added "Manage Tethers" button, Display toggles including ASCII logo visibility, Data & Privacy section, About section with links and license). Updated main.css, index.html, main.js v2.4.
 
 - **2025-12-14 Session 29:** Tether System Phases 1-5 complete — Schema (`tethers_v0_1.sql` with 3 tables, 2 views), tether_manager.py (CRUD, verification, routing, usage logging), 8 API endpoints in forge_server.py v2.9, Web Components (`<ehko-tether-bar>`, `<ehko-tether-panel>`), UI integration in main.js v2.3, chat routing integration (tethers bypass mana). Tethers are direct BYOK conduits that never deplete, styled like mana bars but always full when connected.
@@ -371,6 +373,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.49 — 2025-12-16 Session 31 — Web Components Migration Phases 2+4 complete. main.js v2.6 (full component integration), main.css v2.1 (~270 lines obsolete CSS removed). Mana bar integration verified.
+- v1.47 — 2025-12-16 Session 31 — Web Components Migration Phase 2: Avatar replaced with <ehko-avatar> component v1.1 (5 Authority stages). main.js v2.5 with component integration.
 - v1.46 — 2025-12-15 Session 30 — UI Layout Refinements: ASCII logo in status bar (3-column layout), avatar zone restored to original, settings drawer streamlined (tether panel integration, About section, removed redundant inputs), main.js v2.4.
 - v1.45 — 2025-12-14 Session 29 — Tether System Phases 1-5: Schema (3 tables, 2 views), tether_manager.py, 8 API endpoints (forge_server.py v2.9), Web Components (ehko-tether-bar, ehko-tether-panel), UI integration (main.js v2.3), chat routing (tethers bypass mana).
 - v1.42 — 2025-12-08 Session 28 — Ehko Visual Identity System: Spec v1.1, 5 reference SVGs, gallery, evolution studio. Marked Reorientation Phase 7 complete.

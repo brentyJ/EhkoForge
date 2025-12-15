@@ -1,5 +1,5 @@
 /**
- * EhkoForge Avatar Web Component v1.0
+ * EhkoForge Avatar Web Component v1.1
  * 
  * A self-contained, portable Ehko avatar display.
  * Uses Shadow DOM for style encapsulation - no CSS conflicts.
@@ -7,12 +7,31 @@
  * 
  * Usage:
  *   <ehko-avatar 
- *     stage="nascent|emerging|established|transcendent"
+ *     stage="nascent|signal|resonant|manifest|anchored"
  *     mood="ready|thinking|dormant"
- *     name="Ehko">
+ *     name="Ehko"
+ *     size="120">
  *   </ehko-avatar>
  * 
+ * Stages (aligned with Authority system):
+ *   - nascent: Just beginning (complexity 1)
+ *   - signal: First patterns emerging (complexity 2)
+ *   - resonant: Clear identity forming (complexity 3)
+ *   - manifest: Strong presence (complexity 4)
+ *   - anchored: Fully realised (complexity 5)
+ * 
+ * Moods:
+ *   - ready: Normal state
+ *   - thinking: Processing, enhanced glow
+ *   - dormant: Resting, reduced animation
+ * 
  * @license AGPL-3.0
+ * 
+ * Changelog:
+ *   v1.1 — 2025-12-16 — Added all 5 Authority stages (nascent, signal, resonant, manifest, anchored);
+ *                        legacy stage names (emerging, established, transcendent) still supported;
+ *                        added size attribute documentation
+ *   v1.0 — Initial component with 4-stage system
  */
 
 class EhkoAvatar extends HTMLElement {
@@ -49,9 +68,10 @@ class EhkoAvatar extends HTMLElement {
     get name() { return this.getAttribute('name') || 'Ehko'; }
     get size() { return parseInt(this.getAttribute('size')) || 120; }
 
-    // Stage-based visual parameters
+    // Stage-based visual parameters (aligned with Authority system)
     getStageParams() {
         const stages = {
+            // Stage 1: Nascent - Just beginning
             nascent: {
                 glowIntensity: 0.3,
                 eyeGlow: 'rgba(107, 140, 206, 0.6)',
@@ -59,18 +79,51 @@ class EhkoAvatar extends HTMLElement {
                 pulseSpeed: 3000,
                 complexity: 1
             },
+            // Stage 2: Signal - First patterns emerging
+            signal: {
+                glowIntensity: 0.45,
+                eyeGlow: 'rgba(107, 140, 206, 0.75)',
+                frameColor: 'rgba(107, 140, 206, 0.55)',
+                pulseSpeed: 2750,
+                complexity: 2
+            },
+            // Stage 3: Resonant - Clear identity forming
+            resonant: {
+                glowIntensity: 0.6,
+                eyeGlow: 'rgba(120, 150, 215, 0.85)',
+                frameColor: 'rgba(120, 150, 215, 0.65)',
+                pulseSpeed: 2250,
+                complexity: 3
+            },
+            // Stage 4: Manifest - Strong presence
+            manifest: {
+                glowIntensity: 0.8,
+                eyeGlow: 'rgba(135, 165, 230, 0.95)',
+                frameColor: 'rgba(135, 165, 230, 0.8)',
+                pulseSpeed: 1750,
+                complexity: 4
+            },
+            // Stage 5: Anchored - Fully realised
+            anchored: {
+                glowIntensity: 1.0,
+                eyeGlow: 'rgba(150, 180, 255, 1.0)',
+                frameColor: 'rgba(150, 180, 255, 0.9)',
+                pulseSpeed: 1500,
+                complexity: 5
+            },
+            // Legacy mappings for compatibility
             emerging: {
-                glowIntensity: 0.5,
-                eyeGlow: 'rgba(107, 140, 206, 0.8)',
-                frameColor: 'rgba(107, 140, 206, 0.6)',
-                pulseSpeed: 2500,
+                glowIntensity: 0.45,
+                eyeGlow: 'rgba(107, 140, 206, 0.75)',
+                frameColor: 'rgba(107, 140, 206, 0.55)',
+                pulseSpeed: 2750,
                 complexity: 2
             },
             established: {
-                glowIntensity: 0.7,
-                eyeGlow: 'rgba(130, 160, 220, 0.9)',
-                frameColor: 'rgba(130, 160, 220, 0.7)',
-                pulseSpeed: 2000,
+                glowIntensity: 0.6,
+                eyeGlow: 'rgba(120, 150, 215, 0.85)',
+                frameColor: 'rgba(120, 150, 215, 0.65)',
+                pulseSpeed: 2250,
                 complexity: 3
             },
             transcendent: {
@@ -78,7 +131,7 @@ class EhkoAvatar extends HTMLElement {
                 eyeGlow: 'rgba(150, 180, 255, 1.0)',
                 frameColor: 'rgba(150, 180, 255, 0.9)',
                 pulseSpeed: 1500,
-                complexity: 4
+                complexity: 5
             }
         };
         return stages[this.stage] || stages.nascent;

@@ -174,32 +174,15 @@
                 <!-- Full-width matrix code background -->
                 <canvas class="matrix-code-bg" id="matrix-canvas" width="1200" height="120"></canvas>
             
-                <!-- Single Avatar -->
-                <div class="avatar" id="avatar">
-                    <svg class="avatar-form" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                        <rect class="monitor-body" x="12" y="18" width="56" height="48" rx="4" />
-                        <rect class="screen-bezel" x="18" y="24" width="44" height="32" rx="2" />
-                        <line class="antenna" x1="20" y1="18" x2="18" y2="10" />
-                        <circle class="antenna-tip" cx="18" cy="10" r="1.5" />
-                        <line class="antenna" x1="60" y1="18" x2="62" y2="10" />
-                        <circle class="antenna-tip" cx="62" cy="10" r="1.5" />
-                        <line class="vent-line" x1="14" y1="30" x2="16" y2="30" />
-                        <line class="vent-line" x1="14" y1="34" x2="16" y2="34" />
-                        <line class="vent-line" x1="14" y1="38" x2="16" y2="38" />
-                        <line class="vent-line" x1="64" y1="30" x2="66" y2="30" />
-                        <line class="vent-line" x1="64" y1="34" x2="66" y2="34" />
-                        <line class="vent-line" x1="64" y1="38" x2="66" y2="38" />
-                        <rect class="monitor-stand" x="32" y="66" width="16" height="4" rx="1" />
-                        <rect class="monitor-base" x="28" y="70" width="24" height="3" rx="1" />
-                        <rect class="screen-glow" x="20" y="26" width="40" height="28" rx="1" />
-                    </svg>
-                    <div class="avatar-eyes">
-                        <div class="eye eye-left"></div>
-                        <div class="eye eye-right"></div>
-                    </div>
-                </div>
+                <!-- Ehko Avatar Web Component -->
+                <ehko-avatar 
+                    id="ehko-avatar"
+                    stage="nascent"
+                    mood="ready"
+                    name="Ehko"
+                    size="100">
+                </ehko-avatar>
             </div>
-            <div class="avatar-status" id="avatar-status">Ready</div>
         </div>
         
         <!-- Terminal Output -->
@@ -538,5 +521,7 @@
     <script src="/components/ehko-mana-bar.js"></script>
     <script src="/components/ehko-tether-bar.js"></script>
     <script src="/components/ehko-tether-panel.js"></script>
+    <script src="/components/ehko-avatar.js"></script>
+    <script src="/components/ehko-message.js"></script>
 </body>
 </html>

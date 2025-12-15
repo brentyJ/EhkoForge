@@ -1,10 +1,14 @@
 /**
- * EhkoForge Main JavaScript v2.4
- * Phase 2: UI Consolidation + Web Components + Tethers
- * Session 30: ASCII logo in status bar, settings drawer streamlined
+ * EhkoForge Main JavaScript v2.6
+ * Phase 2: Web Components Migration Complete
+ * Session 31: Full component migration
  * 
- * Toast notifications now use <ehko-toast> Web Component
- * Tether system uses <ehko-tether-bar> and <ehko-tether-panel> Web Components
+ * Web Components in use:
+ * - <ehko-toast> for notifications
+ * - <ehko-mana-bar> for mana display with topup event
+ * - <ehko-tether-bar> and <ehko-tether-panel> for tether management
+ * - <ehko-avatar> for avatar display with mood/stage states
+ * - <ehko-message> for chat messages with role-based styling
  */
 
 // =============================================================================
@@ -153,6 +157,9 @@ function updateAuthorityDisplay(auth) {
     const stageCapitalised = stage.charAt(0).toUpperCase() + stage.slice(1);
     document.getElementById('authority-stage').textContent = stageCapitalised;
     
+    // Sync avatar stage with Authority stage
+    setAvatarStage(stage);
+    
     // Component bars - components are at top level, not nested
     const componentKeys = ['memory_depth', 'identity_clarity', 'emotional_range', 'temporal_coverage', 'core_density'];
     componentKeys.forEach(key => {
@@ -165,30 +172,9 @@ function updateAuthorityDisplay(auth) {
 }
 
 async function fetchMana() {
-    try {
-        const data = await api('/mana');
-        state.mana = data;
-        updateManaDisplay(data);
-    } catch (err) {
-        console.error('Failed to fetch mana:', err);
-    }
-}
-
-function updateManaDisplay(mana) {
-    const current = Math.floor(mana.current_mana || 0);
-    const max = mana.max_mana || 100;
-    const pct = (current / max) * 100;
-    
-    document.getElementById('mana-current').textContent = current;
-    document.getElementById('mana-max').textContent = max;
-    document.getElementById('mana-regen').textContent = `+${mana.regen_rate || 1}/hr`;
-    
-    const fill = document.getElementById('mana-fill');
-    fill.style.width = `${pct}%`;
-    fill.classList.toggle('low', pct < 20);
-    
-    // Update cost display for current mode
-    updateCostDisplay();
+    // Deprecated - use fetchManaBalance() instead
+    // Kept for backward compatibility, redirects to new function
+    await fetchManaBalance();
 }
 
 function updateCostDisplay() {
@@ -212,8 +198,8 @@ async function refreshAuthority() {
 async function refillMana() {
     try {
         const data = await api('/mana/refill', { method: 'POST' });
-        state.mana = data.mana;
-        updateManaDisplay(data.mana);
+        // Refresh mana display from server
+        await fetchManaBalance();
         showNotice('Mana refilled');
     } catch (err) {
         console.error('Failed to refill mana:', err);
@@ -619,37 +605,35 @@ function renderMessage(msg) {
     const welcome = output.querySelector('.welcome-message');
     if (welcome) welcome.remove();
     
-    const div = document.createElement('div');
-    div.className = `message ${msg.role}`;
-    div.innerHTML = `
-        <span class="message-content">${escapeHtml(msg.content)}</span>
-        <div class="message-timestamp">${formatTime(msg.timestamp)}</div>
-    `;
+    // Create message component
+    const message = document.createElement('ehko-message');
+    message.setAttribute('role', msg.role === 'ehko' ? 'ehko' : 'user');
+    if (msg.timestamp) {
+        message.setAttribute('timestamp', msg.timestamp);
+    }
+    message.innerHTML = escapeHtml(msg.content);
     
-    output.appendChild(div);
+    output.appendChild(message);
     scrollToBottom();
 }
 
 function showTyping() {
     const output = document.getElementById('terminal-output');
-    const existing = output.querySelector('.typing-indicator');
+    const existing = output.querySelector('ehko-message[typing]');
     if (existing) return;
     
-    const div = document.createElement('div');
-    div.className = 'typing-indicator';
-    div.innerHTML = `
-        <div class="typing-dots">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-        </div>
-    `;
-    output.appendChild(div);
+    // Create typing indicator using component
+    const typingMsg = document.createElement('ehko-message');
+    typingMsg.setAttribute('role', 'ehko');
+    typingMsg.setAttribute('typing', '');
+    typingMsg.id = 'typing-indicator';
+    
+    output.appendChild(typingMsg);
     scrollToBottom();
 }
 
 function hideTyping() {
-    const typing = document.querySelector('.typing-indicator');
+    const typing = document.getElementById('typing-indicator');
     if (typing) typing.remove();
 }
 
@@ -663,7 +647,6 @@ function scrollToBottom() {
 // =============================================================================
 
 let matrixInterval = null;
-let blinkInterval = null;
 
 function initMatrixCode() {
     const canvas = document.getElementById('matrix-canvas');
@@ -761,68 +744,33 @@ function initMatrixCode() {
     });
 }
 
-function initAvatarCarousel() {
-    const containers = document.querySelectorAll('.avatar-form-container');
-    
-    containers.forEach(container => {
-        container.addEventListener('click', () => {
-            // Remove active from all
-            containers.forEach(c => c.classList.remove('active'));
-            
-            // Set clicked as active
-            container.classList.add('active');
-            
-            // Only the first form (classic) has eyes, so update references
-            const activeAvatar = container.querySelector('.avatar');
-            if (activeAvatar) {
-                // Update state reference for other functions
-                const oldAvatar = document.getElementById('avatar');
-                if (oldAvatar) oldAvatar.removeAttribute('id');
-                activeAvatar.id = 'avatar';
-            }
-        });
-    });
-}
-
-function initEyeBlink() {
-    const eyes = document.querySelectorAll('.eye');
-    
-    function blink() {
-        eyes.forEach(eye => eye.classList.add('blinking'));
-        setTimeout(() => {
-            eyes.forEach(eye => eye.classList.remove('blinking'));
-        }, 100);
-        
-        // Schedule next blink randomly (3-7 seconds)
-        const nextBlink = 3000 + Math.random() * 4000;
-        blinkInterval = setTimeout(blink, nextBlink);
-    }
-    
-    // Start blinking
-    blink();
-}
-
 function setAvatarState(status) {
-    const avatar = document.getElementById('avatar');
-    const statusEl = document.getElementById('avatar-status');
+    const avatar = document.getElementById('ehko-avatar');
+    if (!avatar) return;
     
-    avatar.classList.remove('thinking', 'dormant');
+    // Map status to mood
+    avatar.setMood(status);
     
+    // Adjust matrix speed based on mood
     switch (status) {
         case 'thinking':
-            avatar.classList.add('thinking');
-            statusEl.textContent = 'Thinking...';
             if (window.setMatrixSpeed) window.setMatrixSpeed(2); // Faster
             break;
         case 'dormant':
-            avatar.classList.add('dormant');
-            statusEl.textContent = 'Resting';
             if (window.setMatrixSpeed) window.setMatrixSpeed(0.3); // Slower
             break;
         default:
-            statusEl.textContent = 'Ready';
             if (window.setMatrixSpeed) window.setMatrixSpeed(1); // Normal
     }
+}
+
+function setAvatarStage(stage) {
+    const avatar = document.getElementById('ehko-avatar');
+    if (!avatar) return;
+    
+    // Component supports all Authority stages directly:
+    // nascent, signal, resonant, manifest, anchored
+    avatar.setStage(stage.toLowerCase());
 }
 
 // =============================================================================
@@ -989,16 +937,8 @@ function formatDate(timestamp) {
 }
 
 function showNotice(message, type = 'info') {
-    // Simple notice - could be enhanced with a toast system
-    console.log(`[${type.toUpperCase()}] ${message}`);
-    
-    // For now, update avatar status briefly
-    const statusEl = document.getElementById('avatar-status');
-    const original = statusEl.textContent;
-    statusEl.textContent = message;
-    setTimeout(() => {
-        statusEl.textContent = original;
-    }, 2000);
+    // Use toast notification system
+    showNotification(message, type);
 }
 
 // =============================================================================
@@ -1024,6 +964,13 @@ function updateManaDisplay(balance, limits) {
     const purchasedMana = balance.purchased_mana || 0;
     const totalMana = balance.total_available || 0;
     
+    // Update state for mana checks elsewhere
+    state.mana = {
+        current_mana: totalMana,
+        regenerative_mana: regenMana,
+        purchased_mana: purchasedMana
+    };
+    
     // Update web component attributes
     const manaBar = document.getElementById('mana-bar');
     if (manaBar) {
@@ -1031,6 +978,9 @@ function updateManaDisplay(balance, limits) {
         manaBar.setAttribute('regen', Math.floor(regenMana));
         manaBar.setAttribute('purchased', Math.floor(purchasedMana));
     }
+    
+    // Update cost display
+    updateCostDisplay();
     
     // Check for low mana warning
     if (limits && limits.daily_alert) {
@@ -1559,6 +1509,12 @@ function initEventListeners() {
         });
     }
     
+    // Mana bar topup event (from web component)
+    const manaBar = document.getElementById('mana-bar');
+    if (manaBar) {
+        manaBar.addEventListener('mana-topup', openPurchaseModal);
+    }
+    
     // Mana purchase system (elements may not exist)
     const manaTopupBtn = document.getElementById('mana-topup-btn');
     if (manaTopupBtn) {
@@ -1634,10 +1590,8 @@ async function init() {
     document.body.classList.add('scanlines-enabled');
     applySettings();
     
-    // Initialize avatar animations
+    // Initialize matrix background (avatar component handles its own animations)
     initMatrixCode();
-    initAvatarCarousel();
-    initEyeBlink();
     
     // Initialize ASCII display with random acronym
     state.currentAcronym = getRandomAcronym();

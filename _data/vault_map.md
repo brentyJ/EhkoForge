@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "4.0"
+version: "4.3"
 created: 2025-11-29
-updated: 2025-12-14
+updated: 2025-12-16
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-14 (Session 29 - Tether System)
+**Generated:** 2025-12-16 (Session 31 - Web Components Complete)
 
 ---
 
@@ -209,7 +209,7 @@ static/
 │   ├── forge.css                 — Forge area (gold/violet palette)
 │   └── recog.css                 [v1.0] — ReCog UI (red palette, processing animation)
 ├── js/
-│   ├── main.js                   [v2.3] — Main terminal logic (Authority, Mana, Tethers, chat)
+│   ├── main.js                   [v2.6] — Main terminal logic (full Web Components integration)
 │   ├── forge.js                  — Insite review logic
 │   └── recog.js                  [v1.0] — ReCog scheduler UI (queue/reports/progression)
 ├── reference_nascent.svg         [v1.0] — Stage 1 Ehko reference
@@ -220,6 +220,7 @@ static/
 └── ehko_reference_gallery.html   [v1.0] — All-stage visual gallery
 
 components/
+├── ehko-avatar.js                [v1.1] — Avatar Web Component (5 Authority stages, 3 moods)
 ├── ehko-toast.js                 [v1.0] — Toast notification Web Component
 ├── ehko-mana-bar.js              [v1.1] — Mana bar Web Component
 ├── ehko-tether-bar.js            [v1.0] — Tether bar Web Component (never depletes)
@@ -385,6 +386,8 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.2 — 2025-12-16 Session 31 — Web Components Migration complete: main.js v2.6, main.css v2.1, all UI elements using components.
+- v4.1 — 2025-12-16 Session 31 — Web Components Migration: ehko-avatar.js v1.1 with 5 Authority stages, main.js v2.5.
 - v4.0 — 2025-12-14 Session 29 — Tether System Phases 1-5: tether_manager.py, tethers_v0_1.sql migration, forge_server.py v2.9 with 8 tether endpoints + routing, Web Components (ehko-tether-bar, ehko-tether-panel), main.js v2.3.
 - v3.9 — 2025-12-08 Session 28 — Ehko Visual Identity System: Added 1_8 spec, 5 reference SVGs, gallery, evolution studio.
 - v3.8 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css, recog.js. Updated frontend section.
