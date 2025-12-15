@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "3.9"
+version: "4.0"
 created: 2025-11-29
-updated: 2025-12-08
+updated: 2025-12-14
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-05 (Session 24 - Cleanup Completion)
+**Generated:** 2025-12-14 (Session 29 - Tether System)
 
 ---
 
@@ -99,7 +99,7 @@ Universal/
 #### Root Scripts
 ```
 ehko_refresh.py                   [v2.0, working] — Vault indexing + transcription processing
-forge_server.py                   [v2.5, working] — Flask server + Mana + LLM + ReCog + Evolution Studio
+forge_server.py                   [v2.9, working] — Flask server + Mana + LLM + ReCog + Tethers + Evolution Studio
 ehko_control.py                   [v2.0, working] — GUI control panel (tkinter, touch-optimized)
 EhkoForge Control Panel.vbs       [v1.0, working] — Silent launcher (no console window)
 run_ingot_migration.py            [v1.0, applied]  — Ingot tables migration
@@ -153,6 +153,7 @@ recog_engine/
 ├── authority_mana.py             [v0.1] — Authority & Mana systems
 ├── mana_manager.py               [v0.1] — Purchase system, BYOK/Mana/Hybrid
 ├── scheduler.py                  [v1.0] — ReCog queue management + confirmation flow
+├── tether_manager.py             [v0.1] — Direct BYOK conduits (never deplete)
 └── forge_integration.py          [v0.1, guide] — Server integration helpers
 ```
 
@@ -180,7 +181,8 @@ migrations/
 ├── ingot_migration_v0_1.sql      [applied] — Ingot system tables
 ├── reorientation_v0_1.sql        [applied] — Authority/Mana/Insite tables
 ├── mana_purchase_v0_1.sql        [applied] — Mana purchase tables (7 tables)
-└── memory_progression_v0_1.sql   [applied] — Memory tiers + progression tables (5 tables)
+├── memory_progression_v0_1.sql   [applied] — Memory tiers + progression tables (5 tables)
+└── tethers_v0_1.sql              [pending] — Tether tables (3 tables, 2 views)
 ```
 
 #### Documentation (in 5.0 Scripts/)
@@ -207,7 +209,7 @@ static/
 │   ├── forge.css                 — Forge area (gold/violet palette)
 │   └── recog.css                 [v1.0] — ReCog UI (red palette, processing animation)
 ├── js/
-│   ├── main.js                   [v2.1] — Main terminal logic (Authority, Mana, chat)
+│   ├── main.js                   [v2.3] — Main terminal logic (Authority, Mana, Tethers, chat)
 │   ├── forge.js                  — Insite review logic
 │   └── recog.js                  [v1.0] — ReCog scheduler UI (queue/reports/progression)
 ├── reference_nascent.svg         [v1.0] — Stage 1 Ehko reference
@@ -216,6 +218,12 @@ static/
 ├── reference_manifest.svg        [v1.0] — Stage 4 Ehko reference
 ├── reference_anchored.svg        [v1.0] — Stage 5 Ehko reference
 └── ehko_reference_gallery.html   [v1.0] — All-stage visual gallery
+
+components/
+├── ehko-toast.js                 [v1.0] — Toast notification Web Component
+├── ehko-mana-bar.js              [v1.1] — Mana bar Web Component
+├── ehko-tether-bar.js            [v1.0] — Tether bar Web Component (never depletes)
+└── ehko-tether-panel.js          [v1.0] — Tether management panel Web Component
 ```
 
 **Architecture (v2.1 - Phase 2 Reorientation):**
@@ -280,7 +288,7 @@ ROADMAP.md                        — Expansion phases (Ehko Bridge, Mana Core)
 ## DATABASE SCHEMA
 
 ### Table Count
-**Total:** 40 tables (after memory migration)
+**Total:** 43 tables (after tethers migration)
 
 ---
 
@@ -377,6 +385,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.0 — 2025-12-14 Session 29 — Tether System Phases 1-5: tether_manager.py, tethers_v0_1.sql migration, forge_server.py v2.9 with 8 tether endpoints + routing, Web Components (ehko-tether-bar, ehko-tether-panel), main.js v2.3.
 - v3.9 — 2025-12-08 Session 28 — Ehko Visual Identity System: Added 1_8 spec, 5 reference SVGs, gallery, evolution studio.
 - v3.8 — 2025-12-06 Session 26 — ReCog Forge UI Phase 5: recog.css, recog.js. Updated frontend section.
 - v3.7 — 2025-12-06 Session 26 — ReCog Scheduler v1.0: scheduler.py, test_recog_scheduler.py, forge_server.py v2.4, 8 API endpoints.

@@ -78,6 +78,18 @@
 | `mana_costs` | Operation costs | operation, cost |
 | `mana_transactions` | Spending/regen log | id, operation, amount, timestamp |
 
+## Tether Tables (AGPL)
+
+| Table | Purpose | Key Columns |
+|-------|---------|-------------|
+| `tethers` | Direct BYOK conduits | id, user_id, provider, api_key_encrypted, active, verification_status |
+| `tether_usage_log` | Analytics (no billing) | tether_id, operation, tokens_input, tokens_output |
+| `tether_providers` | Supported providers | provider_key, display_name, default_model, supports_chat, supports_processing |
+
+**Views:** `v_active_tethers`, `v_tether_usage_stats`
+
+**Concept:** Tethers are direct conduits to LLM Sources. Unlike mana, they never deplete—always full while connected.
+
 ## Mana Purchase Tables (AGPL)
 
 | Table | Purpose | Key Columns |
@@ -125,6 +137,7 @@ GROUP BY operation;
 ---
 
 **Changelog:**
+- v1.5 — 2025-12-14 — Added Tether Tables (3 tables, 2 views). Concept: conduits that never deplete.
 - v1.4 — 2025-12-06 — Added Memory & Progression Tables (session_summaries, ehko_progression, recog_processing_log, recog_reports, recog_queue). Noted forge_sessions extensions.
 - v1.3 — 2025-12-05 — Added ReCog Pattern Tables (ingot_patterns, ingot_pattern_insights).
 - v1.2 — 2025-12-05 — Added Mana Purchase Tables section (7 tables). Added mana queries.

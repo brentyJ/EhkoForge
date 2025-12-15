@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-EhkoForge Control Panel v4.0
+EhkoForge Control Panel v4.2
 Consolidated interface with dedicated server log panel.
+
+Two commit workflows:
+- ⚡ Quick: Fast commits for small changes (quick_commit.bat)
+- 📝 Session: Documented session commits (git_push.bat)
 """
 
 import os
@@ -28,6 +32,7 @@ SCRIPTS_PATH = EHKOFORGE_ROOT / "5.0 Scripts"
 SERVER_SCRIPT = SCRIPTS_PATH / "forge_server.py"
 SERVER_URL = "http://localhost:5000"
 REFRESH_SCRIPT = SCRIPTS_PATH / "ehko_refresh.py"
+QUICK_COMMIT_SCRIPT = EHKOFORGE_ROOT / "quick_commit.bat"
 
 # Colours (terminal-aligned, violet tint)
 C = {
@@ -290,13 +295,39 @@ def refresh_full(out_log):
     else:
         log(out_log, "ehko_refresh.py not found", "error")
 
-def git_push(out_log):
+def vault_health(out_log):
+    """Run vault health checks."""
+    if REFRESH_SCRIPT.exists():
+        run_async(out_log, [sys.executable, str(REFRESH_SCRIPT), "--health"], str(SCRIPTS_PATH))
+    else:
+        log(out_log, "ehko_refresh.py not found", "error")
+
+def session_commit(out_log):
+    """Open git_push.bat for documented session commit."""
     p = EHKOFORGE_ROOT / "git_push.bat"
     if p.exists():
         subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', str(p)], cwd=str(EHKOFORGE_ROOT))
-        log(out_log, "Opened git_push.bat", "info")
+        log(out_log, "Opened session commit (git_push.bat)", "info")
     else:
         log(out_log, "git_push.bat not found", "error")
+
+def quick_commit(out_log):
+    """Interactive git quick commit - for small changes, typo fixes, etc."""
+    if not QUICK_COMMIT_SCRIPT.exists():
+        log(out_log, "quick_commit.bat not found", "error")
+        return
+    
+    # Simple prompt for commit message
+    from tkinter import simpledialog
+    msg = simpledialog.askstring("Quick Commit", "Commit message (for small changes):", parent=None)
+    
+    if msg:
+        # Run in new terminal window with message argument
+        subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', str(QUICK_COMMIT_SCRIPT), msg], 
+                        cwd=str(EHKOFORGE_ROOT))
+        log(out_log, f"Quick commit + push: {msg}", "success")
+    else:
+        log(out_log, "Quick commit cancelled", "warning")
 
 def open_folder(path, out_log):
     if path.exists():
@@ -383,7 +414,7 @@ def main():
     # === HEADER ===
     header = ttk.Frame(main_frame)
     header.pack(fill=X, pady=(0, 10))
-    ttk.Label(header, text="◈ EHKOFORGE CONTROL v4.0", style="H.TLabel").pack(side=LEFT)
+    ttk.Label(header, text="◈ EHKOFORGE CONTROL v4.2", style="H.TLabel").pack(side=LEFT)
     status_lbl = Label(header, text="○ SERVER OFFLINE", bg=C["bg"], fg=C["error"], font=("Consolas", 11, "bold"))
     status_lbl.pack(side=RIGHT)
     
@@ -446,8 +477,12 @@ def main():
                command=lambda: system_status(out_log)).pack(side=LEFT, padx=2)
     ttk.Button(sys_frame, text="🔄 Index", style="B.TButton", width=10,
                command=lambda: refresh_index(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(sys_frame, text="🚀 Git Push", width=10,
-               command=lambda: git_push(out_log)).pack(side=LEFT, padx=2)
+    ttk.Button(sys_frame, text="🩺 Health", width=10,
+               command=lambda: vault_health(out_log)).pack(side=LEFT, padx=2)
+    ttk.Button(sys_frame, text="⚡ Quick", style="G.TButton", width=10,
+               command=lambda: quick_commit(out_log)).pack(side=LEFT, padx=2)
+    ttk.Button(sys_frame, text="📝 Session", width=10,
+               command=lambda: session_commit(out_log)).pack(side=LEFT, padx=2)
     
     tools_frame.columnconfigure(0, weight=2)
     tools_frame.columnconfigure(1, weight=1)
@@ -489,7 +524,8 @@ def main():
                command=lambda: open_folder(SCRIPTS_PATH, out_log)).pack(side=LEFT)
     
     # Initial log
-    log(out_log, "EhkoForge Control v4.0 ready", "success")
+    log(out_log, "EhkoForge Control v4.2 ready", "success")
+    log(out_log, "Quick: fast commits | Session: documented commits", "info")
     log(out_log, "Click '▶ Start Server' to begin", "info")
     
     # Close handler

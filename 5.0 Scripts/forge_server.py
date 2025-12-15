@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.6
+EhkoForge Server v2.9
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
-ReCog scheduler with user confirmation flow, and Evolution Studio.
+ReCog scheduler with user confirmation flow, Evolution Studio, and Tether system.
+
+Tether Integration:
+    Chat endpoint checks for active tethers before falling back to mana.
+    Tethers are BYOK conduits that bypass mana costs entirely.
 
 Run: python forge_server.py
 Access: http://localhost:5000
@@ -15,6 +19,7 @@ Routes:
     /studio -> Evolution Studio (Ehko visual identity explorer)
     /reflect, /terminal -> Redirect to /
     /api/mana/* -> Mana management endpoints
+    /api/tethers/* -> Tether (BYOK) management endpoints
     /api/avatar/generate -> Avatar parameter generation
 """
 
@@ -77,6 +82,21 @@ from recog_engine.mana_manager import (
 # ReCog Scheduler
 from recog_engine.scheduler import RecogScheduler, MANA_COSTS, OperationType
 
+# Tether System (BYOK Conduits)
+from recog_engine.tether_manager import (
+    get_tethers,
+    get_tether,
+    create_tether,
+    delete_tether,
+    toggle_tether,
+    verify_tether,
+    get_active_tether_for_operation,
+    has_active_tether,
+    log_tether_usage,
+    get_tether_usage_stats,
+    get_supported_providers,
+)
+
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
@@ -98,6 +118,16 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.logger.setLevel(logging.DEBUG)
 logging.basicConfig(level=logging.DEBUG)
+
+
+# Development: Force no-cache on all responses to prevent 304s
+@app.after_request
+def add_no_cache_headers(response):
+    """Prevent browser caching during development."""
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 # =============================================================================
 # LLM CONFIGURATION
@@ -766,7 +796,12 @@ def send_message(session_id):
     """
     Add a message to session.
     If role is 'user', also generates and adds Ehko response.
-    Checks and spends mana based on interaction mode.
+    
+    Resource priority:
+    1. Check for active tether (BYOK) - bypasses mana
+    2. Fall back to mana system if no tether
+    
+    Tether usage is logged for analytics (no billing).
     """
     try:
         print(f"[ROUTE] POST /api/sessions/{session_id}/messages", flush=True)
@@ -781,23 +816,40 @@ def send_message(session_id):
         if not content:
             return jsonify({"error": "Empty message"}), 400
         
-        # Check mana for user messages
+        # Track whether we're using a tether or mana
+        using_tether = False
+        tether_provider = None
+        
+        # Check tethers first for user messages (tethers bypass mana cost)
         if role == "user":
-            mana_op = "reflection_message" if interaction_mode == "reflection" else "terminal_message"
-            can_afford, current_mana, cost = check_mana_available(DATABASE_PATH, mana_op)
+            # Check for active tether
+            tether = get_active_tether_for_operation(
+                DATABASE_PATH, 
+                operation='chat',
+                user_id=1
+            )
             
-            if not can_afford:
-                return jsonify({
-                    "error": "Not enough mana",
-                    "dormant": True,
-                    "current_mana": current_mana,
-                    "required": cost,
-                    "message": get_dormant_response(),
-                }), 429
-            
-            # Spend mana
-            success, msg = spend_mana(DATABASE_PATH, mana_op)
-            print(f"[ROUTE] Mana: {msg}", flush=True)
+            if tether:
+                using_tether = True
+                tether_provider = tether['provider']
+                print(f"[ROUTE] Using tether: {tether_provider} (mana bypassed)", flush=True)
+            else:
+                # No tether - check mana
+                mana_op = "reflection_message" if interaction_mode == "reflection" else "terminal_message"
+                can_afford, current_mana, cost = check_mana_available(DATABASE_PATH, mana_op)
+                
+                if not can_afford:
+                    return jsonify({
+                        "error": "Not enough mana",
+                        "dormant": True,
+                        "current_mana": current_mana,
+                        "required": cost,
+                        "message": get_dormant_response(),
+                    }), 429
+                
+                # Spend mana
+                success, msg = spend_mana(DATABASE_PATH, mana_op)
+                print(f"[ROUTE] Mana: {msg}", flush=True)
         
         conn = get_db()
         cursor = conn.cursor()
@@ -851,6 +903,25 @@ def send_message(session_id):
                 "timestamp": ehko_time,
                 "forged": False
             })
+            
+            # Log tether usage if using tether (for analytics)
+            if using_tether and tether_provider:
+                try:
+                    # Estimate tokens (rough: ~4 chars per token)
+                    input_tokens = len(content) // 4
+                    output_tokens = len(ehko_response) // 4
+                    log_tether_usage(
+                        DATABASE_PATH,
+                        provider=tether_provider,
+                        operation_type='chat',
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                        model_used='claude-sonnet-4',  # TODO: Get from provider
+                        user_id=1
+                    )
+                    print(f"[ROUTE] Logged tether usage: {tether_provider} (~{input_tokens}+{output_tokens} tokens)", flush=True)
+                except Exception as e:
+                    print(f"[ROUTE] Failed to log tether usage: {e}", flush=True)
         
         # Update session message count and timestamp
         cursor.execute("""
@@ -2263,6 +2334,196 @@ def recog_progression():
 
 
 # =============================================================================
+# API ROUTES - TETHERS (BYOK Conduits)
+# =============================================================================
+
+@app.route("/api/tethers", methods=["GET"])
+def api_tethers_list():
+    """
+    Get all tethers for the current user.
+    
+    Query params:
+        active_only: bool - Only return active tethers
+    
+    Returns list of tethers (API keys masked).
+    """
+    try:
+        active_only = request.args.get('active_only', 'false').lower() == 'true'
+        tethers = get_tethers(DATABASE_PATH, user_id=1, active_only=active_only)
+        return jsonify({"success": True, "tethers": tethers})
+    except Exception as e:
+        import traceback
+        print(f"[TETHER] Error in /api/tethers: {e}", flush=True)
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers", methods=["POST"])
+def api_tethers_create():
+    """
+    Create or update a tether (direct Source connection).
+    
+    Body:
+        provider: str - 'claude', 'openai', 'gemini'
+        api_key: str - The API key
+        display_name: str (optional) - Custom name
+    """
+    try:
+        data = request.json
+        provider = data.get('provider')
+        api_key = data.get('api_key')
+        display_name = data.get('display_name')
+        
+        if not provider or not api_key:
+            return jsonify({"success": False, "error": "Missing provider or api_key"}), 400
+        
+        success, message, tether_id = create_tether(
+            DATABASE_PATH, 
+            provider=provider,
+            api_key=api_key,
+            display_name=display_name,
+            user_id=1
+        )
+        
+        if success:
+            return jsonify({
+                "success": True, 
+                "message": message,
+                "tether_id": tether_id,
+            })
+        else:
+            return jsonify({"success": False, "error": message}), 400
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers/<provider>", methods=["DELETE"])
+def api_tethers_delete(provider):
+    """
+    Remove a tether (disconnect from Source).
+    
+    This doesn't delete usage history, just removes the connection.
+    """
+    try:
+        success, message = delete_tether(DATABASE_PATH, provider, user_id=1)
+        
+        if success:
+            return jsonify({"success": True, "message": message})
+        else:
+            return jsonify({"success": False, "error": message}), 404
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers/<provider>/toggle", methods=["POST"])
+def api_tethers_toggle(provider):
+    """
+    Activate or deactivate a tether without removing it.
+    
+    Body:
+        active: bool - True to connect, False to disconnect
+    """
+    try:
+        data = request.json
+        active = data.get('active', True)
+        
+        success, message = toggle_tether(DATABASE_PATH, provider, active, user_id=1)
+        
+        if success:
+            return jsonify({"success": True, "message": message, "active": active})
+        else:
+            return jsonify({"success": False, "error": message}), 404
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers/<provider>/verify", methods=["POST"])
+def api_tethers_verify(provider):
+    """
+    Verify a tether's API key is still valid.
+    
+    Makes a lightweight API call to confirm the key works.
+    """
+    try:
+        valid, message = verify_tether(DATABASE_PATH, provider, user_id=1)
+        
+        return jsonify({
+            "success": True,
+            "valid": valid,
+            "message": message,
+            "provider": provider,
+        })
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers/providers", methods=["GET"])
+def api_tethers_providers():
+    """Get list of supported tether providers."""
+    try:
+        providers = get_supported_providers(DATABASE_PATH)
+        return jsonify({"success": True, "providers": providers})
+    except Exception as e:
+        import traceback
+        print(f"[TETHER] Error in /api/tethers/providers: {e}", flush=True)
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers/stats", methods=["GET"])
+def api_tethers_stats():
+    """
+    Get tether usage statistics.
+    
+    Query params:
+        days: int - Number of days to look back (default 30)
+    """
+    try:
+        days = request.args.get('days', 30, type=int)
+        stats = get_tether_usage_stats(DATABASE_PATH, user_id=1, days=days)
+        return jsonify({"success": True, "stats": stats, "period_days": days})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/tethers/active", methods=["GET"])
+def api_tethers_active():
+    """
+    Get active tether for a specific operation type.
+    
+    Query params:
+        operation: str - 'chat', 'processing', 'recog' (default 'chat')
+        preferred: str - Optional preferred provider
+    
+    Returns the tether that would be used (if any).
+    """
+    try:
+        operation = request.args.get('operation', 'chat')
+        preferred = request.args.get('preferred')
+        
+        tether = get_active_tether_for_operation(
+            DATABASE_PATH, 
+            operation=operation,
+            preferred_provider=preferred,
+            user_id=1
+        )
+        
+        if tether:
+            # Mask API key
+            tether['api_key'] = f"...{tether['api_key'][-4:]}" if tether.get('api_key') else None
+            return jsonify({"success": True, "tether": tether, "has_tether": True})
+        else:
+            return jsonify({"success": True, "tether": None, "has_tether": False})
+            
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
 # PAGE ROUTES
 # =============================================================================
 
@@ -2313,6 +2574,13 @@ def serve_js(filename):
     return send_from_directory(str(STATIC_PATH / "js"), filename)
 
 
+@app.route("/components/<path:filename>")
+def serve_components(filename):
+    """Serve Web Component files."""
+    components_path = EHKOFORGE_ROOT / "6.0 Frontend" / "components"
+    return send_from_directory(str(components_path), filename)
+
+
 @app.route("/<path:filename>")
 def static_files(filename):
     """Serve other static files."""
@@ -2325,8 +2593,9 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.6")
-    print("Authority, Mana, ReCog Scheduler & Evolution Studio Active")
+    print("EHKOFORGE SERVER v2.9")
+    print("Authority, Mana, Tethers, ReCog Scheduler & Evolution Studio")
+    print("Tethers bypass mana - direct BYOK conduit to Sources")
     print("=" * 60)
     print(f"Database: {DATABASE_PATH}")
     print(f"Static files: {STATIC_PATH}")

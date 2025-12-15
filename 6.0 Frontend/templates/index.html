@@ -100,7 +100,7 @@
             </div>
         </header>
         
-        <!-- Status Bar (Authority + Mana) -->
+        <!-- Status Bar (Authority + ASCII Logo + Mana) -->
         <div class="status-bar">
             <!-- Authority Progress -->
             <div class="authority-section">
@@ -133,38 +133,30 @@
                 </div>
             </div>
             
+            <!-- ASCII EHKO Logo (center) -->
+            <div class="ascii-logo-section" id="ascii-section">
+                <pre class="ascii-logo" id="ascii-display"></pre>
+            </div>
+            
             <!-- Mana Display -->
             <div class="mana-section">
-                <div class="mana-display">
-                    <span class="mana-icon">◆</span>
-                    <span class="mana-value" id="mana-current">100</span>
-                    <span class="mana-separator">/</span>
-                    <span class="mana-max" id="mana-max">100</span>
-                    <button class="mana-topup-btn" id="mana-topup-btn" title="Purchase Mana-Cores">▲</button>
-                </div>
-                <div class="mana-bar">
-                    <div class="mana-fill" id="mana-fill" style="width: 100%"></div>
-                    <div class="mana-fill-purchased" id="mana-fill-purchased" style="width: 0%"></div>
-                </div>
+                <ehko-mana-bar 
+                    id="mana-bar"
+                    current="100" 
+                    regen="100" 
+                    purchased="0"
+                    show-breakdown="true">
+                </ehko-mana-bar>
                 
-                <!-- LLM Tether System -->
-                <div class="tether-container">
-                    <div class="tether-bar" id="tether-claude">
-                        <div class="tether-label">CLAUDE</div>
-                        <div class="tether-fill" data-tether="claude"></div>
-                        <div class="tether-crackle" data-tether="claude"></div>
+                <!-- LLM Tether System (Web Components) -->
+                <div class="tethers-section" id="tethers-section">
+                    <div class="tethers-header">
+                        <span class="tethers-label">TETHERS</span>
+                        <button class="tethers-manage-btn" id="tethers-manage-btn" title="Manage Tethers">⚙</button>
                     </div>
-                    <div class="tether-bar" id="tether-openai">
-                        <div class="tether-label">OPENAI</div>
-                        <div class="tether-fill" data-tether="openai"></div>
-                        <div class="tether-crackle" data-tether="openai"></div>
+                    <div class="tethers-list" id="tethers-list">
+                        <!-- Populated by JS with <ehko-tether-bar> components -->
                     </div>
-                </div>
-                <div class="tether-status" id="tether-status">No LLM tethers active</div>
-                
-                <div class="mana-breakdown" id="mana-breakdown">
-                    <span class="mana-regen" id="mana-regen" title="Regenerative (BYOK)">Regen: 100</span>
-                    <span class="mana-purchased" id="mana-purchased" title="Purchased">Bought: 0</span>
                 </div>
             </div>
         </div>
@@ -213,16 +205,6 @@
         <!-- Terminal Output -->
         <div class="terminal-output" id="terminal-output">
             <div class="welcome-message">
-                <pre class="ascii-art">
-╔═══════════════════════════════════════════════════════════════╗
-║  ███████╗██╗  ██╗██╗  ██╗ ██████╗                             ║
-║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗     <span class="blink-dot">•</span> <span class="glow-letter">E</span>volving           ║
-║  █████╗  ███████║█████╔╝ ██║   ██║     <span class="blink-dot">•</span> <span class="glow-letter">H</span>uman              ║
-║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║     <span class="blink-dot">•</span> <span class="glow-letter">K</span>nowledge          ║
-║  ███████╗██║  ██║██║  ██╗╚██████╔╝     <span class="blink-dot">•</span> <span class="glow-letter">O</span>bserver           ║
-║  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                             ║
-╚═══════════════════════════════════════════════════════════════╝
-                </pre>
                 <p class="welcome-text" id="welcome-text">
                     > TERMINAL MODE — Your Ehko awaits.
                 </p>
@@ -279,70 +261,63 @@
                 <button class="drawer-close" id="settings-close">×</button>
             </div>
             <div class="drawer-content">
+                <!-- LLM Tethers -->
                 <div class="setting-group">
-                    <label class="setting-label">LLM Tethers (API Keys)</label>
-                    <div class="tether-info">
-                        <p>Connect to external LLM power sources by providing your API keys.</p>
-                    </div>
-                    <div class="setting-item api-key-item">
-                        <label for="api-key-claude">Claude API Key:</label>
-                        <div class="api-key-input-group">
-                            <input type="password" id="api-key-claude" class="setting-input api-key-input" placeholder="sk-ant-...">
-                            <button class="api-key-toggle" data-target="api-key-claude" title="Show/hide key">👁</button>
-                        </div>
-                        <span class="api-key-status" id="claude-key-status">No key configured</span>
-                    </div>
-                    <div class="setting-item api-key-item">
-                        <label for="api-key-openai">OpenAI API Key:</label>
-                        <div class="api-key-input-group">
-                            <input type="password" id="api-key-openai" class="setting-input api-key-input" placeholder="sk-proj-...">
-                            <button class="api-key-toggle" data-target="api-key-openai" title="Show/hide key">👁</button>
-                        </div>
-                        <span class="api-key-status" id="openai-key-status">No key configured</span>
-                    </div>
-                    <button class="setting-action" id="save-api-keys">Save API Keys</button>
-                    <button class="setting-action setting-secondary" id="clear-api-keys">Clear All Keys</button>
+                    <label class="setting-label">LLM Tethers</label>
+                    <p class="setting-description">Connect your own API keys to bypass mana consumption. Tethers provide unlimited access to LLM providers.</p>
+                    <button class="setting-action" id="open-tether-panel">⚡ Manage Tethers</button>
                 </div>
-                <div class="setting-group">
-                    <label class="setting-label">Mana Configuration</label>
-                    <div class="setting-item">
-                        <label for="mana-mode">Mode:</label>
-                        <select id="mana-mode" class="setting-select">
-                            <option value="mana">Mana (Purchase mana-cores)</option>
-                            <option value="byok">BYOK (Bring your own keys)</option>
-                            <option value="hybrid">Hybrid (Mix both)</option>
-                        </select>
-                    </div>
-                    <div class="setting-item byok-config" style="display: none;">
-                        <label for="byok-max-mana">BYOK Max Mana:</label>
-                        <input type="number" id="byok-max-mana" class="setting-input" value="100" min="10" max="1000">
-                    </div>
-                    <div class="setting-item byok-config" style="display: none;">
-                        <label for="byok-regen-rate">Regen Rate (per hour):</label>
-                        <input type="number" id="byok-regen-rate" class="setting-input" value="1.0" min="0.1" max="10" step="0.1">
-                    </div>
-                    <button class="setting-action" id="save-mana-config">Save Mana Config</button>
-                    <button class="setting-action" id="view-usage-history">View Usage History</button>
-                </div>
+                
+                <!-- Display Settings -->
                 <div class="setting-group">
                     <label class="setting-label">Display</label>
                     <div class="setting-item">
                         <input type="checkbox" id="setting-avatar" checked>
-                        <label for="setting-avatar">Show Avatar</label>
+                        <label for="setting-avatar">Show Avatar Zone</label>
                     </div>
                     <div class="setting-item">
                         <input type="checkbox" id="setting-scanlines" checked>
-                        <label for="setting-scanlines">Scanline Effect</label>
+                        <label for="setting-scanlines">CRT Scanline Effect</label>
                     </div>
                     <div class="setting-item">
                         <input type="checkbox" id="setting-motion">
                         <label for="setting-motion">Reduce Motion</label>
                     </div>
+                    <div class="setting-item">
+                        <input type="checkbox" id="setting-ascii-logo" checked>
+                        <label for="setting-ascii-logo">Show ASCII Logo</label>
+                    </div>
                 </div>
+                
+                <!-- Data & Privacy -->
+                <div class="setting-group">
+                    <label class="setting-label">Data & Privacy</label>
+                    <p class="setting-description">Your data is stored locally. API keys are encrypted and never leave your device.</p>
+                    <button class="setting-action setting-secondary" id="export-data">Export My Data</button>
+                    <button class="setting-action setting-danger" id="clear-all-data">Clear All Local Data</button>
+                </div>
+                
+                <!-- Debug -->
                 <div class="setting-group">
                     <label class="setting-label">Debug</label>
                     <button class="setting-action" id="refresh-authority">Recalculate Authority</button>
-                    <button class="setting-action" id="refill-mana">Refill Mana (BYOK)</button>
+                    <button class="setting-action" id="refresh-tethers">Refresh Tether Status</button>
+                    <button class="setting-action" id="view-usage-history">View Usage History</button>
+                </div>
+                
+                <!-- About -->
+                <div class="setting-group">
+                    <label class="setting-label">About</label>
+                    <div class="about-info">
+                        <p><strong>EhkoForge</strong> v2.0</p>
+                        <p class="about-tagline">Digital identity preservation system</p>
+                        <p class="about-links">
+                            <a href="https://ehkoforge.ai" target="_blank">Website</a> · 
+                            <a href="https://github.com/ehkoforge" target="_blank">GitHub</a> · 
+                            <a href="mailto:support@ehkoforge.ai">Support</a>
+                        </p>
+                        <p class="about-license">Licensed under AGPLv3</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -554,7 +529,14 @@
     <!-- ReCog Toast -->
     <div class="recog-toast" id="recog-toast"></div>
 
+    <!-- Tether Management Panel (Web Component) -->
+    <ehko-tether-panel id="tether-panel"></ehko-tether-panel>
+
     <script src="/js/main.js"></script>
     <script src="/js/recog.js"></script>
+    <script src="/components/ehko-toast.js"></script>
+    <script src="/components/ehko-mana-bar.js"></script>
+    <script src="/components/ehko-tether-bar.js"></script>
+    <script src="/components/ehko-tether-panel.js"></script>
 </body>
 </html>

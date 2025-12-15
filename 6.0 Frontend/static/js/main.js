@@ -1,8 +1,10 @@
 /**
- * EhkoForge Main JavaScript v2.1
- * Phase 2: UI Consolidation
+ * EhkoForge Main JavaScript v2.4
+ * Phase 2: UI Consolidation + Web Components + Tethers
+ * Session 30: ASCII logo in status bar, settings drawer streamlined
  * 
- * Single terminal interface with mode toggle
+ * Toast notifications now use <ehko-toast> Web Component
+ * Tether system uses <ehko-tether-bar> and <ehko-tether-panel> Web Components
  */
 
 // =============================================================================
@@ -219,6 +221,112 @@ async function refillMana() {
 }
 
 // =============================================================================
+// TETHERS (BYOK Conduits)
+// =============================================================================
+
+async function fetchTethers() {
+    try {
+        const data = await api('/tethers');
+        if (data.success) {
+            renderTethers(data.tethers);
+        }
+    } catch (err) {
+        console.error('Failed to fetch tethers:', err);
+    }
+}
+
+function renderTethers(tethers) {
+    const container = document.getElementById('tethers-list');
+    if (!container) return;
+    
+    // Clear existing
+    container.innerHTML = '';
+    
+    // Create tether bars for each configured tether
+    tethers.forEach(tether => {
+        const bar = document.createElement('ehko-tether-bar');
+        bar.setAttribute('provider', tether.provider);
+        bar.setAttribute('provider-name', tether.provider_display_name || tether.provider);
+        bar.setAttribute('status', tether.verification_status || 'none');
+        bar.setAttribute('active', tether.active === 1 ? 'true' : 'false');
+        bar.setAttribute('compact', '');
+        
+        // Event handlers
+        bar.addEventListener('tether-manage', (e) => {
+            openTetherPanel(e.detail.provider);
+        });
+        
+        bar.addEventListener('tether-toggle', async (e) => {
+            const { provider, active } = e.detail;
+            await toggleTetherConnection(provider, active);
+        });
+        
+        container.appendChild(bar);
+    });
+    
+    // If no tethers, show placeholder
+    if (tethers.length === 0) {
+        container.innerHTML = `
+            <div class="tethers-empty" style="font-size: 10px; color: var(--text-dim); text-align: center; padding: 8px;">
+                No tethers configured. Click ⚙ to add.
+            </div>
+        `;
+    }
+}
+
+async function toggleTetherConnection(provider, active) {
+    try {
+        const data = await api(`/tethers/${provider}/toggle`, {
+            method: 'POST',
+            body: JSON.stringify({ active }),
+        });
+        
+        if (data.success) {
+            showNotification(data.message, 'success');
+            await fetchTethers();
+        } else {
+            showNotification(data.error || 'Toggle failed', 'error');
+        }
+    } catch (err) {
+        console.error('Failed to toggle tether:', err);
+        showNotification('Failed to toggle tether', 'error');
+    }
+}
+
+function openTetherPanel(provider = null) {
+    console.log('[EhkoForge] openTetherPanel called');
+    const panel = document.getElementById('tether-panel');
+    console.log('[EhkoForge] Panel element:', panel);
+    if (panel) {
+        panel.open(provider);
+    } else {
+        console.error('[EhkoForge] Tether panel element not found!');
+    }
+}
+
+function initTetherEvents() {
+    // Manage button
+    const manageBtn = document.getElementById('tethers-manage-btn');
+    console.log('[EhkoForge] initTetherEvents - manageBtn:', manageBtn);
+    if (manageBtn) {
+        manageBtn.addEventListener('click', () => {
+            console.log('[EhkoForge] Tethers manage button clicked');
+            openTetherPanel();
+        });
+    } else {
+        console.error('[EhkoForge] Tethers manage button not found!');
+    }
+    
+    // Panel events
+    const panel = document.getElementById('tether-panel');
+    if (panel) {
+        panel.addEventListener('tether-updated', () => {
+            fetchTethers();
+        });
+    }
+}
+
+// =============================================================================
 // INSITE COUNT
 // =============================================================================
 
@@ -339,6 +447,7 @@ async function createSession() {
         state.currentAcronym = getRandomAcronym();  // Fresh acronym for new session
         document.getElementById('session-title').textContent = data.title;
         clearMessages();
+        updateAsciiDisplay();  // Update ASCII with new acronym
         showWelcome();
         return data;
     } catch (err) {
@@ -380,8 +489,9 @@ function clearMessages() {
     output.innerHTML = '';
 }
 
-function showWelcome() {
-    const output = document.getElementById('terminal-output');
+function updateAsciiDisplay() {
+    const asciiDisplay = document.getElementById('ascii-display');
+    if (!asciiDisplay) return;
     
     // Use stored acronym if exists, otherwise generate and store new one
     if (!state.currentAcronym) {
@@ -389,26 +499,26 @@ function showWelcome() {
     }
     const acronym = state.currentAcronym;
     
-    // Line structure (65 chars total), words shifted down 1 row to center:
-    // Row 1: EHKO(35) + 29 spaces + ║ = 65 (empty)
-    // Rows 2-5: EHKO(36) + 5 spaces + "• " + word.padEnd(21) + ║ = 65
-    // Row 6: EHKO(35) + 29 spaces + ║ = 65 (empty)
-    const formatWord = (word) => {
-        const padding = ' '.repeat(21 - word.length);
-        return `<span class="blink-dot">•</span> <span class="glow-letter">${word[0]}</span>${word.slice(1)}${padding}`;
-    };
+    // Full ASCII logo with acronym
+    const formatWord = (word) => `<span class="blink-dot">•</span> <span class="glow-letter">${word[0]}</span>${word.slice(1)}`;
+    
+    asciiDisplay.innerHTML = `███████╗██╗  ██╗██╗  ██╗ ██████╗
+██╔════╝██║  ██║██║ ██╔╝██╔═══██╗  ${formatWord(acronym[0])}
+█████╗  ███████║█████╔╝ ██║   ██║  ${formatWord(acronym[1])}
+██╔══╝  ██╔══██║██╔═██╗ ██║   ██║  ${formatWord(acronym[2])}
+███████╗██║  ██║██║  ██╗╚██████╔╝  ${formatWord(acronym[3])}
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝`;
+}
+
+function showWelcome() {
+    const output = document.getElementById('terminal-output');
+    
+    // Update ASCII display in avatar zone
+    updateAsciiDisplay();
+    
+    // Simple welcome message in terminal output
     output.innerHTML = `
         <div class="welcome-message">
-            <pre class="ascii-art">
-╔═══════════════════════════════════════════════════════════════╗
-║  ███████╗██╗  ██╗██╗  ██╗ ██████╗                             ║
-║  ██╔════╝██║  ██║██║ ██╔╝██╔═══██╗     ${formatWord(acronym[0])}║
-║  █████╗  ███████║█████╔╝ ██║   ██║     ${formatWord(acronym[1])}║
-║  ██╔══╝  ██╔══██║██╔═██╗ ██║   ██║     ${formatWord(acronym[2])}║
-║  ███████╗██║  ██║██║  ██╗╚██████╔╝     ${formatWord(acronym[3])}║
-║  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝                             ║
-╚═══════════════════════════════════════════════════════════════╝
-            </pre>
             <p class="welcome-text" id="welcome-text">
                 > ${state.mode === 'reflection' ? 'REFLECTION MODE — Explore your inner landscape.' : 'TERMINAL MODE — Your Ehko awaits.'}
             </p>
@@ -557,11 +667,13 @@ let blinkInterval = null;
 
 function initMatrixCode() {
     const canvas = document.getElementById('matrix-canvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
     // Make canvas responsive
     function resizeCanvas() {
         const container = document.querySelector('.avatar-zone');
+        if (!container) return;
         const width = Math.min(container.offsetWidth, 1200);
         canvas.width = width;
         canvas.height = 120;
@@ -912,22 +1024,12 @@ function updateManaDisplay(balance, limits) {
     const purchasedMana = balance.purchased_mana || 0;
     const totalMana = balance.total_available || 0;
     
-    // Update display values
-    document.getElementById('mana-current').textContent = Math.floor(totalMana);
-    document.getElementById('mana-max').textContent = Math.floor(regenMana + purchasedMana);
-    
-    // Update breakdown
-    document.getElementById('mana-regen').textContent = `Regen: ${Math.floor(regenMana)}`;
-    document.getElementById('mana-purchased').textContent = `Bought: ${Math.floor(purchasedMana)}`;
-    
-    // Update bar (layered)
-    const totalMax = regenMana + purchasedMana;
-    if (totalMax > 0) {
-        const regenPercent = (regenMana / totalMax) * 100;
-        const purchasedPercent = (purchasedMana / totalMax) * 100;
-        
-        document.getElementById('mana-fill').style.width = `${regenPercent}%`;
-        document.getElementById('mana-fill-purchased').style.width = `${purchasedPercent}%`;
+    // Update web component attributes
+    const manaBar = document.getElementById('mana-bar');
+    if (manaBar) {
+        manaBar.setAttribute('current', Math.floor(totalMana));
+        manaBar.setAttribute('regen', Math.floor(regenMana));
+        manaBar.setAttribute('purchased', Math.floor(purchasedMana));
     }
     
     // Check for low mana warning
@@ -937,38 +1039,10 @@ function updateManaDisplay(balance, limits) {
 }
 
 function updateTetherDisplay(config) {
+    // Legacy function - tether display now handled by web components
+    // This is called from fetchManaBalance but can be a no-op
     if (!config) return;
-    
-    const claudeBar = document.getElementById('tether-claude');
-    const openaiBar = document.getElementById('tether-openai');
-    const statusEl = document.getElementById('tether-status');
-    
-    // Check which providers have API keys configured
-    const hasClaudeKey = config.has_claude_key || false;
-    const hasOpenAIKey = config.has_openai_key || false;
-    
-    // Update tether bar states
-    claudeBar.classList.toggle('active', hasClaudeKey);
-    claudeBar.setAttribute('data-provider', 'claude');
-    
-    openaiBar.classList.toggle('active', hasOpenAIKey);
-    openaiBar.setAttribute('data-provider', 'openai');
-    
-    // Update status message based on active tethers
-    statusEl.classList.remove('twin-active', 'single-active');
-    
-    if (hasClaudeKey && hasOpenAIKey) {
-        statusEl.textContent = 'Twin LLM tether in place. 100% negation of mana requirement';
-        statusEl.classList.add('twin-active');
-    } else if (hasClaudeKey) {
-        statusEl.textContent = 'Claude tether active. Partial mana negation';
-        statusEl.classList.add('single-active');
-    } else if (hasOpenAIKey) {
-        statusEl.textContent = 'OpenAI tether active. Partial mana negation';
-        statusEl.classList.add('single-active');
-    } else {
-        statusEl.textContent = 'No LLM tethers active. Using purchased mana-cores only';
-    }
+    console.log('[TETHERS] Config received:', config);
 }
 
 async function openPurchaseModal() {
@@ -1339,46 +1413,8 @@ async function clearApiKeys() {
 }
 
 function showNotification(message, type = 'info') {
-    // Create toast container if it doesn't exist
-    let container = document.querySelector('.toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-    
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    // Icon based on type
-    const icons = {
-        success: '✓',
-        error: '✗',
-        warning: '⚠',
-        info: 'ⓘ'
-    };
-    
-    toast.innerHTML = `
-        <div class="toast-content">
-            <span class="toast-icon">${icons[type] || icons.info}</span>
-            <span class="toast-message">${message}</span>
-        </div>
-    `;
-    
-    container.appendChild(toast);
-    
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('removing');
-        setTimeout(() => {
-            toast.remove();
-            // Remove container if empty
-            if (container.children.length === 0) {
-                container.remove();
-            }
-        }, 300);
-    }, 3000);
+    // Web Component toast - Shadow DOM handles all styling
+    EhkoToast.show(message, type);
 }
 
 // =============================================================================
@@ -1458,39 +1494,98 @@ function initEventListeners() {
         applySettings();
     });
     
+    // ASCII Logo toggle
+    const asciiLogoCheckbox = document.getElementById('setting-ascii-logo');
+    if (asciiLogoCheckbox) {
+        asciiLogoCheckbox.addEventListener('change', (e) => {
+            state.settings.showAsciiLogo = e.target.checked;
+            const asciiSection = document.getElementById('ascii-section');
+            if (asciiSection) {
+                asciiSection.style.display = e.target.checked ? 'flex' : 'none';
+            }
+        });
+    }
+    
     // Settings actions
     document.getElementById('refresh-authority').addEventListener('click', refreshAuthority);
-    document.getElementById('refill-mana').addEventListener('click', refillMana);
     
-    // Mana purchase system
-    document.getElementById('mana-topup-btn').addEventListener('click', openPurchaseModal);
-    document.getElementById('purchase-close').addEventListener('click', closePurchaseModal);
-    document.getElementById('purchase-overlay').addEventListener('click', (e) => {
-        if (e.target.id === 'purchase-overlay') closePurchaseModal();
-    });
-    
-    // API keys
-    document.querySelectorAll('.api-key-toggle').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const targetId = e.currentTarget.dataset.target;
-            toggleApiKeyVisibility(targetId);
+    // Open Tether Panel from settings
+    const openTetherPanelBtn = document.getElementById('open-tether-panel');
+    if (openTetherPanelBtn) {
+        openTetherPanelBtn.addEventListener('click', () => {
+            closeSettingsDrawer();
+            openTetherPanel();
         });
-    });
-    document.getElementById('save-api-keys').addEventListener('click', saveApiKeys);
-    document.getElementById('clear-api-keys').addEventListener('click', clearApiKeys);
+    }
     
-    // Mana config
-    document.getElementById('mana-mode').addEventListener('change', (e) => {
-        toggleBYOKConfig(e.target.value);
-    });
-    document.getElementById('save-mana-config').addEventListener('click', saveManaConfig);
-    document.getElementById('view-usage-history').addEventListener('click', openUsageHistoryModal);
+    // Refresh tethers
+    const refreshTethersBtn = document.getElementById('refresh-tethers');
+    if (refreshTethersBtn) {
+        refreshTethersBtn.addEventListener('click', async () => {
+            showNotification('Refreshing tethers...', 'info');
+            await fetchTethers();
+            showNotification('Tethers refreshed', 'success');
+        });
+    }
     
-    // Usage history modal
-    document.getElementById('usage-close').addEventListener('click', closeUsageHistoryModal);
-    document.getElementById('usage-overlay').addEventListener('click', (e) => {
-        if (e.target.id === 'usage-overlay') closeUsageHistoryModal();
-    });
+    // View usage history
+    const viewUsageHistoryBtn = document.getElementById('view-usage-history');
+    if (viewUsageHistoryBtn) {
+        viewUsageHistoryBtn.addEventListener('click', openUsageHistoryModal);
+    }
+    
+    // Export data
+    const exportDataBtn = document.getElementById('export-data');
+    if (exportDataBtn) {
+        exportDataBtn.addEventListener('click', async () => {
+            showNotification('Export functionality coming soon', 'info');
+        });
+    }
+    
+    // Clear all data
+    const clearAllDataBtn = document.getElementById('clear-all-data');
+    if (clearAllDataBtn) {
+        clearAllDataBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to clear ALL local data? This cannot be undone.')) {
+                return;
+            }
+            if (!confirm('This will remove all sessions, settings, and cached data. Continue?')) {
+                return;
+            }
+            // Clear localStorage
+            localStorage.clear();
+            showNotification('Local data cleared. Reloading...', 'success');
+            setTimeout(() => window.location.reload(), 1500);
+        });
+    }
+    
+    // Mana purchase system (elements may not exist)
+    const manaTopupBtn = document.getElementById('mana-topup-btn');
+    if (manaTopupBtn) {
+        manaTopupBtn.addEventListener('click', openPurchaseModal);
+    }
+    const purchaseClose = document.getElementById('purchase-close');
+    if (purchaseClose) {
+        purchaseClose.addEventListener('click', closePurchaseModal);
+    }
+    const purchaseOverlay = document.getElementById('purchase-overlay');
+    if (purchaseOverlay) {
+        purchaseOverlay.addEventListener('click', (e) => {
+            if (e.target.id === 'purchase-overlay') closePurchaseModal();
+        });
+    }
+    
+    // Usage history modal (elements may not exist)
+    const usageClose = document.getElementById('usage-close');
+    if (usageClose) {
+        usageClose.addEventListener('click', closeUsageHistoryModal);
+    }
+    const usageOverlay = document.getElementById('usage-overlay');
+    if (usageOverlay) {
+        usageOverlay.addEventListener('click', (e) => {
+            if (e.target.id === 'usage-overlay') closeUsageHistoryModal();
+        });
+    }
     
     // Usage tabs
     document.querySelectorAll('.usage-tab').forEach(tab => {
@@ -1544,6 +1639,10 @@ async function init() {
     initAvatarCarousel();
     initEyeBlink();
     
+    // Initialize ASCII display with random acronym
+    state.currentAcronym = getRandomAcronym();
+    updateAsciiDisplay();
+    
     // Set initial mode
     setMode('terminal');
     
@@ -1553,6 +1652,7 @@ async function init() {
         fetchManaBalance(),
         fetchInsiteCount(),
         loadManaConfig(),
+        fetchTethers(),
     ]);
     
     // Create initial session
@@ -1560,6 +1660,7 @@ async function init() {
     
     // Bind events
     initEventListeners();
+    initTetherEvents();
     
     // Focus input
     document.getElementById('message-input').focus();

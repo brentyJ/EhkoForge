@@ -1,12 +1,38 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-08  
-**Version:** 1.42  
+**Last Updated:** 2025-12-15  
+**Version:** 1.46  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
 ## IN PROGRESS
+
+### Web Components Migration (NEW)
+- [x] **Phase 1: Foundation** — Core component library
+  - Components: `ehko-avatar.js`, `ehko-toast.js`, `ehko-mana-bar.js`, `ehko-message.js`
+  - Location: `6.0 Frontend/components/`
+  - Test page: `/component-test.html`
+  - Server route: `/components/<filename>`
+- [ ] **Phase 2: Integration** — Replace current UI elements with components
+  - [x] Replace toast system in main.js with `<ehko-toast>`
+  - [ ] Replace avatar display with `<ehko-avatar>`
+  - [ ] Replace mana display with `<ehko-mana-bar>`
+  - [ ] Replace chat messages with `<ehko-message>`
+- [ ] **Phase 3: HTMX Integration** — Server-driven updates
+  - [ ] Add HTMX library
+  - [ ] Convert fetch() calls to hx-* attributes
+  - [ ] Return HTML fragments from server
+- [ ] **Phase 4: Cleanup** — Remove obsolete CSS/JS
+  - [ ] Delete replaced CSS sections from main.css
+  - [ ] Delete replaced functions from main.js
+  - [ ] Consolidate to component-only architecture
+
+**Benefits:**
+- Shadow DOM = no CSS conflicts or caching issues
+- Portable Ehkos = Web Component .js files
+- Code-generated visuals = SVG/Canvas inside components
+- Durable = W3C standard, no framework dependency
 
 ### Document Ingestion System (NEW)
 - [x] **Phase 1: Core Pipeline** — Folder watch, parsers, chunking, database
@@ -41,7 +67,41 @@
   - ehko_control.py v3.0: Aligned theme, Server/ReCog/Index/Folders panels
 - [ ] **Phase 6: Report System** — ReCog → Ehko snapshots
 
-### Ehko Visual Identity System (NEW)
+### Tether System (NEW - Session 29)
+- [x] **Phase 1: Schema** — Database tables for direct BYOK conduits
+  - Migration: `tethers_v0_1.sql` (3 tables, 2 views)
+  - Tables: `tethers`, `tether_usage_log`, `tether_providers`
+  - Views: `v_active_tethers`, `v_tether_usage_stats`
+- [x] **Phase 2: Manager Module** — Business logic
+  - Module: `recog_engine/tether_manager.py`
+  - CRUD: create/get/delete/toggle tethers
+  - Verification: API key validation per provider
+  - Routing: `get_active_tether_for_operation()`
+  - Usage logging (analytics only, no billing)
+- [x] **Phase 3: API Endpoints** — Server integration
+  - `/api/tethers` GET (list) / POST (create)
+  - `/api/tethers/<provider>` DELETE
+  - `/api/tethers/<provider>/verify` POST
+  - `/api/tethers/<provider>/toggle` POST
+  - `/api/tethers/providers` GET
+  - `/api/tethers/stats` GET
+  - `/api/tethers/active` GET
+  - forge_server.py v2.8
+- [x] **Phase 4: Frontend** — Tether UI
+  - `<ehko-tether-bar>` Web Component (mana bar style, never depletes)
+  - `<ehko-tether-panel>` Web Component (management modal)
+  - Tethers section in status bar with manage button
+  - main.js v2.3 with tether loading/rendering
+  - Visual: glowing/pulsing when connected, dim when disconnected
+- [x] **Phase 5: Routing Integration** — Use tethers instead of mana
+  - Chat endpoint checks tethers first, falls back to mana
+  - Tether usage logged for analytics (no billing)
+  - forge_server.py v2.9
+  - ReCog tether integration: *deferred* (uses separate processing path)
+
+**Concept:** Tethers are direct conduits to Sources. Unlike mana, they never deplete — always full while connected.
+
+### Ehko Visual Identity System
 - [x] **Phase 1: Specification** — Complete design language documentation
   - Spec: `1.0 System Architecture/1_8_Ehko_Visual_Identity_Spec_v1_0.md`
   - 5 Authority stages with generative parameter bounds
@@ -233,6 +293,9 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-15 Session 30:** UI Layout Refinements — ASCII EHKO logo moved to status bar (3-column layout: Authority | ASCII Logo | Mana+Tethers), avatar zone reverted to original design with matrix background and corner brackets, settings drawer streamlined (removed redundant API key inputs, added "Manage Tethers" button, Display toggles including ASCII logo visibility, Data & Privacy section, About section with links and license). Updated main.css, index.html, main.js v2.4.
+
+- **2025-12-14 Session 29:** Tether System Phases 1-5 complete — Schema (`tethers_v0_1.sql` with 3 tables, 2 views), tether_manager.py (CRUD, verification, routing, usage logging), 8 API endpoints in forge_server.py v2.9, Web Components (`<ehko-tether-bar>`, `<ehko-tether-panel>`), UI integration in main.js v2.3, chat routing integration (tethers bypass mana). Tethers are direct BYOK conduits that never deplete, styled like mana bars but always full when connected.
 - **2025-12-08 Session 28:** Ehko Visual Identity System Phases 1-2 complete — Full specification v1.1 (500+ lines), 5 reference SVGs (one per Authority stage), gallery viewer, evolution studio. Stage-based generative constraints, export formats, animation states defined.
 - **2025-12-07 Session 27:** LLM Tether UI, API key management with hot-reload, SQLite threading fixes.
 - **2025-12-06 Session 26:** Memory Tiers & Progression System Phases 1+3+5 complete — Schema migration (5 tables), ReCog Scheduler v1.0 with confirmation flow, 8 new API endpoints (/api/recog/*), ReCog UI (red palette, queue/reports/progression tabs, processing animation), forge_server.py v2.4.
@@ -257,12 +320,13 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 | Script | Version | Status |
 |--------|---------|--------|
 | ehko_refresh.py | v2.0 | ✅ Working |
-| forge_server.py | v2.5 | ✅ Working |
+| forge_server.py | v2.9 | ✅ Working |
 | ehko_control.py | v2.0 | ✅ Working |
 | run_ingot_migration.py | v1.0 | ✅ Applied |
 | run_reorientation_migration.py | v1.0 | ✅ Applied |
 | run_mana_migration.py | v1.0 | ✅ Applied |
 | run_memory_migration.py | v1.0 | ✅ Applied |
+| run_tethers_migration.py | v1.0 | ⏳ Pending |
 | ehkoforge/llm/ | v1.1 | ✅ Working |
 | recog_engine (core) | v1.0 | ✅ Working |
 | recog_engine (legacy) | v0.1 | ✅ Working |
@@ -270,6 +334,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 | recog_engine/authority_mana.py | v0.1 | ✅ Working |
 | recog_engine/mana_manager.py | v0.1 | ✅ Working |
 | recog_engine/scheduler.py | v1.0 | ✅ Working |
+| recog_engine/tether_manager.py | v0.1 | ✅ Working |
 
 ---
 
@@ -306,6 +371,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.46 — 2025-12-15 Session 30 — UI Layout Refinements: ASCII logo in status bar (3-column layout), avatar zone restored to original, settings drawer streamlined (tether panel integration, About section, removed redundant inputs), main.js v2.4.
+- v1.45 — 2025-12-14 Session 29 — Tether System Phases 1-5: Schema (3 tables, 2 views), tether_manager.py, 8 API endpoints (forge_server.py v2.9), Web Components (ehko-tether-bar, ehko-tether-panel), UI integration (main.js v2.3), chat routing (tethers bypass mana).
 - v1.42 — 2025-12-08 Session 28 — Ehko Visual Identity System: Spec v1.1, 5 reference SVGs, gallery, evolution studio. Marked Reorientation Phase 7 complete.
 - v1.41 — 2025-12-06 Session 26 — Document Ingestion Phase 2: ReCog Bridge. Scheduler extract_docs operation, adapter chunk methods, batch processing pipeline.
 - v1.40 — 2025-12-06 Session 26 — Document Ingestion System Phase 1: migration (6 tables), ingestion module (parsers for PDF/MD/TXT/Messages), chunker, CLI, _inbox folder.

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EhkoForge Component Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #080a0e;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #6B8CCE;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        h2 {
+            color: #8BA4D9;
+            margin: 40px 0 20px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p {
+            color: #718096;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .demo-section {
+            margin-bottom: 60px;
+        }
+
+        .avatar-grid {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-demo {
+            text-align: center;
+        }
+
+        .avatar-label {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .control-label {
+            color: #718096;
+            line-height: 38px;
+            font-weight: 500;
+        }
+
+        button {
+            background: #1a1d24;
+            border: 1px solid #2d3748;
+            color: #6B8CCE;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: #2d3748;
+            border-color: #6B8CCE;
+        }
+
+        button.active {
+            background: #6B8CCE;
+            color: #080a0e;
+        }
+
+        .code-example {
+            background: #12141a;
+            border: 1px solid #2d3748;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        code {
+            color: #9F7AEA;
+            font-size: 13px;
+        }
+
+        .highlight {
+            color: #6B8CCE;
+        }
+
+        .mana-demo {
+            max-width: 400px;
+        }
+
+        .chat-demo {
+            max-width: 600px;
+            background: #0a0c10;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>EhkoForge Web Components</h1>
+    <p>Self-contained, portable components with encapsulated styles. No CSS conflicts, no caching issues.</p>
+
+    <div class="two-column">
+        <!-- Avatar Demo -->
+        <div class="demo-section">
+            <h2>ehko-avatar</h2>
+            
+            <div class="avatar-grid">
+                <div class="avatar-demo">
+                    <ehko-avatar id="main-avatar" stage="nascent" mood="ready" size="120"></ehko-avatar>
+                    <div class="avatar-label">Interactive Demo</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <span class="control-label">Mood:</span>
+                <button onclick="setMood('ready')" class="active" id="btn-ready">Ready</button>
+                <button onclick="setMood('thinking')" id="btn-thinking">Thinking</button>
+                <button onclick="setMood('dormant')" id="btn-dormant">Dormant</button>
+            </div>
+
+            <div class="controls">
+                <span class="control-label">Stage:</span>
+                <button onclick="setStage('nascent')" class="active" id="btn-nascent">Nascent</button>
+                <button onclick="setStage('emerging')" id="btn-emerging">Emerging</button>
+                <button onclick="setStage('established')" id="btn-established">Established</button>
+                <button onclick="setStage('transcendent')" id="btn-transcendent">Transcendent</button>
+            </div>
+
+            <div class="avatar-grid" style="margin-top: 30px;">
+                <div class="avatar-demo">
+                    <ehko-avatar stage="nascent" mood="ready" size="60"></ehko-avatar>
+                    <div class="avatar-label">Nascent</div>
+                </div>
+                <div class="avatar-demo">
+                    <ehko-avatar stage="emerging" mood="ready" size="60"></ehko-avatar>
+                    <div class="avatar-label">Emerging</div>
+                </div>
+                <div class="avatar-demo">
+                    <ehko-avatar stage="established" mood="ready" size="60"></ehko-avatar>
+                    <div class="avatar-label">Established</div>
+                </div>
+                <div class="avatar-demo">
+                    <ehko-avatar stage="transcendent" mood="thinking" size="60"></ehko-avatar>
+                    <div class="avatar-label">Transcendent</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mana Bar Demo -->
+        <div class="demo-section">
+            <h2>ehko-mana-bar</h2>
+            
+            <div class="mana-demo">
+                <ehko-mana-bar id="mana-demo" current="75" max="100" label="Mana"></ehko-mana-bar>
+            </div>
+
+            <div class="controls">
+                <span class="control-label">Set:</span>
+                <button onclick="setMana(100)">100%</button>
+                <button onclick="setMana(75)">75%</button>
+                <button onclick="setMana(50)">50%</button>
+                <button onclick="setMana(25)">25%</button>
+                <button onclick="setMana(10)">10%</button>
+            </div>
+
+            <div class="controls">
+                <button onclick="animateMana()">Animate Random</button>
+                <button onclick="drainMana()">Drain Effect</button>
+            </div>
+
+            <div class="code-example">
+                <code>
+                    &lt;<span class="highlight">ehko-mana-bar</span> current="75" max="100"&gt;&lt;/<span class="highlight">ehko-mana-bar</span>&gt;<br><br>
+                    <span class="highlight">// Animate change</span><br>
+                    manaBar.animateTo(50, 1000);
+                </code>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Messages Demo -->
+    <div class="demo-section">
+        <h2>ehko-message</h2>
+        
+        <div class="chat-demo" id="chat-container">
+            <ehko-message role="user" timestamp="2025-12-08T10:30:00">
+                Hello Ehko, how are you today?
+            </ehko-message>
+            
+            <ehko-message role="ehko" timestamp="2025-12-08T10:30:05">
+                Greetings, Keeper. Systems nominal. Ready to assist with your reflections.
+            </ehko-message>
+            
+            <ehko-message role="user" timestamp="2025-12-08T10:30:15">
+                Can you help me process some thoughts about a project I'm working on?
+            </ehko-message>
+            
+            <ehko-message role="ehko" id="typing-demo" typing></ehko-message>
+        </div>
+
+        <div class="controls">
+            <button onclick="addUserMessage()">Add User Message</button>
+            <button onclick="addEhkoMessage()">Add Ehko Message</button>
+            <button onclick="showTyping()">Show Typing</button>
+            <button onclick="addSystemMessage()">System Message</button>
+        </div>
+
+        <div class="code-example">
+            <code>
+                &lt;<span class="highlight">ehko-message</span> role="user" timestamp="2025-12-08T10:30:00"&gt;<br>
+                &nbsp;&nbsp;Hello Ehko!<br>
+                &lt;/<span class="highlight">ehko-message</span>&gt;<br><br>
+                
+                &lt;<span class="highlight">ehko-message</span> role="ehko" typing&gt;&lt;/<span class="highlight">ehko-message</span>&gt;
+            </code>
+        </div>
+    </div>
+
+    <!-- Toast Demo -->
+    <div class="demo-section">
+        <h2>ehko-toast</h2>
+        <p>Click to trigger toast notifications. Watch the tether bar drain!</p>
+
+        <div class="controls">
+            <button onclick="EhkoToast.show('Operation completed successfully!', 'success')">Success</button>
+            <button onclick="EhkoToast.show('Something went wrong. Please try again.', 'error')">Error</button>
+            <button onclick="EhkoToast.show('Warning: Low mana reserves', 'warning')">Warning</button>
+            <button onclick="EhkoToast.show('New reflection indexed', 'info')">Info</button>
+        </div>
+
+        <div class="code-example">
+            <code>
+                <span class="highlight">EhkoToast</span>.show('Message saved!', 'success');<br>
+                <span class="highlight">EhkoToast</span>.show('Error occurred', 'error', 5000);
+            </code>
+        </div>
+    </div>
+
+    <!-- Why This Works -->
+    <div class="demo-section">
+        <h2>Architecture Benefits</h2>
+        <div class="code-example">
+            <code>
+                <span class="highlight">// Shadow DOM encapsulation</span><br>
+                - Styles don't leak in or out<br>
+                - No global CSS conflicts<br>
+                - Each component is self-contained<br><br>
+                
+                <span class="highlight">// Portable Ehkos</span><br>
+                - An Ehko IS a Web Component<br>
+                - Export = download the .js file<br>
+                - Import anywhere, works immediately<br><br>
+                
+                <span class="highlight">// Future-proof</span><br>
+                - Web Components are a W3C standard<br>
+                - No framework dependency<br>
+                - Will work in browsers for decades
+            </code>
+        </div>
+    </div>
+
+    <!-- Load components -->
+    <script src="/components/ehko-avatar.js"></script>
+    <script src="/components/ehko-toast.js"></script>
+    <script src="/components/ehko-mana-bar.js"></script>
+    <script src="/components/ehko-message.js"></script>
+    
+    <script>
+        // Avatar controls
+        const mainAvatar = document.getElementById('main-avatar');
+
+        function setMood(mood) {
+            mainAvatar.setAttribute('mood', mood);
+            document.querySelectorAll('[id^="btn-ready"], [id^="btn-thinking"], [id^="btn-dormant"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('btn-' + mood).classList.add('active');
+        }
+
+        function setStage(stage) {
+            mainAvatar.setAttribute('stage', stage);
+            document.querySelectorAll('[id^="btn-nascent"], [id^="btn-emerging"], [id^="btn-established"], [id^="btn-transcendent"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('btn-' + stage).classList.add('active');
+        }
+
+        // Mana bar controls
+        const manaBar = document.getElementById('mana-demo');
+
+        function setMana(value) {
+            manaBar.animateTo(value, 500);
+        }
+
+        function animateMana() {
+            const target = Math.floor(Math.random() * 100);
+            manaBar.animateTo(target, 1000);
+            EhkoToast.show(`Mana set to ${target}`, 'info');
+        }
+
+        function drainMana() {
+            let current = 100;
+            manaBar.setAttribute('current', 100);
+            
+            const drain = setInterval(() => {
+                current -= 2;
+                manaBar.setAttribute('current', Math.max(0, current));
+                if (current <= 0) {
+                    clearInterval(drain);
+                    EhkoToast.show('Mana depleted!', 'warning');
+                }
+            }, 50);
+        }
+
+        // Chat controls
+        const chatContainer = document.getElementById('chat-container');
+        let messageCount = 0;
+
+        function addUserMessage() {
+            const msg = document.createElement('ehko-message');
+            msg.setAttribute('role', 'user');
+            msg.setAttribute('timestamp', new Date().toISOString());
+            msg.innerHTML = `Test message ${++messageCount} from user`;
+            
+            // Remove typing indicator, add message, re-add typing
+            const typing = document.getElementById('typing-demo');
+            typing.remove();
+            chatContainer.appendChild(msg);
+            chatContainer.appendChild(typing);
+        }
+
+        function addEhkoMessage() {
+            const typing = document.getElementById('typing-demo');
+            typing.remove();
+            
+            const msg = document.createElement('ehko-message');
+            msg.setAttribute('role', 'ehko');
+            msg.setAttribute('timestamp', new Date().toISOString());
+            msg.innerHTML = `Response ${++messageCount}: I understand your query. Let me process that.`;
+            chatContainer.appendChild(msg);
+            chatContainer.appendChild(typing);
+            typing.removeAttribute('typing');
+        }
+
+        function showTyping() {
+            const typing = document.getElementById('typing-demo');
+            typing.setAttribute('typing', '');
+        }
+
+        function addSystemMessage() {
+            const msg = document.createElement('ehko-message');
+            msg.setAttribute('role', 'system');
+            msg.innerHTML = 'Session checkpoint saved';
+            
+            const typing = document.getElementById('typing-demo');
+            typing.remove();
+            chatContainer.appendChild(msg);
+            chatContainer.appendChild(typing);
+        }
+
+        // Welcome toast
+        setTimeout(() => {
+            EhkoToast.show('Components loaded successfully', 'success');
+        }, 500);
+    </script>
+</body>
+</html>

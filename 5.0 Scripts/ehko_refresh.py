@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 """
-ehko_refresh.py — EhkoForge Indexing + Transcription Processing Script v2.0
+ehko_refresh.py — EhkoForge Indexing + Transcription Processing Script v2.1
 
 Scans EhkoForge and Mirrorwell vaults:
 1. Detects transcription-style files (with Short Summary, Long Summary, Transcriptions sections)
 2. Converts transcriptions → Mirrorwell reflection entries
 3. Archives originals to _processed/
 4. Indexes all markdown files into SQLite
+5. Performs vault health checks
 
 Usage:
     python ehko_refresh.py                  # Incremental update + process transcriptions
     python ehko_refresh.py --full           # Full rebuild + process all transcriptions
     python ehko_refresh.py --report         # Show stats only
     python ehko_refresh.py --no-process     # Index only, skip transcription processing
+    python ehko_refresh.py --health         # Run vault health checks, generate report
 
 Dependencies:
     pip install pyyaml
 
 Author: Brent Lefebure / EhkoForge
 Created: 2025-11-26
-Updated: 2025-11-27 — v2.0: Added transcription processing pipeline
+Updated: 2025-12-08 — v2.1: Added vault health checks (broken refs, orphaned files, missing versions, stale drafts)
 """
 
 import argparse
@@ -1152,6 +1154,170 @@ def print_report(db: EhkoDatabase, indexer_stats: Optional[dict] = None):
 
 
 # =============================================================================
+# VAULT HEALTH CHECKS
+# =============================================================================
+
+def check_health(db: EhkoDatabase) -> dict:
+    """
+    Perform vault health checks and return results.
+    Checks for:
+    - Broken cross-references (links to non-existent files)
+    - Orphaned files (files on disk not in database)
+    - Missing version numbers
+    - Stale status flags (draft files older than 30 days)
+    """
+    issues = {
+        "broken_references": [],
+        "orphaned_files": [],
+        "missing_versions": [],
+        "stale_drafts": [],
+    }
+    
+    conn = db.conn
+    cursor = conn.cursor()
+    
+    # 1. Check for broken cross-references
+    cursor.execute("""
+        SELECT DISTINCT ro1.file_path, cr.target_file
+        FROM reflection_objects ro1
+        JOIN cross_references cr ON ro1.id = cr.source_id
+        LEFT JOIN reflection_objects ro2 ON cr.target_file = ro2.file_path
+        WHERE ro2.id IS NULL
+    """)
+    
+    for source_path, target_file in cursor.fetchall():
+        issues["broken_references"].append({
+            "source": source_path,
+            "target": target_file
+        })
+    
+    # 2. Check for orphaned files (files on disk but not in DB)
+    indexed_files = set()
+    cursor.execute("SELECT file_path FROM reflection_objects")
+    for (path,) in cursor.fetchall():
+        indexed_files.add(path)
+    
+    for vault_name, vault_path in VAULTS.items():
+        for md_file in vault_path.rglob("*.md"):
+            # Skip excluded directories
+            if any(skip_dir in md_file.parts for skip_dir in SKIP_DIRS):
+                continue
+            if md_file.name in SKIP_PATTERNS:
+                continue
+            
+            relative_path = str(md_file.relative_to(vault_path))
+            full_path = f"{vault_name}/{relative_path}"
+            
+            if full_path not in indexed_files:
+                issues["orphaned_files"].append(full_path)
+    
+    # 3. Check for missing version numbers
+    cursor.execute("""
+        SELECT file_path, frontmatter
+        FROM reflection_objects
+        WHERE frontmatter IS NOT NULL
+    """)
+    
+    for file_path, frontmatter_json in cursor.fetchall():
+        try:
+            frontmatter = json.loads(frontmatter_json) if frontmatter_json else {}
+            if "version" not in frontmatter or not frontmatter["version"]:
+                issues["missing_versions"].append(file_path)
+        except:
+            pass
+    
+    # 4. Check for stale drafts (status: draft, updated > 30 days ago)
+    cursor.execute("""
+        SELECT file_path, updated
+        FROM reflection_objects
+        WHERE frontmatter LIKE '%"status": "draft"%'
+    """)
+    
+    from datetime import datetime, timedelta
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    
+    for file_path, updated_str in cursor.fetchall():
+        try:
+            if updated_str:
+                updated = datetime.fromisoformat(updated_str)
+                if updated < thirty_days_ago:
+                    issues["stale_drafts"].append({
+                        "path": file_path,
+                        "updated": updated_str
+                    })
+        except:
+            pass
+    
+    return issues
+
+
+def write_health_report(issues: dict, report_path: Path):
+    """Write health check results to markdown file."""
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("---\n")
+        f.write("title: \"Vault Health Report\"\n")
+        f.write("vault: \"EhkoForge\"\n")
+        f.write("type: \"system\"\n")
+        f.write("category: \"_data\"\n")
+        f.write(f"generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("tags: [system, health, diagnostics]\n")
+        f.write("---\n\n")
+        f.write("# VAULT HEALTH REPORT\n\n")
+        
+        # Summary
+        total_issues = sum(len(v) for v in issues.values())
+        f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"**Total Issues:** {total_issues}\n\n")
+        f.write("---\n\n")
+        
+        # Broken references
+        f.write("## Broken Cross-References\n\n")
+        if issues["broken_references"]:
+            f.write(f"Found {len(issues['broken_references'])} broken links:\n\n")
+            for ref in issues["broken_references"]:
+                f.write(f"- `{ref['source']}` → `{ref['target']}` (not found)\n")
+        else:
+            f.write("✓ No broken cross-references found.\n")
+        f.write("\n---\n\n")
+        
+        # Orphaned files
+        f.write("## Orphaned Files\n\n")
+        if issues["orphaned_files"]:
+            f.write(f"Found {len(issues['orphaned_files'])} files not in index:\n\n")
+            for path in issues["orphaned_files"]:
+                f.write(f"- `{path}`\n")
+        else:
+            f.write("✓ No orphaned files found.\n")
+        f.write("\n---\n\n")
+        
+        # Missing versions
+        f.write("## Missing Version Numbers\n\n")
+        if issues["missing_versions"]:
+            f.write(f"Found {len(issues['missing_versions'])} files without version field:\n\n")
+            for path in issues["missing_versions"]:
+                f.write(f"- `{path}`\n")
+        else:
+            f.write("✓ All files have version numbers.\n")
+        f.write("\n---\n\n")
+        
+        # Stale drafts
+        f.write("## Stale Drafts\n\n")
+        if issues["stale_drafts"]:
+            f.write(f"Found {len(issues['stale_drafts'])} draft files older than 30 days:\n\n")
+            for draft in issues["stale_drafts"]:
+                f.write(f"- `{draft['path']}` (last updated: {draft['updated']})\n")
+        else:
+            f.write("✓ No stale drafts found.\n")
+        f.write("\n---\n\n")
+        
+        f.write("## Recommendations\n\n")
+        if total_issues == 0:
+            f.write("✓ Vault is healthy. No issues found.\n")
+        else:
+            f.write("Review and fix the issues above to maintain vault integrity.\n")
+
+
+# =============================================================================
 # MAIN ENTRY POINT
 # =============================================================================
 
@@ -1171,6 +1337,10 @@ def main():
         "--no-process", action="store_true",
         help="Skip transcription processing (index only)"
     )
+    parser.add_argument(
+        "--health", action="store_true",
+        help="Run vault health checks and generate report"
+    )
     
     args = parser.parse_args()
     
@@ -1183,7 +1353,26 @@ def main():
     db.initialize_schema()
     
     try:
-        if args.report:
+        if args.health:
+            # Run health checks
+            print("Running vault health checks...")
+            issues = check_health(db)
+            
+            # Write report
+            report_path = DB_PATH.parent / "health_report.md"
+            write_health_report(issues, report_path)
+            
+            # Print summary
+            total_issues = sum(len(v) for v in issues.values())
+            print(f"\nHealth check complete. Found {total_issues} issue(s).")
+            print(f"Report written to: {report_path}")
+            print("\nSummary:")
+            print(f"  Broken references:   {len(issues['broken_references'])}")
+            print(f"  Orphaned files:      {len(issues['orphaned_files'])}")
+            print(f"  Missing versions:    {len(issues['missing_versions'])}")
+            print(f"  Stale drafts (30d+): {len(issues['stale_drafts'])}")
+            
+        elif args.report:
             # Report only
             print_report(db)
         else:
