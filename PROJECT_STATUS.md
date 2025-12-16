@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-17  
-**Version:** 1.55  
+**Version:** 1.56  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -373,6 +373,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 | run_reorientation_migration.py | v1.0 | ✅ Applied |
 | run_mana_migration.py | v1.0 | ✅ Applied |
 | run_memory_migration.py | v1.0 | ✅ Applied |
+| run_insights_migration.py | v1.0 | ⚠️ **RUN NOW** |
 | run_tethers_migration.py | v1.0 | ⏳ Pending |
 | ehkoforge/llm/ | v1.1 | ✅ Working |
 | recog_engine (core) | v1.0 | ✅ Working |
@@ -418,6 +419,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.56 — 2025-12-17 Session 38 — Schema mismatch fix: Created insights_columns_v0_1.sql migration and run_insights_migration.py for missing ingots columns (flagged, reviewed, rejected, user_context). Updated STACKWRIGHT_INSTRUCTIONS.md v2.3 with database troubleshooting guide, common error patterns, and "NEVER copy database file" warning.
 - v1.55 — 2025-12-17 Session 37 — Conclusions display fix: [object Object] bug. Conclusions are objects (type/summary/significance/emerging). recog.js v2.1, recog.css v1.2.
 - v1.54 — 2025-12-17 Session 36 — Insights Tab CSS complete. recog.css v1.1 with full Insights tab styles (toolbar, cards, detail panel, report drill-down). Full browse/review workflow operational.
 - v1.53 — 2025-12-16 Session 35 — Preflight Phase 4: confirm_preflight_session() creates document_chunks and queues ReCog operation. Migration v0.2 (content column). API endpoint /api/preflight/sessions/<id>/confirm. preflight.js confirmSession() wired. forge_server.py v3.1.

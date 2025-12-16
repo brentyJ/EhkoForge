@@ -44,8 +44,8 @@
 | `smelt_queue` | Pending content | id, source_type, source_id, status, priority |
 | `transcript_segments` | Chunked transcripts | id, transcript_id, segment_index, content |
 | `annotations` | User hints | id, segment_id, annotation_type, content |
-| `ingots` / `insites` | Core insight objects | id, type, tier, content, confidence, status |
-| `ingot_sources` / `insite_sources` | Links to sources | ingot_id, source_type, source_id |
+| `ingots` | Core insight objects | id, summary, themes_json, significance, confidence, status, flagged, reviewed, rejected, user_context |
+| `ingot_sources` | Links to sources | ingot_id, source_type, source_id |
 | `ingot_history` / `insite_history` | Audit trail | ingot_id, action, timestamp, details |
 | `ehko_personality_layers` | Forged personality | id, layer_type, content, weight |
 
@@ -137,6 +137,7 @@ GROUP BY operation;
 ---
 
 **Changelog:**
+- v1.6 — 2025-12-17 — Updated ingots table schema with flagged/reviewed/rejected/user_context columns (requires insights_columns_v0_1.sql migration).
 - v1.5 — 2025-12-14 — Added Tether Tables (3 tables, 2 views). Concept: conduits that never deplete.
 - v1.4 — 2025-12-06 — Added Memory & Progression Tables (session_summaries, ehko_progression, recog_processing_log, recog_reports, recog_queue). Noted forge_sessions extensions.
 - v1.3 — 2025-12-05 — Added ReCog Pattern Tables (ingot_patterns, ingot_pattern_insights).

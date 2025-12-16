@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "4.3"
+version: "4.4"
 created: 2025-11-29
-updated: 2025-12-16
+updated: 2025-12-17
 tags: [system, reference, navigation]
 ---
 
@@ -263,7 +263,8 @@ TechnoForge.png, technoForge_noText.png   [assets]
 ehko_index.db                     [SQLite, ~200KB]
 vault_map.md                      [this file]
 script_registry.md                [v1.2] — Compressed script reference
-db_schema_summary.md              [v1.2] — Compressed DB schema reference
+db_schema_summary.md              [v1.6] — Compressed DB schema reference
+STACKWRIGHT_INSTRUCTIONS.md       [v2.3] — Claude project instructions (UPDATED)
 ```
 
 ### _private/
@@ -386,6 +387,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.4 — 2025-12-17 Session 38 — Added STACKWRIGHT_INSTRUCTIONS.md v2.3 to _data/. Added insights_columns migration. Updated db_schema_summary.md v1.6.
 - v4.2 — 2025-12-16 Session 31 — Web Components Migration complete: main.js v2.6, main.css v2.1, all UI elements using components.
 - v4.1 — 2025-12-16 Session 31 — Web Components Migration: ehko-avatar.js v1.1 with 5 Authority stages, main.js v2.5.
 - v4.0 — 2025-12-14 Session 29 — Tether System Phases 1-5: tether_manager.py, tethers_v0_1.sql migration, forge_server.py v2.9 with 8 tether endpoints + routing, Web Components (ehko-tether-bar, ehko-tether-panel), main.js v2.3.
