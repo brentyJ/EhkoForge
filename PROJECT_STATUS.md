@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-16  
-**Version:** 1.49  
+**Version:** 1.50  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -293,6 +293,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-16 Session 32:** ReCog Synthesis Fix — Added emerging themes fallback when patterns are limited. synthesis_min_patterns lowered from 2 to 1. Synthesiser now generates "emerging observations" instead of returning nothing. Report summaries distinguish between full syntheses and emerging themes. Added comprehensive logging to correlator and scheduler.
+
 - **2025-12-16 Session 31:** Web Components Migration Phases 2+4 COMPLETE — All UI elements now use Web Components. Avatar (`<ehko-avatar>` v1.1), mana bar (`<ehko-mana-bar>`), chat messages (`<ehko-message>`), toast notifications (`<ehko-toast>`), tethers (`<ehko-tether-bar>`, `<ehko-tether-panel>`). main.js v2.6 with full component integration. main.css v2.1 with ~270 lines obsolete CSS removed. Mana bar integration verified (removed duplicate updateManaDisplay, fixed state.mana sync, connected mana-topup event).
 
 - **2025-12-15 Session 30:** UI Layout Refinements — ASCII EHKO logo moved to status bar (3-column layout: Authority | ASCII Logo | Mana+Tethers), avatar zone reverted to original design with matrix background and corner brackets, settings drawer streamlined (removed redundant API key inputs, added "Manage Tethers" button, Display toggles including ASCII logo visibility, Data & Privacy section, About section with links and license). Updated main.css, index.html, main.js v2.4.
@@ -373,6 +375,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.50 — 2025-12-16 Session 32 — ReCog Synthesis Fix: Lowered synthesis_min_patterns to 1, added emerging themes fallback, improved logging.
 - v1.49 — 2025-12-16 Session 31 — Web Components Migration Phases 2+4 complete. main.js v2.6 (full component integration), main.css v2.1 (~270 lines obsolete CSS removed). Mana bar integration verified.
 - v1.47 — 2025-12-16 Session 31 — Web Components Migration Phase 2: Avatar replaced with <ehko-avatar> component v1.1 (5 Authority stages). main.js v2.5 with component integration.
 - v1.46 — 2025-12-15 Session 30 — UI Layout Refinements: ASCII logo in status bar (3-column layout), avatar zone restored to original, settings drawer streamlined (tether panel integration, About section, removed redundant inputs), main.js v2.4.

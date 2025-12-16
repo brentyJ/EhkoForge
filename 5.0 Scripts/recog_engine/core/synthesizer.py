@@ -133,8 +133,12 @@ class Synthesizer:
             Tuple of (syntheses, processing stats)
         """
         if len(patterns) < self.config.synthesis_min_patterns:
-            logger.info(f"Too few patterns ({len(patterns)}) for synthesis")
-            return [], {"skipped": True, "reason": "insufficient_patterns"}
+            logger.info(f"Too few patterns ({len(patterns)}) for full synthesis, generating emerging themes")
+            # Generate emerging themes instead of skipping entirely
+            return self._generate_emerging_themes(patterns, insights, adapter), {
+                "mode": "emerging",
+                "reason": "limited_patterns"
+            }
         
         # Get context
         context = None
@@ -345,6 +349,61 @@ class Synthesizer:
         # Keep longer/more detailed summary
         if len(source.summary) > len(target.summary):
             target.summary = source.summary
+    
+    def _generate_emerging_themes(self,
+                                   patterns: List[Pattern],
+                                   insights: List[Insight],
+                                   adapter = None) -> List[Synthesis]:
+        """
+        Generate emerging themes when there aren't enough patterns for full synthesis.
+        
+        This provides users with SOMETHING useful even when data is limited.
+        Lower confidence to indicate these are preliminary observations.
+        """
+        syntheses = []
+        
+        # If we have patterns, create emerging themes from them
+        for pattern in patterns:
+            synthesis = Synthesis.create(
+                summary=f"Emerging observation: {pattern.summary}",
+                synthesis_type=SynthesisType.THEME,
+                pattern_ids=[pattern.id],
+                significance=pattern.strength * 0.7,  # Reduced significance
+                confidence=0.4,  # Low confidence - this is preliminary
+                metadata={
+                    "emerging": True,
+                    "pattern_type": pattern.pattern_type.value,
+                    "source": "limited_synthesis",
+                }
+            )
+            syntheses.append(synthesis)
+            
+            if adapter:
+                adapter.save_synthesis(synthesis)
+        
+        # If we have insights but no patterns, surface top insights as emerging themes
+        if not patterns and insights:
+            top_insights = sorted(insights, key=lambda i: i.significance, reverse=True)[:3]
+            for insight in top_insights:
+                synthesis = Synthesis.create(
+                    summary=f"Early signal: {insight.summary}",
+                    synthesis_type=SynthesisType.THEME,
+                    pattern_ids=[],
+                    significance=insight.significance * 0.5,
+                    confidence=0.3,
+                    metadata={
+                        "emerging": True,
+                        "source": "top_insight",
+                        "themes": insight.themes[:3],
+                    }
+                )
+                syntheses.append(synthesis)
+                
+                if adapter:
+                    adapter.save_synthesis(synthesis)
+        
+        logger.info(f"Generated {len(syntheses)} emerging themes from limited data")
+        return syntheses
 
 
 # =============================================================================

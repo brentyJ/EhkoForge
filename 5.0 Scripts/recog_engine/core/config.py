@@ -72,7 +72,7 @@ class RecogConfig:
     synthesis_temperature: float = 0.5
     synthesis_max_tokens: int = 4000
     
-    synthesis_min_patterns: int = 2            # Min patterns for synthesis
+    synthesis_min_patterns: int = 1            # Min patterns for synthesis (lowered from 2)
     synthesis_significance_threshold: float = 0.5
     
     # =========================================================================

@@ -905,17 +905,24 @@ class RecogScheduler:
             return ProcessingResult(op_id, "correlate", False, error="No LLM configured")
         
         # Get insights
-        insights = list(self.adapter.get_insights(limit=50))
+        adapter = self.adapter  # Cache single adapter for consistency
+        insights = list(adapter.get_insights(limit=50))
         
         if len(insights) < 2:
             return ProcessingResult(op_id, "correlate", True, patterns_found=0)
+        
+        logger.info(f"Correlating {len(insights)} insights")
         
         # Correlate
         correlator = Correlator(llm=self.llm, config=self.config)
         patterns, stats = correlator.correlate(insights)
         
-        for pattern in patterns:
-            self.adapter.save_pattern(pattern)
+        logger.info(f"Correlation found {len(patterns)} patterns: {stats}")
+        
+        # Save patterns using same adapter
+        for i, pattern in enumerate(patterns):
+            logger.debug(f"Saving pattern {i+1}/{len(patterns)}: {pattern.id[:8]} - {pattern.summary[:50]}")
+            adapter.save_pattern(pattern)
         
         # Log
         self._log_processing(
@@ -1038,16 +1045,28 @@ class RecogScheduler:
         cursor = conn.cursor()
         now = datetime.utcnow().isoformat() + "Z"
         
-        # Build conclusions
+        # Build conclusions - distinguish between full syntheses and emerging themes
         conclusions = []
+        emerging_count = 0
         for synth in syntheses:
+            is_emerging = synth.metadata.get("emerging", False)
+            if is_emerging:
+                emerging_count += 1
             conclusions.append({
                 "type": synth.synthesis_type.value,
                 "summary": synth.summary,
                 "significance": synth.significance,
+                "emerging": is_emerging,
             })
         
-        summary = f"Synthesised {len(syntheses)} personality components from {len(patterns)} patterns and {len(insights)} insights."
+        # Generate appropriate summary
+        if emerging_count == len(syntheses) and emerging_count > 0:
+            summary = f"Identified {emerging_count} emerging themes from {len(patterns)} patterns and {len(insights)} insights. More data needed for full personality synthesis."
+        elif emerging_count > 0:
+            full_count = len(syntheses) - emerging_count
+            summary = f"Synthesised {full_count} personality components plus {emerging_count} emerging themes from {len(patterns)} patterns and {len(insights)} insights."
+        else:
+            summary = f"Synthesised {len(syntheses)} personality components from {len(patterns)} patterns and {len(insights)} insights."
         
         cursor.execute("""
             INSERT INTO recog_reports

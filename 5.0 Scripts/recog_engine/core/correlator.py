@@ -197,16 +197,20 @@ class Correlator:
                 )
                 
                 for pattern in new_patterns:
+                    logger.debug(f"Processing pattern: {pattern.summary[:60]}... with {len(pattern.insight_ids)} insights")
+                    
                     # Check if extends existing pattern
                     extended = False
                     for existing in all_patterns:
                         if self._patterns_overlap(pattern, existing):
+                            logger.debug(f"Merging with existing pattern: {existing.summary[:40]}...")
                             self._merge_patterns(existing, pattern)
                             stats["patterns_extended"] += 1
                             extended = True
                             break
                     
                     if not extended:
+                        logger.debug(f"Adding new pattern: {pattern.id[:8]}")
                         all_patterns.append(pattern)
                         stats["patterns_found"] += 1
                     
