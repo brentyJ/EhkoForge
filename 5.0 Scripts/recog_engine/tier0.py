@@ -188,7 +188,7 @@ def _empty_result() -> Dict[str, Any]:
         "intensity_markers": {"exclamations": 0, "all_caps_words": 0, "repeated_punctuation": 0, "intensifiers": [], "hedges": []},
         "question_analysis": {"question_count": 0, "question_density": 0.0, "self_inquiry": 0, "rhetorical_likely": 0},
         "temporal_references": {"past": [], "present": [], "future": [], "habitual": []},
-        "entities": {"people": [], "places": [], "organisations": []},
+        "entities": {"people": [], "phone_numbers": [], "email_addresses": [], "places": [], "organisations": []},
         "structural": {"paragraph_count": 0, "sentence_count": 0, "avg_sentence_length": 0, "longest_sentence": 0, "speaker_changes": 0},
         "flags": {"high_emotion": False, "self_reflective": False, "narrative": False, "analytical": False},
     }
@@ -299,11 +299,102 @@ def extract_temporal_refs(text: str) -> Dict:
     return result
 
 
+# Phone number patterns (AU focus with international support)
+PHONE_PATTERNS = [
+    # Australian formats
+    r'\+61\s?4\d{2}\s?\d{3}\s?\d{3}',      # +61 4XX XXX XXX
+    r'\+61\s?[23478]\s?\d{4}\s?\d{4}',     # +61 X XXXX XXXX (landline)
+    r'04\d{2}\s?\d{3}\s?\d{3}',             # 04XX XXX XXX
+    r'0[23478]\s?\d{4}\s?\d{4}',            # 0X XXXX XXXX (landline)
+    # International formats
+    r'\+1\s?\d{3}\s?\d{3}\s?\d{4}',        # US +1 XXX XXX XXXX
+    r'\+44\s?\d{4}\s?\d{6}',               # UK +44 XXXX XXXXXX
+    r'\+\d{1,3}\s?\d{6,12}',               # Generic international
+    # Compact formats
+    r'\b04\d{8}\b',                         # 04XXXXXXXX
+    r'\b0[23478]\d{8}\b',                   # 0XXXXXXXXX (landline)
+]
+
+# Email pattern
+EMAIL_PATTERN = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+
+
+def extract_phone_numbers(text: str) -> List[Dict]:
+    """
+    Extract phone numbers with context.
+    Returns list of {raw, normalised, context} dicts.
+    """
+    phones = []
+    seen = set()
+    
+    for pattern in PHONE_PATTERNS:
+        for match in re.finditer(pattern, text):
+            raw = match.group(0)
+            # Normalise: remove spaces, keep + for international
+            normalised = re.sub(r'[\s\-\(\)]', '', raw)
+            
+            if normalised in seen:
+                continue
+            seen.add(normalised)
+            
+            # Get context (30 chars before and after)
+            start = max(0, match.start() - 30)
+            end = min(len(text), match.end() + 30)
+            context = text[start:end].strip()
+            
+            phones.append({
+                'raw': raw,
+                'normalised': normalised,
+                'context': context,
+            })
+    
+    return phones
+
+
+def extract_email_addresses(text: str) -> List[Dict]:
+    """
+    Extract email addresses with context.
+    Returns list of {raw, normalised, context, domain} dicts.
+    """
+    emails = []
+    seen = set()
+    
+    for match in re.finditer(EMAIL_PATTERN, text, re.IGNORECASE):
+        raw = match.group(0)
+        normalised = raw.lower()
+        
+        if normalised in seen:
+            continue
+        seen.add(normalised)
+        
+        # Extract domain
+        domain = normalised.split('@')[1] if '@' in normalised else ''
+        
+        # Get context
+        start = max(0, match.start() - 30)
+        end = min(len(text), match.end() + 30)
+        context = text[start:end].strip()
+        
+        emails.append({
+            'raw': raw,
+            'normalised': normalised,
+            'domain': domain,
+            'context': context,
+        })
+    
+    return emails
+
+
 def extract_basic_entities(text: str) -> Dict:
     """
-    Basic entity extraction without NLP library.
-    Catches capitalised words mid-sentence and title-preceded names.
+    Entity extraction: people, phone numbers, emails.
+    No NLP library required.
     """
+    # Extract phones and emails
+    phones = extract_phone_numbers(text)
+    emails = extract_email_addresses(text)
+    
+    # Extract people (capitalised words, titles)
     sentences = re.split(r"[.!?]", text)
     people = []
     
@@ -338,6 +429,8 @@ def extract_basic_entities(text: str) -> Dict:
     
     return {
         "people": list(set(people))[:10],
+        "phone_numbers": phones[:20],
+        "email_addresses": emails[:20],
         "places": [],  # Would need NER for reliable place detection
         "organisations": [],
     }
@@ -440,6 +533,18 @@ def summarise_for_prompt(pre_annotation: Dict) -> str:
         people = pre_annotation["entities"]["people"][:5]
         parts.append(f"People mentioned: {', '.join(people)}")
     
+    # Phone numbers
+    phones = pre_annotation.get("entities", {}).get("phone_numbers", [])
+    if phones:
+        phone_strs = [p.get('normalised', p.get('raw', '?')) for p in phones[:5]]
+        parts.append(f"Phone numbers: {', '.join(phone_strs)}")
+    
+    # Email addresses
+    emails = pre_annotation.get("entities", {}).get("email_addresses", [])
+    if emails:
+        email_strs = [e.get('normalised', e.get('raw', '?')) for e in emails[:5]]
+        parts.append(f"Email addresses: {', '.join(email_strs)}")
+    
     # Intensity
     intensity = pre_annotation.get("intensity_markers", {})
     if intensity.get("exclamations", 0) >= 2:
@@ -501,8 +606,13 @@ __all__ = [
     "summarise_for_prompt",
     "to_json",
     "from_json",
+    "extract_phone_numbers",
+    "extract_email_addresses",
+    "extract_basic_entities",
     "EMOTION_KEYWORDS",
     "INTENSIFIERS",
     "HEDGES",
     "ABSOLUTES",
+    "PHONE_PATTERNS",
+    "EMAIL_PATTERN",
 ]

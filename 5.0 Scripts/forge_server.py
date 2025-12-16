@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v2.9
+EhkoForge Server v3.0
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
@@ -96,6 +96,35 @@ from recog_engine.tether_manager import (
     get_tether_usage_stats,
     get_supported_providers,
 )
+
+# Preflight Context System
+try:
+    from recog_engine.preflight import (
+        create_preflight_session,
+        get_preflight_session,
+        update_preflight_session,
+        add_preflight_item,
+        get_preflight_items,
+        exclude_preflight_item,
+        include_preflight_item,
+        scan_preflight_session,
+        get_preflight_summary,
+        apply_filters,
+    )
+    from recog_engine.entity_registry import (
+        get_entity,
+        get_entity_by_id,
+        register_entity,
+        update_entity,
+        list_entities,
+        get_unknown_entities,
+        get_entity_stats,
+    )
+    PREFLIGHT_AVAILABLE = True
+    print("[OK] Preflight context system loaded")
+except ImportError as e:
+    PREFLIGHT_AVAILABLE = False
+    print(f"[WARN] Preflight context system not available: {e}")
 
 # =============================================================================
 # CONFIGURATION
@@ -2571,6 +2600,316 @@ def api_tethers_active():
 
 
 # =============================================================================
+# API ROUTES - PREFLIGHT CONTEXT SYSTEM
+# =============================================================================
+
+@app.route("/api/preflight/status", methods=["GET"])
+def api_preflight_status():
+    """Check if preflight system is available."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({
+            "success": True,
+            "available": False,
+            "message": "Preflight system not initialised. Run entity migration.",
+        })
+    
+    try:
+        stats = get_entity_stats()
+        return jsonify({
+            "success": True,
+            "available": True,
+            "entity_stats": stats,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions", methods=["POST"])
+def api_preflight_create():
+    """
+    Create a new preflight session.
+    
+    Body:
+        session_type: str - 'single_file', 'batch', 'chatgpt_import'
+        source_files: list - Optional list of file paths
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        data = request.json or {}
+        session_type = data.get('session_type', 'batch')
+        source_files = data.get('source_files', [])
+        
+        session_id = create_preflight_session(session_type, source_files)
+        
+        return jsonify({
+            "success": True,
+            "session_id": session_id,
+            "session_type": session_type,
+        }), 201
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions/<int:session_id>", methods=["GET"])
+def api_preflight_get(session_id):
+    """Get preflight session details."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        summary = get_preflight_summary(session_id)
+        if 'error' in summary:
+            return jsonify({"success": False, "error": summary['error']}), 404
+        return jsonify({"success": True, **summary})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions/<int:session_id>/items", methods=["POST"])
+def api_preflight_add_item(session_id):
+    """
+    Add content to a preflight session.
+    Runs Tier 0 scan automatically.
+    
+    Body:
+        source_type: str - 'chatgpt_conversation', 'document', 'transcript', etc.
+        source_id: str - Unique ID within source
+        title: str - Display title
+        content: str - The actual text content to scan
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        data = request.json or {}
+        source_type = data.get('source_type', 'unknown')
+        source_id = data.get('source_id')
+        title = data.get('title', 'Untitled')
+        content = data.get('content', '')
+        
+        item_id = add_preflight_item(
+            preflight_session_id=session_id,
+            source_type=source_type,
+            source_id=source_id,
+            title=title,
+            content=content,
+        )
+        
+        return jsonify({
+            "success": True,
+            "item_id": item_id,
+            "session_id": session_id,
+        }), 201
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions/<int:session_id>/items", methods=["GET"])
+def api_preflight_list_items(session_id):
+    """Get all items in a preflight session."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        included_only = request.args.get('included_only', 'false').lower() == 'true'
+        items = get_preflight_items(session_id, included_only=included_only)
+        return jsonify({"success": True, "items": items, "count": len(items)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions/<int:session_id>/scan", methods=["POST"])
+def api_preflight_scan(session_id):
+    """
+    Analyse preflight session after all items added.
+    Returns summary with entity counts, cost estimate, and questions.
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        result = scan_preflight_session(session_id)
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions/<int:session_id>/filter", methods=["POST"])
+def api_preflight_filter(session_id):
+    """
+    Apply filters to preflight items.
+    
+    Body:
+        min_words: int - Minimum word count
+        min_messages: int - Minimum message count (for chat content)
+        date_after: str - ISO date string
+        date_before: str - ISO date string
+        keywords: list - Keywords to match
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        data = request.json or {}
+        result = apply_filters(
+            session_id,
+            min_words=data.get('min_words'),
+            min_messages=data.get('min_messages'),
+            date_after=data.get('date_after'),
+            date_before=data.get('date_before'),
+            keywords=data.get('keywords'),
+        )
+        return jsonify({"success": True, **result})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/items/<int:item_id>/exclude", methods=["POST"])
+def api_preflight_exclude_item(item_id):
+    """Exclude an item from processing."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        data = request.json or {}
+        reason = data.get('reason', 'manual')
+        success = exclude_preflight_item(item_id, reason)
+        return jsonify({"success": success, "item_id": item_id})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/items/<int:item_id>/include", methods=["POST"])
+def api_preflight_include_item(item_id):
+    """Re-include an excluded item."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        success = include_preflight_item(item_id)
+        return jsonify({"success": success, "item_id": item_id})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
+# API ROUTES - ENTITY REGISTRY
+# =============================================================================
+
+@app.route("/api/entities", methods=["GET"])
+def api_entities_list():
+    """
+    List entities in the registry.
+    
+    Query params:
+        type: str - Filter by entity_type ('phone', 'email', 'person')
+        confirmed: bool - Only confirmed entities
+        unconfirmed: bool - Only unconfirmed entities
+        limit: int - Max results (default 100)
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        entity_type = request.args.get('type')
+        confirmed = request.args.get('confirmed', 'false').lower() == 'true'
+        unconfirmed = request.args.get('unconfirmed', 'false').lower() == 'true'
+        limit = request.args.get('limit', 100, type=int)
+        
+        entities = list_entities(
+            entity_type=entity_type,
+            confirmed_only=confirmed,
+            unconfirmed_only=unconfirmed,
+            limit=limit,
+        )
+        return jsonify({"success": True, "entities": entities, "count": len(entities)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/entities/unknown", methods=["GET"])
+def api_entities_unknown():
+    """Get entities that need user identification."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        entities = get_unknown_entities(limit=limit)
+        return jsonify({"success": True, "entities": entities, "count": len(entities)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/entities/<int:entity_id>", methods=["GET"])
+def api_entity_get(entity_id):
+    """Get a single entity by ID."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        entity = get_entity_by_id(entity_id)
+        if entity:
+            return jsonify({"success": True, "entity": entity})
+        else:
+            return jsonify({"success": False, "error": "Entity not found"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/entities/<int:entity_id>", methods=["PUT"])
+def api_entity_update(entity_id):
+    """
+    Update entity with user-provided context.
+    
+    Body:
+        display_name: str - Human-friendly name
+        relationship: str - Relationship to user
+        notes: str - Additional context
+        anonymise_in_prompts: bool - Use placeholder in LLM calls
+        placeholder_name: str - Placeholder to use
+        confirmed: bool - Mark as confirmed
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        data = request.json or {}
+        success = update_entity(
+            entity_id,
+            display_name=data.get('display_name'),
+            relationship=data.get('relationship'),
+            notes=data.get('notes'),
+            anonymise_in_prompts=data.get('anonymise_in_prompts'),
+            placeholder_name=data.get('placeholder_name'),
+            confirmed=data.get('confirmed'),
+        )
+        
+        if success:
+            entity = get_entity_by_id(entity_id)
+            return jsonify({"success": True, "entity": entity})
+        else:
+            return jsonify({"success": False, "error": "Update failed"}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/entities/stats", methods=["GET"])
+def api_entity_stats():
+    """Get entity registry statistics."""
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        stats = get_entity_stats()
+        return jsonify({"success": True, "stats": stats})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
 # PAGE ROUTES
 # =============================================================================
 
@@ -2640,7 +2979,7 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v2.9")
+    print("EHKOFORGE SERVER v3.0")
     print("Authority, Mana, Tethers, ReCog Scheduler & Evolution Studio")
     print("Tethers bypass mana - direct BYOK conduit to Sources")
     print("=" * 60)

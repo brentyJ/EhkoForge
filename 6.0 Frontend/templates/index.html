@@ -418,6 +418,7 @@
             <!-- Tabs -->
             <div class="recog-tabs">
                 <button class="recog-tab active" data-tab="queue">Queue</button>
+                <button class="recog-tab" data-tab="preflight">Preflight</button>
                 <button class="recog-tab" data-tab="reports">Reports</button>
                 <button class="recog-tab" data-tab="progression">Progression</button>
             </div>
@@ -458,6 +459,111 @@
                     <div class="pending-list" id="pending-list">
                         <!-- Populated by JS -->
                     </div>
+                </div>
+            </div>
+            
+            <!-- Preflight Pane -->
+            <div class="recog-pane" id="recog-pane-preflight">
+                <!-- Upload Section -->
+                <div class="preflight-upload-section">
+                    <div class="preflight-upload-header">
+                        <span class="preflight-title">Import Content</span>
+                        <span class="preflight-subtitle">FREE Tier 0 scan</span>
+                    </div>
+                    <div class="preflight-drop-zone" id="preflight-drop-zone">
+                        <div class="drop-zone-icon">📁</div>
+                        <div class="drop-zone-text">Drop files here or click to browse</div>
+                        <div class="drop-zone-formats">ChatGPT export (.json), Text files</div>
+                        <input type="file" id="preflight-file-input" accept=".json,.txt,.md" multiple hidden>
+                    </div>
+                </div>
+                
+                <!-- Active Session -->
+                <div class="preflight-session" id="preflight-session" style="display: none;">
+                    <div class="preflight-session-header">
+                        <span class="session-type" id="preflight-session-type">ChatGPT Import</span>
+                        <span class="session-status" id="preflight-session-status">Scanning...</span>
+                    </div>
+                    
+                    <!-- Scan Progress -->
+                    <div class="preflight-progress" id="preflight-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="preflight-progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="preflight-progress-text">Processing...</div>
+                    </div>
+                    
+                    <!-- Summary Stats -->
+                    <div class="preflight-summary" id="preflight-summary" style="display: none;">
+                        <div class="summary-stats">
+                            <div class="summary-stat">
+                                <div class="summary-value" id="pf-item-count">0</div>
+                                <div class="summary-label">Items</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="summary-value" id="pf-word-count">0</div>
+                                <div class="summary-label">Words</div>
+                            </div>
+                            <div class="summary-stat">
+                                <div class="summary-value" id="pf-entity-count">0</div>
+                                <div class="summary-label">Entities</div>
+                            </div>
+                            <div class="summary-stat cost">
+                                <div class="summary-value">$<span id="pf-cost-estimate">0.00</span></div>
+                                <div class="summary-label">Est. Cost</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Entity Questions -->
+                    <div class="preflight-entities" id="preflight-entities" style="display: none;">
+                        <div class="entities-header">
+                            <span class="entities-title">Unknown Contacts</span>
+                            <span class="entities-count" id="pf-unknown-count">0 need identification</span>
+                        </div>
+                        <div class="entities-list" id="preflight-entities-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="preflight-filters" id="preflight-filters" style="display: none;">
+                        <div class="filters-header">
+                            <span class="filters-title">Filters</span>
+                            <button class="filters-toggle" id="pf-filters-toggle">▼</button>
+                        </div>
+                        <div class="filters-content" id="pf-filters-content" style="display: none;">
+                            <div class="filter-row">
+                                <label>Min words:</label>
+                                <input type="number" id="pf-filter-min-words" value="50" min="0">
+                            </div>
+                            <div class="filter-row">
+                                <label>Date after:</label>
+                                <input type="date" id="pf-filter-date-after">
+                            </div>
+                            <div class="filter-row">
+                                <label>Keywords:</label>
+                                <input type="text" id="pf-filter-keywords" placeholder="comma,separated">
+                            </div>
+                            <button class="filter-apply-btn" id="pf-filter-apply">Apply Filters</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="preflight-actions">
+                        <button class="preflight-btn secondary" id="pf-cancel-btn">Cancel</button>
+                        <button class="preflight-btn primary" id="pf-confirm-btn" disabled>
+                            <span>Confirm & Process</span>
+                            <span class="btn-cost">◆<span id="pf-mana-cost">0</span></span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div class="preflight-empty" id="preflight-empty">
+                    <div class="empty-icon">📥</div>
+                    <div class="empty-text">No active import</div>
+                    <div class="empty-hint">Upload a ChatGPT export or other content to scan</div>
                 </div>
             </div>
             
@@ -517,6 +623,7 @@
 
     <script src="/js/main.js"></script>
     <script src="/js/recog.js"></script>
+    <script src="/js/preflight.js"></script>
     <script src="/components/ehko-toast.js"></script>
     <script src="/components/ehko-mana-bar.js"></script>
     <script src="/components/ehko-tether-bar.js"></script>

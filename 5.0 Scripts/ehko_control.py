@@ -254,6 +254,7 @@ def factory_reset(out_log, srv_log, status_lbl, start_btn, stop_btn, restart_btn
         ("Memory Migration", SCRIPTS_PATH / "run_memory_migration.py"),
         ("Tethers Migration", SCRIPTS_PATH / "run_tethers_migration.py"),
         ("Document Ingestion Migration", SCRIPTS_PATH / "run_ingestion_migration.py"),
+        ("Entity Registry Migration", SCRIPTS_PATH / "run_entity_migration.py"),
     ]
     
     def run_migrations():
