@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v3.0
+EhkoForge Server v3.1
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
-ReCog scheduler with user confirmation flow, Evolution Studio, and Tether system.
+ReCog scheduler with user confirmation flow, Evolution Studio, Tether system,
+and Preflight Context System with confirmation processing.
 
 Tether Integration:
     Chat endpoint checks for active tethers before falling back to mana.
@@ -110,6 +111,7 @@ try:
         scan_preflight_session,
         get_preflight_summary,
         apply_filters,
+        confirm_preflight_session,
     )
     from recog_engine.entity_registry import (
         get_entity,
@@ -2791,6 +2793,37 @@ def api_preflight_include_item(item_id):
         success = include_preflight_item(item_id)
         return jsonify({"success": success, "item_id": item_id})
     except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/preflight/sessions/<int:session_id>/confirm", methods=["POST"])
+def api_preflight_confirm(session_id):
+    """
+    Confirm preflight session and queue for ReCog processing.
+    
+    This transfers included items to document_chunks table
+    and creates a ReCog operation ready for processing.
+    """
+    if not PREFLIGHT_AVAILABLE:
+        return jsonify({"success": False, "error": "Preflight system not available"}), 503
+    
+    try:
+        result = confirm_preflight_session(session_id)
+        
+        if result.get('success'):
+            return jsonify({
+                "success": True,
+                "document_id": result['document_id'],
+                "chunks_created": result['chunks_created'],
+                "operation_id": result['operation_id'],
+                "status": result['status'],
+                "message": f"Created {result['chunks_created']} chunks, queued for processing",
+            })
+        else:
+            return jsonify({"success": False, "error": result.get('error', 'Unknown error')}), 400
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
 
 

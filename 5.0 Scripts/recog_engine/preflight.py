@@ -202,12 +202,12 @@ def add_preflight_item(
             INSERT INTO preflight_items (
                 preflight_session_id, source_type, source_id, title,
                 word_count, pre_annotation_json, entities_found_json,
-                included, processed, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, ?)
+                content, included, processed, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)
         """, (
             preflight_session_id, source_type, source_id, title,
             word_count, json.dumps(pre_annotation), json.dumps(entities_found),
-            now
+            content, now
         ))
         conn.commit()
         return cursor.lastrowid
@@ -511,4 +511,152 @@ __all__ = [
     'scan_preflight_session',
     'get_preflight_summary',
     'apply_filters',
+    'confirm_preflight_session',
 ]
+
+
+# =============================================================================
+# CONFIRMATION & PROCESSING
+# =============================================================================
+
+def confirm_preflight_session(session_id: int) -> Dict:
+    """
+    Confirm a preflight session and create ReCog operations.
+    
+    This transfers included items to the document_chunks table
+    and queues them for ReCog processing.
+    
+    Returns:
+        dict with document_id, chunks_created, status
+    """
+    conn = get_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get session info
+    cursor.execute("""
+        SELECT id, session_type, source_files_json, status
+        FROM preflight_sessions WHERE id = ?
+    """, (session_id,))
+    session = cursor.fetchone()
+    
+    if not session:
+        conn.close()
+        return {'success': False, 'error': 'Session not found'}
+    
+    if session['status'] not in ('scanned', 'reviewing'):
+        conn.close()
+        return {'success': False, 'error': f'Session not ready: {session["status"]}'}
+    
+    # Get included items WITH content
+    cursor.execute("""
+        SELECT id, source_type, source_id, title, word_count,
+               pre_annotation_json, entities_found_json, content
+        FROM preflight_items
+        WHERE preflight_session_id = ? AND included = 1
+    """, (session_id,))
+    items = cursor.fetchall()
+    
+    if not items:
+        conn.close()
+        return {'success': False, 'error': 'No items to process'}
+    
+    now = datetime.utcnow().isoformat() + 'Z'
+    source_files = json.loads(session['source_files_json']) if session['source_files_json'] else []
+    filename = source_files[0] if source_files else f'preflight_{session_id}'
+    
+    # Create ingested_document entry
+    cursor.execute("""
+        INSERT INTO ingested_documents (
+            filename, file_type, source_path, total_chunks, 
+            status, ingested_at, doc_subject, metadata
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        filename,
+        session['session_type'],
+        f'preflight:{session_id}',
+        len(items),
+        'processing',
+        now,
+        f'Preflight Import - {session["session_type"]}',
+        json.dumps({'preflight_session_id': session_id})
+    ))
+    document_id = cursor.lastrowid
+    
+    # Create document_chunks for each item
+    chunks_created = 0
+    for idx, item in enumerate(items):
+        # Get content - stored in preflight_items
+        content = item['content'] or ''
+        
+        # Fallback to title if no content
+        if not content:
+            pre_annotation = json.loads(item['pre_annotation_json']) if item['pre_annotation_json'] else {}
+            content = pre_annotation.get('summary', item['title'] or '')
+        
+        # Estimate tokens (rough: 1 word = 1.3 tokens)
+        token_count = int(item['word_count'] * 1.3) if item['word_count'] else 100
+        
+        cursor.execute("""
+            INSERT INTO document_chunks (
+                document_id, chunk_index, content, token_count,
+                recog_processed, tier0_signals, metadata
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            document_id,
+            idx,
+            content,
+            token_count,
+            0,  # Not processed by Tier 1 yet
+            item['pre_annotation_json'],  # Tier 0 already done
+            json.dumps({
+                'preflight_item_id': item['id'],
+                'original_source_type': item['source_type'],
+                'original_source_id': item['source_id'],
+                'title': item['title'],
+            })
+        ))
+        chunk_id = cursor.lastrowid
+        
+        # Link preflight item to chunk
+        cursor.execute("""
+            UPDATE preflight_items 
+            SET processed = 1, recog_operation_id = ?
+            WHERE id = ?
+        """, (chunk_id, item['id']))
+        
+        chunks_created += 1
+    
+    # Update session status
+    cursor.execute("""
+        UPDATE preflight_sessions
+        SET status = 'processing', recog_operations_created = ?
+        WHERE id = ?
+    """, (chunks_created, session_id))
+    
+    # Queue a ReCog operation for document extraction
+    cursor.execute("""
+        INSERT INTO recog_queue (
+            operation_type, source_type, source_ids_json, queued_at, status,
+            estimated_tokens, estimated_mana, requires_confirmation
+        ) VALUES (?, ?, ?, ?, 'ready', ?, ?, 0)
+    """, (
+        'extract_docs',
+        'document_chunk',
+        json.dumps([document_id]),
+        now,
+        sum(int(i['word_count'] * 1.3) for i in items if i['word_count']),
+        len(items),  # 1 mana per item
+    ))
+    operation_id = cursor.lastrowid
+    
+    conn.commit()
+    conn.close()
+    
+    return {
+        'success': True,
+        'document_id': document_id,
+        'chunks_created': chunks_created,
+        'operation_id': operation_id,
+        'status': 'queued'
+    }

@@ -315,15 +315,47 @@ const PreflightUI = {
     },
     
     async confirmSession() {
-        // TODO: Create ReCog operations from preflight items
         console.log('[Preflight] Confirming session', this.sessionId);
         
-        // For now, just show toast
-        if (window.RecogUI) {
-            RecogUI.showToast('success', 'Session confirmed! ReCog operations created.');
-        }
+        // Disable button and show processing state
+        this.elements.confirmBtn.disabled = true;
+        this.elements.confirmBtn.textContent = 'Processing...';
+        this.elements.sessionStatus.textContent = 'Creating ReCog operations...';
         
-        this.cancelSession();
+        try {
+            const response = await fetch(`/api/preflight/sessions/${this.sessionId}/confirm`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('[Preflight] Confirmed:', result);
+                
+                if (window.RecogUI) {
+                    RecogUI.showToast('success', 
+                        `Created ${result.chunks_created} chunks. Queued for ReCog processing.`);
+                }
+                
+                // Reset UI and switch to ReCog tab to see progress
+                this.cancelSession();
+                
+                // If RecogUI exists, refresh its status
+                if (window.RecogUI && typeof RecogUI.refreshStatus === 'function') {
+                    RecogUI.refreshStatus();
+                }
+            } else {
+                throw new Error(result.error || 'Failed to confirm session');
+            }
+        } catch (error) {
+            console.error('[Preflight] Confirm error:', error);
+            this.showError(error.message);
+            
+            // Reset button
+            this.elements.confirmBtn.disabled = false;
+            this.elements.confirmBtn.textContent = 'Confirm & Process';
+        }
     },
     
     // ==========================================================================
