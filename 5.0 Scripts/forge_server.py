@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-EhkoForge Server v3.1
+EhkoForge Server v3.2
 Flask application serving the Forge UI.
 Phase 2 UI Consolidation: Single terminal interface with mode toggle.
 Includes Authority/Mana systems, mana purchase (Stripe placeholder), LLM integration,
@@ -2943,6 +2943,535 @@ def api_entity_stats():
 
 
 # =============================================================================
+# API ROUTES - RECOG INSIGHTS (Browse & Review)
+# =============================================================================
+
+@app.route("/api/recog/insights", methods=["GET"])
+def api_recog_insights_list():
+    """
+    List insights for browsing.
+    
+    Query params:
+        status: str - Filter by status ('raw', 'surfaced', 'forged', 'rejected')
+        flagged: bool - Only flagged insights
+        rejected: bool - Include rejected (default False)
+        min_significance: float - Minimum significance
+        theme: str - Filter by theme
+        search: str - Search in summary
+        limit: int - Max results (default 50)
+        offset: int - Pagination offset
+    """
+    try:
+        status = request.args.get('status')
+        flagged = request.args.get('flagged', 'false').lower() == 'true'
+        include_rejected = request.args.get('rejected', 'false').lower() == 'true'
+        min_sig = request.args.get('min_significance', 0.0, type=float)
+        theme = request.args.get('theme')
+        search = request.args.get('search')
+        limit = request.args.get('limit', 50, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT i.id, i.summary, i.themes_json, i.emotional_tags_json,
+                   i.significance, i.confidence, i.status, i.source_count,
+                   i.flagged, i.flagged_at, i.rejected, i.rejected_at,
+                   i.reviewed, i.reviewed_at, i.user_context,
+                   i.created_at, i.updated_at,
+                   COUNT(DISTINCT pi.pattern_id) as pattern_count
+            FROM ingots i
+            LEFT JOIN ingot_pattern_insights pi ON i.id = pi.ingot_id
+            WHERE i.significance >= ?
+        """
+        params = [min_sig]
+        
+        if status:
+            query += " AND i.status = ?"
+            params.append(status)
+        
+        if flagged:
+            query += " AND i.flagged = 1"
+        
+        if not include_rejected:
+            query += " AND (i.rejected = 0 OR i.rejected IS NULL)"
+        
+        if theme:
+            query += " AND i.themes_json LIKE ?"
+            params.append(f'%"{theme}"%')
+        
+        if search:
+            query += " AND i.summary LIKE ?"
+            params.append(f'%{search}%')
+        
+        query += " GROUP BY i.id ORDER BY i.significance DESC, i.created_at DESC LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        
+        insights = []
+        for row in rows:
+            insights.append({
+                "id": row["id"],
+                "summary": row["summary"],
+                "themes": json.loads(row["themes_json"]) if row["themes_json"] else [],
+                "emotional_tags": json.loads(row["emotional_tags_json"]) if row["emotional_tags_json"] else [],
+                "significance": row["significance"],
+                "significance_tier": get_significance_tier(row["significance"] or 0),
+                "confidence": row["confidence"],
+                "status": row["status"],
+                "source_count": row["source_count"],
+                "pattern_count": row["pattern_count"],
+                "flagged": bool(row["flagged"]),
+                "flagged_at": row["flagged_at"],
+                "rejected": bool(row["rejected"]),
+                "rejected_at": row["rejected_at"],
+                "reviewed": bool(row["reviewed"]),
+                "reviewed_at": row["reviewed_at"],
+                "user_context": row["user_context"],
+                "created_at": row["created_at"],
+                "updated_at": row["updated_at"],
+            })
+        
+        # Get total count for pagination
+        count_query = "SELECT COUNT(*) FROM ingots WHERE significance >= ?"
+        count_params = [min_sig]
+        if status:
+            count_query += " AND status = ?"
+            count_params.append(status)
+        if not include_rejected:
+            count_query += " AND (rejected = 0 OR rejected IS NULL)"
+        
+        cursor.execute(count_query, count_params)
+        total = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return jsonify({
+            "success": True,
+            "insights": insights,
+            "count": len(insights),
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/insights/<insight_id>", methods=["GET"])
+def api_recog_insight_detail(insight_id):
+    """
+    Get full insight details including sources and patterns.
+    Also marks the insight as reviewed.
+    """
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Get insight
+        cursor.execute("SELECT * FROM ingots WHERE id = ?", (insight_id,))
+        row = cursor.fetchone()
+        
+        if not row:
+            conn.close()
+            return jsonify({"success": False, "error": "Insight not found"}), 404
+        
+        insight = {
+            "id": row["id"],
+            "summary": row["summary"],
+            "themes": json.loads(row["themes_json"]) if row["themes_json"] else [],
+            "emotional_tags": json.loads(row["emotional_tags_json"]) if row["emotional_tags_json"] else [],
+            "patterns": json.loads(row["patterns_json"]) if row["patterns_json"] else [],
+            "significance": row["significance"],
+            "significance_tier": get_significance_tier(row["significance"] or 0),
+            "confidence": row["confidence"],
+            "status": row["status"],
+            "source_count": row["source_count"],
+            "flagged": bool(row["flagged"]),
+            "flagged_at": row["flagged_at"],
+            "rejected": bool(row["rejected"]),
+            "rejected_at": row["rejected_at"],
+            "reviewed": bool(row["reviewed"]),
+            "reviewed_at": row["reviewed_at"],
+            "user_context": row["user_context"],
+            "created_at": row["created_at"],
+            "updated_at": row["updated_at"],
+        }
+        
+        # Get sources
+        cursor.execute("""
+            SELECT source_type, source_id, excerpt, added_at
+            FROM ingot_sources WHERE ingot_id = ?
+            ORDER BY added_at ASC
+        """, (insight_id,))
+        
+        sources = []
+        for src in cursor.fetchall():
+            source_title = get_source_title(cursor, src["source_type"], src["source_id"])
+            sources.append({
+                "type": src["source_type"],
+                "id": src["source_id"],
+                "title": source_title,
+                "excerpt": src["excerpt"],
+                "added_at": src["added_at"],
+            })
+        insight["sources"] = sources
+        
+        # Get patterns this insight contributes to
+        cursor.execute("""
+            SELECT p.id, p.summary, p.pattern_type, p.strength
+            FROM ingot_patterns p
+            JOIN ingot_pattern_insights pi ON p.id = pi.pattern_id
+            WHERE pi.ingot_id = ?
+        """, (insight_id,))
+        
+        patterns = []
+        for pat in cursor.fetchall():
+            patterns.append({
+                "id": pat["id"],
+                "summary": pat["summary"],
+                "pattern_type": pat["pattern_type"],
+                "strength": pat["strength"],
+            })
+        insight["linked_patterns"] = patterns
+        
+        # Mark as reviewed if not already
+        if not insight["reviewed"]:
+            now = datetime.utcnow().isoformat() + "Z"
+            cursor.execute("""
+                UPDATE ingots SET reviewed = 1, reviewed_at = ?, updated_at = ?
+                WHERE id = ?
+            """, (now, now, insight_id))
+            insight["reviewed"] = True
+            insight["reviewed_at"] = now
+            conn.commit()
+        
+        conn.close()
+        return jsonify({"success": True, "insight": insight})
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/insights/<insight_id>/flag", methods=["POST"])
+def api_recog_insight_flag(insight_id):
+    """
+    Toggle flag status on an insight.
+    Flagged insights are candidates for core memory.
+    """
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Check current state
+        cursor.execute("SELECT flagged FROM ingots WHERE id = ?", (insight_id,))
+        row = cursor.fetchone()
+        
+        if not row:
+            conn.close()
+            return jsonify({"success": False, "error": "Insight not found"}), 404
+        
+        now = datetime.utcnow().isoformat() + "Z"
+        new_flagged = 0 if row["flagged"] else 1
+        
+        cursor.execute("""
+            UPDATE ingots SET flagged = ?, flagged_at = ?, updated_at = ?
+            WHERE id = ?
+        """, (new_flagged, now if new_flagged else None, now, insight_id))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            "success": True,
+            "insight_id": insight_id,
+            "flagged": bool(new_flagged),
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/insights/<insight_id>/context", methods=["POST"])
+def api_recog_insight_context(insight_id):
+    """
+    Add or update user context on an insight.
+    This allows users to add missing context the LLM didn't have.
+    
+    Body:
+        context: str - The user-provided context
+    """
+    try:
+        data = request.json or {}
+        context = data.get('context', '').strip()
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        now = datetime.utcnow().isoformat() + "Z"
+        
+        cursor.execute("""
+            UPDATE ingots SET user_context = ?, updated_at = ?
+            WHERE id = ?
+        """, (context if context else None, now, insight_id))
+        
+        if cursor.rowcount == 0:
+            conn.close()
+            return jsonify({"success": False, "error": "Insight not found"}), 404
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            "success": True,
+            "insight_id": insight_id,
+            "user_context": context,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/insights/<insight_id>/reject", methods=["POST"])
+def api_recog_insight_reject(insight_id):
+    """
+    Reject an insight (mark as not valuable).
+    Can be undone by setting rejected=0.
+    """
+    try:
+        data = request.json or {}
+        reject = data.get('reject', True)
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        now = datetime.utcnow().isoformat() + "Z"
+        
+        cursor.execute("""
+            UPDATE ingots SET rejected = ?, rejected_at = ?, updated_at = ?
+            WHERE id = ?
+        """, (1 if reject else 0, now if reject else None, now, insight_id))
+        
+        if cursor.rowcount == 0:
+            conn.close()
+            return jsonify({"success": False, "error": "Insight not found"}), 404
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            "success": True,
+            "insight_id": insight_id,
+            "rejected": reject,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/reports/<int:report_id>/details", methods=["GET"])
+def api_recog_report_details(report_id):
+    """
+    Get detailed report with contributing insights and patterns.
+    Allows drilling down from report to see what fed into it.
+    """
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Get report
+        cursor.execute("SELECT * FROM recog_reports WHERE id = ?", (report_id,))
+        row = cursor.fetchone()
+        
+        if not row:
+            conn.close()
+            return jsonify({"success": False, "error": "Report not found"}), 404
+        
+        report = {
+            "id": row["id"],
+            "report_type": row["report_type"],
+            "created_at": row["created_at"],
+            "summary": row["summary"],
+            "insights_count": row["insights_count"],
+            "patterns_count": row["patterns_count"],
+            "syntheses_count": row["syntheses_count"],
+            "conclusions": json.loads(row["conclusions_json"]) if row["conclusions_json"] else [],
+            "status": row["status"],
+        }
+        
+        # Get linked insights (via recog_report_sources if available)
+        try:
+            cursor.execute("""
+                SELECT i.id, i.summary, i.themes_json, i.significance, i.flagged
+                FROM recog_report_sources rs
+                JOIN ingots i ON rs.source_id = i.id
+                WHERE rs.report_id = ? AND rs.source_type = 'insight'
+                ORDER BY i.significance DESC
+            """, (report_id,))
+            
+            insights = []
+            for ins in cursor.fetchall():
+                insights.append({
+                    "id": ins["id"],
+                    "summary": ins["summary"],
+                    "themes": json.loads(ins["themes_json"]) if ins["themes_json"] else [],
+                    "significance": ins["significance"],
+                    "flagged": bool(ins["flagged"]),
+                })
+            report["insights"] = insights
+        except sqlite3.OperationalError:
+            # Table might not exist yet
+            report["insights"] = []
+        
+        # Get linked patterns
+        try:
+            cursor.execute("""
+                SELECT p.id, p.summary, p.pattern_type, p.strength
+                FROM recog_report_sources rs
+                JOIN ingot_patterns p ON rs.source_id = p.id
+                WHERE rs.report_id = ? AND rs.source_type = 'pattern'
+                ORDER BY p.strength DESC
+            """, (report_id,))
+            
+            patterns = []
+            for pat in cursor.fetchall():
+                patterns.append({
+                    "id": pat["id"],
+                    "summary": pat["summary"],
+                    "pattern_type": pat["pattern_type"],
+                    "strength": pat["strength"],
+                })
+            report["patterns"] = patterns
+        except sqlite3.OperationalError:
+            report["patterns"] = []
+        
+        # Get syntheses
+        try:
+            cursor.execute("""
+                SELECT epl.ingot_id, epl.layer_type, epl.content, epl.weight
+                FROM recog_report_sources rs
+                JOIN ehko_personality_layers epl ON rs.source_id = epl.ingot_id
+                WHERE rs.report_id = ? AND rs.source_type = 'synthesis'
+                ORDER BY epl.weight DESC
+            """, (report_id,))
+            
+            syntheses = []
+            for syn in cursor.fetchall():
+                syntheses.append({
+                    "id": syn["ingot_id"],
+                    "layer_type": syn["layer_type"],
+                    "content": syn["content"],
+                    "weight": syn["weight"],
+                })
+            report["syntheses"] = syntheses
+        except sqlite3.OperationalError:
+            report["syntheses"] = []
+        
+        conn.close()
+        return jsonify({"success": True, "report": report})
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/patterns", methods=["GET"])
+def api_recog_patterns_list():
+    """
+    List all patterns with their linked insight counts.
+    """
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        min_strength = request.args.get('min_strength', 0.0, type=float)
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT p.id, p.summary, p.pattern_type, p.strength, p.created_at,
+                   COUNT(pi.ingot_id) as insight_count
+            FROM ingot_patterns p
+            LEFT JOIN ingot_pattern_insights pi ON p.id = pi.pattern_id
+            WHERE p.strength >= ?
+            GROUP BY p.id
+            ORDER BY p.strength DESC, p.created_at DESC
+            LIMIT ?
+        """, (min_strength, limit))
+        
+        patterns = []
+        for row in cursor.fetchall():
+            patterns.append({
+                "id": row["id"],
+                "summary": row["summary"],
+                "pattern_type": row["pattern_type"],
+                "strength": row["strength"],
+                "insight_count": row["insight_count"],
+                "created_at": row["created_at"],
+            })
+        
+        conn.close()
+        return jsonify({"success": True, "patterns": patterns, "count": len(patterns)})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/recog/patterns/<pattern_id>", methods=["GET"])
+def api_recog_pattern_detail(pattern_id):
+    """
+    Get pattern details with all contributing insights.
+    """
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM ingot_patterns WHERE id = ?", (pattern_id,))
+        row = cursor.fetchone()
+        
+        if not row:
+            conn.close()
+            return jsonify({"success": False, "error": "Pattern not found"}), 404
+        
+        pattern = {
+            "id": row["id"],
+            "summary": row["summary"],
+            "pattern_type": row["pattern_type"],
+            "strength": row["strength"],
+            "metadata": json.loads(row["metadata"]) if row["metadata"] else {},
+            "created_at": row["created_at"],
+        }
+        
+        # Get contributing insights
+        cursor.execute("""
+            SELECT i.id, i.summary, i.themes_json, i.significance, i.flagged
+            FROM ingots i
+            JOIN ingot_pattern_insights pi ON i.id = pi.ingot_id
+            WHERE pi.pattern_id = ?
+            ORDER BY i.significance DESC
+        """, (pattern_id,))
+        
+        insights = []
+        for ins in cursor.fetchall():
+            insights.append({
+                "id": ins["id"],
+                "summary": ins["summary"],
+                "themes": json.loads(ins["themes_json"]) if ins["themes_json"] else [],
+                "significance": ins["significance"],
+                "flagged": bool(ins["flagged"]),
+            })
+        pattern["insights"] = insights
+        
+        conn.close()
+        return jsonify({"success": True, "pattern": pattern})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
 # PAGE ROUTES
 # =============================================================================
 
@@ -3012,7 +3541,7 @@ def static_files(filename):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EHKOFORGE SERVER v3.0")
+    print("EHKOFORGE SERVER v3.2")
     print("Authority, Mana, Tethers, ReCog Scheduler & Evolution Studio")
     print("Tethers bypass mana - direct BYOK conduit to Sources")
     print("=" * 60)

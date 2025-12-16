@@ -1,12 +1,34 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-16  
-**Version:** 1.53  
+**Last Updated:** 2025-12-17  
+**Version:** 1.55  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
 ## IN PROGRESS
+
+### Voice Pattern Extraction (PLANNED)
+- [ ] **Phase 1: Capture Schema** — Define voice signature structure
+  - Signature phrases, verbal tics, filler words
+  - Register detection (formal/casual/technical triggers)
+  - Humour style classification
+  - Explanation patterns (analogy use, step-by-step vs conceptual)
+  - Punctuation/formatting tendencies
+- [ ] **Phase 2: Extraction Pass** — Tier 1 variant for voice markers
+  - Separate prompt optimised for speech pattern detection
+  - Weight text messages higher (authentic casual voice)
+  - Extract from chat sessions, transcripts, messages
+- [ ] **Phase 3: Voice Profile** — Persistent voice layer in Ehko
+  - Store in `ehko_personality_layers` with layer_type='voice'
+  - Human-readable export for descendants
+  - Stage-based throttling (Nascent=neutral → Anchored=distinct)
+- [ ] **Phase 4: Voice Injection** — Apply to Ehko responses
+  - System prompt includes voice profile at appropriate stages
+  - Strength scales with Authority level
+
+**Sources:** Text messages (primary), chat sessions, transcripts, reflections  
+**Goal:** Descendants recognise the forger in Ehko's words
 
 ### Preflight Context System (IN PROGRESS)
 - [x] **Phase 1: Entity Extraction** — Tier 0 extracts phone numbers, emails, names
@@ -304,6 +326,10 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-17 Session 37:** Conclusions Display Fix — Fixed [object Object] bug in synthesis report conclusions. Conclusions are objects with type/summary/significance/emerging properties, not strings. recog.js v2.1, recog.css v1.2 with conclusion styling.
+
+- **2025-12-17 Session 36:** Insights Tab Complete — Added full CSS for Insights tab (search, filters, insight cards, detail panel, patterns view, report drill-down). recog.css v1.1. Backend API and recog.js were already complete from Session 35. Full Insights browsing workflow now operational: list → detail → flag/context/reject.
+
 - **2025-12-16 Session 35:** Preflight Context System Phase 4 — confirm_preflight_session() transfers included items to document_chunks table, creates ingested_documents entry, queues ReCog operation. Migration v0.2 adds content column to preflight_items. API endpoint POST /api/preflight/sessions/<id>/confirm. Frontend confirmSession() wired to API. Full ChatGPT import → Tier 0 scan → review → confirm → ReCog queue workflow operational.
 
 - **2025-12-16 Session 34:** Preflight Context System Phases 1-3 — Enhanced Tier 0 with phone/email extraction (AU+intl formats). Created entity_registry.py and preflight.py managers. Added entity_registry migration with 5 tables (entity_registry, entity_aliases, entity_occurrences, preflight_sessions, preflight_items). Full REST API endpoints for /api/preflight/* and /api/entities/*. Preflight UI tab in ReCog drawer with file upload, ChatGPT export parsing, progress display, entity questions, filters. Updated ehko_control.py factory reset to include entity migration. Created _private/SECURITY_CONSIDERATIONS.md for PII planning.
@@ -392,6 +418,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.55 — 2025-12-17 Session 37 — Conclusions display fix: [object Object] bug. Conclusions are objects (type/summary/significance/emerging). recog.js v2.1, recog.css v1.2.
+- v1.54 — 2025-12-17 Session 36 — Insights Tab CSS complete. recog.css v1.1 with full Insights tab styles (toolbar, cards, detail panel, report drill-down). Full browse/review workflow operational.
 - v1.53 — 2025-12-16 Session 35 — Preflight Phase 4: confirm_preflight_session() creates document_chunks and queues ReCog operation. Migration v0.2 (content column). API endpoint /api/preflight/sessions/<id>/confirm. preflight.js confirmSession() wired. forge_server.py v3.1.
 - v1.52 — 2025-12-16 Session 34 — Preflight Context System Phases 1-3: Enhanced Tier 0 (phone/email extraction), entity_registry.py, preflight.py, entity_registry migration, full REST API for /api/preflight/* and /api/entities/*, Preflight UI tab with file upload + ChatGPT parsing + entity questions + filters. forge_server.py v3.0, preflight.js v1.0.
 - v1.51 — 2025-12-16 Session 33 — ReCog Full Pipeline Complete: Fixed cursor reuse bug, progression endpoint queries ehko_personality_layers, enhanced progression UI. ehko_control.py v4.3 (Restart, Git Push, Factory Reset). Added Preflight Context System to roadmap. Created _private/SECURITY_CONSIDERATIONS.md.

@@ -418,6 +418,7 @@
             <!-- Tabs -->
             <div class="recog-tabs">
                 <button class="recog-tab active" data-tab="queue">Queue</button>
+                <button class="recog-tab" data-tab="insights">Insights</button>
                 <button class="recog-tab" data-tab="preflight">Preflight</button>
                 <button class="recog-tab" data-tab="reports">Reports</button>
                 <button class="recog-tab" data-tab="progression">Progression</button>
@@ -459,6 +460,33 @@
                     <div class="pending-list" id="pending-list">
                         <!-- Populated by JS -->
                     </div>
+                </div>
+            </div>
+            
+            <!-- Insights Pane -->
+            <div class="recog-pane" id="recog-pane-insights">
+                <!-- Search and Filter -->
+                <div class="insights-toolbar">
+                    <input type="text" class="insights-search" id="insights-search" placeholder="Search insights...">
+                    <select class="insights-filter" id="insights-filter">
+                        <option value="all">All Insights</option>
+                        <option value="flagged">★ Flagged</option>
+                        <option value="unreviewed">Unreviewed</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                
+                <!-- Insights List -->
+                <div class="insights-list-container">
+                    <div class="insights-list" id="insights-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button class="insights-load-more" id="insights-load-more" style="display: none;">Load More</button>
+                </div>
+                
+                <!-- Insight Detail Panel (slides in) -->
+                <div class="insights-detail" id="insights-detail">
+                    <!-- Populated by JS -->
                 </div>
             </div>
             
@@ -570,6 +598,10 @@
             <!-- Reports Pane -->
             <div class="recog-pane" id="recog-pane-reports">
                 <div class="reports-list" id="reports-list">
+                    <!-- Populated by JS -->
+                </div>
+                <!-- Report Detail Panel (slides in) -->
+                <div class="report-detail" id="report-detail">
                     <!-- Populated by JS -->
                 </div>
             </div>

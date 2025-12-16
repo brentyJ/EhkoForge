@@ -568,7 +568,7 @@ def confirm_preflight_session(session_id: int) -> Dict:
     # Create ingested_document entry
     cursor.execute("""
         INSERT INTO ingested_documents (
-            filename, file_type, source_path, total_chunks, 
+            filename, file_type, file_path, chunk_count, 
             status, ingested_at, doc_subject, metadata
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (
@@ -600,8 +600,8 @@ def confirm_preflight_session(session_id: int) -> Dict:
         cursor.execute("""
             INSERT INTO document_chunks (
                 document_id, chunk_index, content, token_count,
-                recog_processed, tier0_signals, metadata
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                recog_processed, tier0_signals
+            ) VALUES (?, ?, ?, ?, ?, ?)
         """, (
             document_id,
             idx,
@@ -609,12 +609,6 @@ def confirm_preflight_session(session_id: int) -> Dict:
             token_count,
             0,  # Not processed by Tier 1 yet
             item['pre_annotation_json'],  # Tier 0 already done
-            json.dumps({
-                'preflight_item_id': item['id'],
-                'original_source_type': item['source_type'],
-                'original_source_id': item['source_id'],
-                'title': item['title'],
-            })
         ))
         chunk_id = cursor.lastrowid
         
