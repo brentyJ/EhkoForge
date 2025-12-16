@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-EhkoForge Control Panel v4.2
+EhkoForge Control Panel v4.3
 Consolidated interface with dedicated server log panel.
 
-Two commit workflows:
-- ⚡ Quick: Fast commits for small changes (quick_commit.bat)
-- 📝 Session: Documented session commits (git_push.bat)
+Features:
+- Server control with restart
+- ReCog pipeline management  
+- Git workflows (Quick + Session)
+- Factory Reset for testing
 """
 
 import os
@@ -17,6 +19,7 @@ import webbrowser
 import urllib.request
 import urllib.error
 import json
+import shutil
 from datetime import datetime
 from pathlib import Path
 from tkinter import *
@@ -33,6 +36,8 @@ SERVER_SCRIPT = SCRIPTS_PATH / "forge_server.py"
 SERVER_URL = "http://localhost:5000"
 REFRESH_SCRIPT = SCRIPTS_PATH / "ehko_refresh.py"
 QUICK_COMMIT_SCRIPT = EHKOFORGE_ROOT / "quick_commit.bat"
+GIT_PUSH_SCRIPT = EHKOFORGE_ROOT / "git_push.bat"
+DATABASE_PATH = EHKOFORGE_ROOT / "_data" / "ehko_index.db"
 
 # Colours (terminal-aligned, violet tint)
 C = {
@@ -85,17 +90,17 @@ def run_async(w, cmd, cwd=None, shell=False):
             for line in iter(p.stdout.readline, ''):
                 if line: log(w, line.strip())
             p.wait()
-            log(w, "✓ Done" if p.returncode == 0 else f"✗ Exit {p.returncode}", 
+            log(w, "Done" if p.returncode == 0 else f"Exit {p.returncode}", 
                 "success" if p.returncode == 0 else "error")
         except Exception as e:
-            log(w, f"✗ {e}", "error")
+            log(w, f"Error: {e}", "error")
     threading.Thread(target=_run, daemon=True).start()
 
 # =============================================================================
-# COMMANDS
+# SERVER COMMANDS
 # =============================================================================
 
-def start_server(srv_log, status_lbl, start_btn, stop_btn):
+def start_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn):
     global server_process
     if server_process and server_process.poll() is None:
         log(srv_log, "Server already running", "warning")
@@ -113,40 +118,40 @@ def start_server(srv_log, status_lbl, start_btn, stop_btn):
         status_lbl.config(text="● SERVER ONLINE", fg=C["success"])
         start_btn.config(state=DISABLED)
         stop_btn.config(state=NORMAL)
+        restart_btn.config(state=NORMAL)
         log(srv_log, f"Server started (PID {server_process.pid})", "success")
         
         def stream():
             for line in iter(server_process.stdout.readline, ''):
                 if line and server_process.poll() is None:
-                    # Clean up the line
                     line = line.strip()
-                    # Colour-code based on content
                     if "ERROR" in line or "error" in line.lower():
                         log(srv_log, line, "error")
                     elif "WARNING" in line or "warn" in line.lower():
                         log(srv_log, line, "warning")
-                    elif "[OK]" in line or "✓" in line:
+                    elif "[OK]" in line:
                         log(srv_log, line, "success")
                     elif "RECOG" in line or "recog" in line.lower():
                         log(srv_log, line, "recog")
                     else:
                         log(srv_log, line, "server")
-            # Server stopped
             status_lbl.config(text="○ SERVER OFFLINE", fg=C["error"])
             start_btn.config(state=NORMAL)
             stop_btn.config(state=DISABLED)
+            restart_btn.config(state=DISABLED)
             log(srv_log, "Server stopped", "warning")
         
         threading.Thread(target=stream, daemon=True).start()
     except Exception as e:
         log(srv_log, f"Failed to start: {e}", "error")
 
-def stop_server(srv_log, status_lbl, start_btn, stop_btn):
+def stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn):
     global server_process
     if not server_process or server_process.poll() is not None:
         status_lbl.config(text="○ SERVER OFFLINE", fg=C["error"])
         start_btn.config(state=NORMAL)
         stop_btn.config(state=DISABLED)
+        restart_btn.config(state=DISABLED)
         return
     try:
         log(srv_log, "Stopping server...", "warning")
@@ -164,6 +169,16 @@ def stop_server(srv_log, status_lbl, start_btn, stop_btn):
         status_lbl.config(text="○ SERVER OFFLINE", fg=C["error"])
         start_btn.config(state=NORMAL)
         stop_btn.config(state=DISABLED)
+        restart_btn.config(state=DISABLED)
+
+def restart_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn):
+    """Stop and start server."""
+    log(srv_log, "Restarting server...", "warning")
+    stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn)
+    # Small delay to ensure port is freed
+    import time
+    time.sleep(1)
+    start_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn)
 
 def open_ui(out_log):
     webbrowser.open(SERVER_URL)
@@ -173,17 +188,119 @@ def open_studio(out_log):
     webbrowser.open(f"{SERVER_URL}/studio")
     log(out_log, "Opened Evolution Studio", "info")
 
+# =============================================================================
+# FACTORY RESET
+# =============================================================================
+
+def factory_reset(out_log, srv_log, status_lbl, start_btn, stop_btn, restart_btn):
+    """Reset database to fresh state for testing."""
+    global server_process
+    
+    # Confirm with user
+    if not messagebox.askyesno("Factory Reset", 
+        "This will:\n"
+        "• Stop the server\n"
+        "• Delete the database (ehko_index.db)\n"
+        "• Re-run all migrations\n"
+        "• Clear all ReCog data, sessions, ingots\n\n"
+        "Mirrorwell vault files will NOT be deleted.\n\n"
+        "Are you sure?"):
+        log(out_log, "Factory reset cancelled", "warning")
+        return
+    
+    # Double confirm
+    if not messagebox.askyesno("Confirm Reset", 
+        "LAST CHANCE!\n\n"
+        "All database content will be permanently deleted.\n\n"
+        "Continue?"):
+        log(out_log, "Factory reset cancelled", "warning")
+        return
+    
+    log(out_log, "=" * 40, "warning")
+    log(out_log, "FACTORY RESET INITIATED", "error")
+    log(out_log, "=" * 40, "warning")
+    
+    # Stop server if running
+    if server_process and server_process.poll() is None:
+        log(out_log, "Stopping server...", "warning")
+        stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn)
+        import time
+        time.sleep(1)
+    
+    # Backup database (just in case)
+    if DATABASE_PATH.exists():
+        backup_path = DATABASE_PATH.with_suffix('.db.backup')
+        try:
+            shutil.copy2(DATABASE_PATH, backup_path)
+            log(out_log, f"Backup created: {backup_path.name}", "info")
+        except Exception as e:
+            log(out_log, f"Backup failed: {e}", "warning")
+        
+        # Delete database
+        try:
+            DATABASE_PATH.unlink()
+            log(out_log, "Database deleted", "success")
+        except Exception as e:
+            log(out_log, f"Failed to delete database: {e}", "error")
+            return
+    else:
+        log(out_log, "No database found (already clean)", "info")
+    
+    # Run migrations
+    migrations = [
+        ("Ingot Migration", SCRIPTS_PATH / "run_ingot_migration.py"),
+        ("Reorientation Migration", SCRIPTS_PATH / "run_reorientation_migration.py"),
+        ("Mana Migration", SCRIPTS_PATH / "run_mana_migration.py"),
+        ("Memory Migration", SCRIPTS_PATH / "run_memory_migration.py"),
+        ("Tethers Migration", SCRIPTS_PATH / "run_tethers_migration.py"),
+        ("Document Ingestion Migration", SCRIPTS_PATH / "run_ingestion_migration.py"),
+    ]
+    
+    def run_migrations():
+        for name, script in migrations:
+            if script.exists():
+                log(out_log, f"Running {name}...", "info")
+                try:
+                    result = subprocess.run(
+                        [sys.executable, str(script)],
+                        cwd=str(SCRIPTS_PATH),
+                        capture_output=True,
+                        text=True,
+                        timeout=30
+                    )
+                    if result.returncode == 0:
+                        log(out_log, f"  {name}: OK", "success")
+                    else:
+                        log(out_log, f"  {name}: Failed", "error")
+                        if result.stderr:
+                            log(out_log, f"  {result.stderr[:100]}", "error")
+                except Exception as e:
+                    log(out_log, f"  {name}: Error - {e}", "error")
+            else:
+                log(out_log, f"  {name}: Script not found, skipping", "warning")
+        
+        log(out_log, "=" * 40, "success")
+        log(out_log, "FACTORY RESET COMPLETE", "success")
+        log(out_log, "Database is now empty. Start server to begin fresh.", "info")
+        log(out_log, "=" * 40, "success")
+    
+    threading.Thread(target=run_migrations, daemon=True).start()
+
+# =============================================================================
+# RECOG COMMANDS
+# =============================================================================
+
 def recog_check(out_log):
     log(out_log, "ReCog: Checking for work...", "recog")
     r = api("/api/recog/check", "POST")
     if "error" in r:
-        log(out_log, f"✗ {r['error']}", "error")
+        log(out_log, f"Error: {r['error']}", "error")
     else:
         q = r.get("queued", [])
         if q:
             for op in q:
-                log(out_log, f"  → {op.get('description', op.get('type'))}", "recog")
-            log(out_log, f"✓ {len(q)} operation(s) queued", "success")
+                log(out_log, f"  -> {op.get('description', op.get('type'))}", "recog")
+            log(out_log, f"Queued {len(q)} operation(s)", "success")
         else:
             log(out_log, "Nothing to queue", "info")
 
@@ -191,7 +308,7 @@ def recog_pending(out_log):
     log(out_log, "ReCog: Fetching pending...", "recog")
     r = api("/api/recog/pending", "GET")
     if "error" in r:
-        log(out_log, f"✗ {r['error']}", "error")
+        log(out_log, f"Error: {r['error']}", "error")
     else:
         pending = r.get("pending", [])
         if pending:
@@ -206,10 +323,9 @@ def recog_pending(out_log):
 
 def recog_confirm_all(out_log):
     log(out_log, "ReCog: Confirming all pending...", "recog")
-    # First get pending
     r = api("/api/recog/pending", "GET")
     if "error" in r:
-        log(out_log, f"✗ {r['error']}", "error")
+        log(out_log, f"Error: {r['error']}", "error")
         return
     
     pending = [op for op in r.get("pending", []) if op.get("status") == "pending"]
@@ -223,9 +339,9 @@ def recog_confirm_all(out_log):
         result = api(f"/api/recog/confirm/{op_id}", "POST")
         if "error" not in result and result.get("success"):
             confirmed += 1
-            log(out_log, f"  ✓ Confirmed #{op_id}", "success")
+            log(out_log, f"  Confirmed #{op_id}", "success")
         else:
-            log(out_log, f"  ✗ Failed #{op_id}", "error")
+            log(out_log, f"  Failed #{op_id}", "error")
     
     log(out_log, f"Confirmed {confirmed}/{len(pending)} operations", "success" if confirmed else "warning")
 
@@ -234,54 +350,53 @@ def recog_process(out_log):
     log(out_log, "(This may take 1-2 minutes for LLM calls)", "info")
     
     def _process():
-        r = api("/api/recog/process", "POST", timeout=180)  # 3 min timeout
+        r = api("/api/recog/process", "POST", timeout=180)
         if "error" in r:
-            log(out_log, f"✗ {r['error']}", "error")
+            log(out_log, f"Error: {r['error']}", "error")
         elif r.get("processed", 0) > 0:
             results = r.get("results", [])
             for res in results:
                 insights = res.get("insights_created", 0)
                 patterns = res.get("patterns_found", 0)
                 synths = res.get("syntheses_generated", 0)
-                log(out_log, f"  → {res.get('operation_type')}: {insights}i / {patterns}p / {synths}s", "recog")
-            log(out_log, f"✓ Processed {r['processed']} operation(s)", "success")
+                log(out_log, f"  -> {res.get('operation_type')}: {insights}i / {patterns}p / {synths}s", "recog")
+            log(out_log, f"Processed {r['processed']} operation(s)", "success")
         else:
             log(out_log, "No confirmed operations to process", "warning")
     
     threading.Thread(target=_process, daemon=True).start()
 
+# =============================================================================
+# SYSTEM COMMANDS
+# =============================================================================
+
 def system_status(out_log):
-    log(out_log, "─" * 40, "info")
+    log(out_log, "-" * 40, "info")
     
-    # Authority
     a = api("/api/authority")
     if "error" not in a:
         log(out_log, f"Authority: {a.get('percentage',0):.0f}% ({a.get('stage','?')})", "info")
     
-    # Mana
     m = api("/api/mana/balance")
     if "error" not in m:
         regen = m.get('regenerating', {})
         purch = m.get('purchased', {})
         log(out_log, f"Mana: {regen.get('current',0):,} regen + {purch.get('current',0):,} purchased", "info")
     
-    # ReCog Status
     r = api("/api/recog/status")
     if "error" not in r:
         log(out_log, f"Hot Sessions: {r.get('hot_sessions',0)}", "info")
         log(out_log, f"Pending Insights: {r.get('pending_insights',0)} | Patterns: {r.get('patterns',0)}", "info")
-        log(out_log, f"Unprocessed Chunks: {r.get('unprocessed_chunks',0)}", "info")
         q = r.get('queue', {})
         if q:
             log(out_log, f"Queue: {q.get('pending',0)} pending, {q.get('ready',0)} ready", "recog")
     
-    # Progression
     p = api("/api/recog/progression")
     if "error" not in p:
         log(out_log, f"Ehko Stage: {p.get('stage','?').upper()}", "info")
         log(out_log, f"Core Memories: {p.get('core_memory_count',0)}", "info")
     
-    log(out_log, "─" * 40, "info")
+    log(out_log, "-" * 40, "info")
 
 def refresh_index(out_log):
     if REFRESH_SCRIPT.exists():
@@ -296,38 +411,42 @@ def refresh_full(out_log):
         log(out_log, "ehko_refresh.py not found", "error")
 
 def vault_health(out_log):
-    """Run vault health checks."""
     if REFRESH_SCRIPT.exists():
         run_async(out_log, [sys.executable, str(REFRESH_SCRIPT), "--health"], str(SCRIPTS_PATH))
     else:
         log(out_log, "ehko_refresh.py not found", "error")
 
-def session_commit(out_log):
-    """Open git_push.bat for documented session commit."""
-    p = EHKOFORGE_ROOT / "git_push.bat"
-    if p.exists():
-        subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', str(p)], cwd=str(EHKOFORGE_ROOT))
-        log(out_log, "Opened session commit (git_push.bat)", "info")
+# =============================================================================
+# GIT COMMANDS
+# =============================================================================
+
+def git_push(out_log):
+    """Open git_push.bat for full session commit."""
+    if GIT_PUSH_SCRIPT.exists():
+        subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', str(GIT_PUSH_SCRIPT)], cwd=str(EHKOFORGE_ROOT))
+        log(out_log, "Opened git_push.bat", "info")
     else:
         log(out_log, "git_push.bat not found", "error")
 
 def quick_commit(out_log):
-    """Interactive git quick commit - for small changes, typo fixes, etc."""
+    """Interactive git quick commit."""
     if not QUICK_COMMIT_SCRIPT.exists():
         log(out_log, "quick_commit.bat not found", "error")
         return
     
-    # Simple prompt for commit message
     from tkinter import simpledialog
     msg = simpledialog.askstring("Quick Commit", "Commit message (for small changes):", parent=None)
     
     if msg:
-        # Run in new terminal window with message argument
         subprocess.Popen(['cmd', '/c', 'start', 'cmd', '/k', str(QUICK_COMMIT_SCRIPT), msg], 
                         cwd=str(EHKOFORGE_ROOT))
-        log(out_log, f"Quick commit + push: {msg}", "success")
+        log(out_log, f"Quick commit: {msg}", "success")
     else:
         log(out_log, "Quick commit cancelled", "warning")
+
+# =============================================================================
+# UTILITY COMMANDS
+# =============================================================================
 
 def open_folder(path, out_log):
     if path.exists():
@@ -344,13 +463,12 @@ def clear_log(w):
     w.config(state=DISABLED)
 
 def copy_log(root, w):
-    """Copy log contents to clipboard."""
     w.config(state=NORMAL)
     content = w.get(1.0, END).strip()
     w.config(state=DISABLED)
     root.clipboard_clear()
     root.clipboard_append(content)
-    root.update()  # Required for clipboard to persist
+    root.update()
 
 def run_cmd(out_log, entry):
     cmd = entry.get().strip()
@@ -364,7 +482,6 @@ def run_cmd(out_log, entry):
 # =============================================================================
 
 def create_log_widget(parent, height=10):
-    """Create a styled log widget with tag configurations."""
     log_w = scrolledtext.ScrolledText(
         parent, 
         height=height, 
@@ -386,9 +503,9 @@ def create_log_widget(parent, height=10):
 
 def main():
     root = Tk()
-    root.title("◈ EHKOFORGE CONTROL")
-    root.geometry("800x700")
-    root.minsize(700, 500)
+    root.title("EHKOFORGE CONTROL")
+    root.geometry("850x750")
+    root.minsize(750, 550)
     root.configure(bg=C["bg"])
     
     # Styles
@@ -407,6 +524,8 @@ def main():
     style.map("R.TButton", background=[("active", "#5a2a2a"), ("disabled", "#1a0a0a")])
     style.configure("B.TButton", background="#1a2a3a")
     style.map("B.TButton", background=[("active", "#2a4a5a")])
+    style.configure("Y.TButton", background="#3a3a1a")
+    style.map("Y.TButton", background=[("active", "#5a5a2a")])
     
     main_frame = ttk.Frame(root, padding=10)
     main_frame.pack(fill=BOTH, expand=True)
@@ -414,7 +533,7 @@ def main():
     # === HEADER ===
     header = ttk.Frame(main_frame)
     header.pack(fill=X, pady=(0, 10))
-    ttk.Label(header, text="◈ EHKOFORGE CONTROL v4.2", style="H.TLabel").pack(side=LEFT)
+    ttk.Label(header, text="EHKOFORGE CONTROL v4.3", style="H.TLabel").pack(side=LEFT)
     status_lbl = Label(header, text="○ SERVER OFFLINE", bg=C["bg"], fg=C["error"], font=("Consolas", 11, "bold"))
     status_lbl.pack(side=RIGHT)
     
@@ -422,70 +541,90 @@ def main():
     srv_frame = ttk.LabelFrame(main_frame, text="SERVER", padding=5)
     srv_frame.pack(fill=BOTH, expand=True, pady=(0, 10))
     
-    # Server buttons
     srv_btn_frame = ttk.Frame(srv_frame)
     srv_btn_frame.pack(fill=X, pady=(0, 5))
     
-    start_btn = ttk.Button(srv_btn_frame, text="▶ Start Server", style="G.TButton", width=15)
+    start_btn = ttk.Button(srv_btn_frame, text="Start", style="G.TButton", width=10)
     start_btn.pack(side=LEFT, padx=(0, 5))
     
-    stop_btn = ttk.Button(srv_btn_frame, text="■ Stop", style="R.TButton", width=10, state=DISABLED)
+    stop_btn = ttk.Button(srv_btn_frame, text="Stop", style="R.TButton", width=8, state=DISABLED)
     stop_btn.pack(side=LEFT, padx=(0, 5))
     
-    ttk.Button(srv_btn_frame, text="🌐 Open UI", width=10, 
+    restart_btn = ttk.Button(srv_btn_frame, text="Restart", style="Y.TButton", width=8, state=DISABLED)
+    restart_btn.pack(side=LEFT, padx=(0, 5))
+    
+    ttk.Button(srv_btn_frame, text="Open UI", width=8, 
                command=lambda: open_ui(out_log)).pack(side=LEFT, padx=(0, 5))
     
-    ttk.Button(srv_btn_frame, text="◆ Studio", width=10,
+    ttk.Button(srv_btn_frame, text="Studio", width=8,
                command=lambda: open_studio(out_log)).pack(side=LEFT, padx=(0, 5))
     
-    ttk.Button(srv_btn_frame, text="📋 Copy", width=6,
+    ttk.Button(srv_btn_frame, text="Copy", width=6,
                command=lambda: copy_log(root, srv_log)).pack(side=RIGHT, padx=(0, 5))
     
     ttk.Button(srv_btn_frame, text="Clear", width=6,
                command=lambda: clear_log(srv_log)).pack(side=RIGHT)
     
-    # Server log
     srv_log = create_log_widget(srv_frame, height=12)
     srv_log.pack(fill=BOTH, expand=True)
     
-    # Wire up server buttons (need srv_log first)
-    start_btn.config(command=lambda: start_server(srv_log, status_lbl, start_btn, stop_btn))
-    stop_btn.config(command=lambda: stop_server(srv_log, status_lbl, start_btn, stop_btn))
+    # Wire up server buttons
+    start_btn.config(command=lambda: start_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn))
+    stop_btn.config(command=lambda: stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn))
+    restart_btn.config(command=lambda: threading.Thread(target=lambda: restart_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn), daemon=True).start())
     
     # === TOOLS SECTION ===
     tools_frame = ttk.Frame(main_frame)
     tools_frame.pack(fill=X, pady=(0, 10))
     
     # ReCog
-    recog_frame = ttk.LabelFrame(tools_frame, text="RECOG ENGINE", padding=5)
+    recog_frame = ttk.LabelFrame(tools_frame, text="RECOG", padding=5)
     recog_frame.grid(row=0, column=0, padx=(0, 5), sticky="nsew")
     
-    ttk.Button(recog_frame, text="⚙ Check", style="R.TButton", width=12,
+    ttk.Button(recog_frame, text="Check", style="R.TButton", width=10,
                command=lambda: recog_check(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(recog_frame, text="✓ Confirm All", width=12,
+    ttk.Button(recog_frame, text="Confirm All", width=10,
                command=lambda: recog_confirm_all(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(recog_frame, text="▶ Process", style="R.TButton", width=12,
+    ttk.Button(recog_frame, text="Process", style="R.TButton", width=10,
                command=lambda: recog_process(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(recog_frame, text="📊 Pending", width=10,
+    ttk.Button(recog_frame, text="Pending", width=8,
                command=lambda: recog_pending(out_log)).pack(side=LEFT, padx=2)
     
-    # Index & System
-    sys_frame = ttk.LabelFrame(tools_frame, text="SYSTEM", padding=5)
-    sys_frame.grid(row=0, column=1, padx=(5, 0), sticky="nsew")
+    # Git
+    git_frame = ttk.LabelFrame(tools_frame, text="GIT", padding=5)
+    git_frame.grid(row=0, column=1, padx=(5, 0), sticky="nsew")
     
-    ttk.Button(sys_frame, text="📊 Status", width=10,
-               command=lambda: system_status(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(sys_frame, text="🔄 Index", style="B.TButton", width=10,
-               command=lambda: refresh_index(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(sys_frame, text="🩺 Health", width=10,
-               command=lambda: vault_health(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(sys_frame, text="⚡ Quick", style="G.TButton", width=10,
+    ttk.Button(git_frame, text="Quick", style="G.TButton", width=8,
                command=lambda: quick_commit(out_log)).pack(side=LEFT, padx=2)
-    ttk.Button(sys_frame, text="📝 Session", width=10,
-               command=lambda: session_commit(out_log)).pack(side=LEFT, padx=2)
+    ttk.Button(git_frame, text="Git Push", style="B.TButton", width=10,
+               command=lambda: git_push(out_log)).pack(side=LEFT, padx=2)
     
     tools_frame.columnconfigure(0, weight=2)
     tools_frame.columnconfigure(1, weight=1)
+    
+    # === SYSTEM SECTION ===
+    sys_frame = ttk.Frame(main_frame)
+    sys_frame.pack(fill=X, pady=(0, 10))
+    
+    sys_left = ttk.LabelFrame(sys_frame, text="SYSTEM", padding=5)
+    sys_left.grid(row=0, column=0, padx=(0, 5), sticky="nsew")
+    
+    ttk.Button(sys_left, text="Status", width=8,
+               command=lambda: system_status(out_log)).pack(side=LEFT, padx=2)
+    ttk.Button(sys_left, text="Index", style="B.TButton", width=8,
+               command=lambda: refresh_index(out_log)).pack(side=LEFT, padx=2)
+    ttk.Button(sys_left, text="Health", width=8,
+               command=lambda: vault_health(out_log)).pack(side=LEFT, padx=2)
+    
+    # Danger zone
+    danger_frame = ttk.LabelFrame(sys_frame, text="DANGER ZONE", padding=5)
+    danger_frame.grid(row=0, column=1, padx=(5, 0), sticky="nsew")
+    
+    ttk.Button(danger_frame, text="Factory Reset", style="R.TButton", width=14,
+               command=lambda: factory_reset(out_log, srv_log, status_lbl, start_btn, stop_btn, restart_btn)).pack(side=LEFT, padx=2)
+    
+    sys_frame.columnconfigure(0, weight=2)
+    sys_frame.columnconfigure(1, weight=1)
     
     # === OUTPUT SECTION ===
     out_frame = ttk.LabelFrame(main_frame, text="OUTPUT", padding=5)
@@ -507,7 +646,7 @@ def main():
     
     ttk.Button(cmd_frame, text="Run", width=6, 
                command=lambda: run_cmd(out_log, cmd_entry)).pack(side=RIGHT)
-    ttk.Button(cmd_frame, text="📋 Copy", width=6,
+    ttk.Button(cmd_frame, text="Copy", width=6,
                command=lambda: copy_log(root, out_log)).pack(side=RIGHT, padx=(0, 5))
     ttk.Button(cmd_frame, text="Clear", width=6,
                command=lambda: clear_log(out_log)).pack(side=RIGHT, padx=(0, 5))
@@ -516,24 +655,23 @@ def main():
     folder_frame = ttk.Frame(main_frame)
     folder_frame.pack(fill=X, pady=(8, 0))
     
-    ttk.Button(folder_frame, text="📁 EhkoForge", width=12,
+    ttk.Button(folder_frame, text="EhkoForge", width=10,
                command=lambda: open_folder(EHKOFORGE_ROOT, out_log)).pack(side=LEFT, padx=(0, 5))
-    ttk.Button(folder_frame, text="📁 Mirrorwell", width=12,
+    ttk.Button(folder_frame, text="Mirrorwell", width=10,
                command=lambda: open_folder(MIRRORWELL_ROOT, out_log)).pack(side=LEFT, padx=(0, 5))
-    ttk.Button(folder_frame, text="📁 Scripts", width=12,
+    ttk.Button(folder_frame, text="Scripts", width=10,
                command=lambda: open_folder(SCRIPTS_PATH, out_log)).pack(side=LEFT)
     
     # Initial log
-    log(out_log, "EhkoForge Control v4.2 ready", "success")
-    log(out_log, "Quick: fast commits | Session: documented commits", "info")
-    log(out_log, "Click '▶ Start Server' to begin", "info")
+    log(out_log, "EhkoForge Control v4.3 ready", "success")
+    log(out_log, "Start server to begin", "info")
     
     # Close handler
     def on_close():
         global server_process
         if server_process and server_process.poll() is None:
             if messagebox.askyesno("Server Running", "Stop server before closing?"):
-                stop_server(srv_log, status_lbl, start_btn, stop_btn)
+                stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn)
         root.destroy()
     
     root.protocol("WM_DELETE_WINDOW", on_close)

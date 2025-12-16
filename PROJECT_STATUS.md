@@ -8,6 +8,15 @@
 
 ## IN PROGRESS
 
+### Preflight Context System (NEXT)
+- [ ] **Phase 1: Entity Extraction** — Tier 0 extracts phone numbers, emails, names
+- [ ] **Phase 2: Entity Registry** — Database table + CRUD for known entities
+- [ ] **Phase 3: Preflight UI** — Review findings, answer questions, filter content
+- [ ] **Phase 4: Context Injection** — Inject resolved entities into Tier 1-3 prompts
+- [ ] **Phase 5: ChatGPT Parser** — First implementation using preflight system
+
+**Purpose:** Stop flying blind. Know who/what/why before spending tokens.
+
 ### Web Components Migration (NEW)
 - [x] **Phase 1: Foundation** — Core component library
   - Components: `ehko-avatar.js`, `ehko-toast.js`, `ehko-mana-bar.js`, `ehko-message.js`
@@ -293,7 +302,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
-- **2025-12-16 Session 33:** ReCog Full Pipeline Complete — Fixed cursor reuse bug in `get_patterns()` that was only returning 1 pattern instead of all 13. Updated progression endpoint to query actual `ehko_personality_layers` table instead of empty static data. Enhanced progression UI with content previews, colored pillar borders, and expand-on-click. Full ReCog pipeline now operational: Extract (77 insights) → Correlate (12 patterns) → Synthesise (3 personality components) → Display in pillars (Mirror: 2 items, Compass: 1 item).
+- **2025-12-16 Session 33:** ReCog Full Pipeline Complete + Control Panel v4.3 — Fixed cursor reuse bug in `get_patterns()` that was only returning 1 pattern instead of all 13. Updated progression endpoint to query actual `ehko_personality_layers` table. Enhanced progression UI with content previews, colored pillar borders, and expand-on-click. Full ReCog pipeline now operational: Extract (77 insights) → Correlate (12 patterns) → Synthesise (3 personality components) → Display in pillars (Mirror: 2, Compass: 1). ehko_control.py v4.3 adds Restart button, Git Push button, and Factory Reset with double confirmation. Created `_private/SECURITY_CONSIDERATIONS.md` for PII/entity security planning (gitignored).
 
 - **2025-12-16 Session 32:** ReCog Synthesis Fix — Added emerging themes fallback when patterns are limited. synthesis_min_patterns lowered from 2 to 1. Synthesiser now generates "emerging observations" instead of returning nothing. Report summaries distinguish between full syntheses and emerging themes. Added comprehensive logging to correlator and scheduler.
 
@@ -327,7 +336,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 |--------|---------|--------|
 | ehko_refresh.py | v2.0 | ✅ Working |
 | forge_server.py | v2.9 | ✅ Working |
-| ehko_control.py | v2.0 | ✅ Working |
+| ehko_control.py | v4.3 | ✅ Working |
 | run_ingot_migration.py | v1.0 | ✅ Applied |
 | run_reorientation_migration.py | v1.0 | ✅ Applied |
 | run_mana_migration.py | v1.0 | ✅ Applied |
@@ -377,7 +386,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
-- v1.51 — 2025-12-16 Session 33 — ReCog Full Pipeline Complete: Fixed cursor reuse bug in get_patterns(), progression endpoint queries actual ehko_personality_layers, enhanced progression UI with content previews and expand-on-click. Full pipeline tested successfully.
+- v1.51 — 2025-12-16 Session 33 — ReCog Full Pipeline Complete: Fixed cursor reuse bug, progression endpoint queries ehko_personality_layers, enhanced progression UI. ehko_control.py v4.3 (Restart, Git Push, Factory Reset). Added Preflight Context System to roadmap. Created _private/SECURITY_CONSIDERATIONS.md.
 - v1.50 — 2025-12-16 Session 32 — ReCog Synthesis Fix: Lowered synthesis_min_patterns to 1, added emerging themes fallback, improved logging.
 - v1.49 — 2025-12-16 Session 31 — Web Components Migration Phases 2+4 complete. main.js v2.6 (full component integration), main.css v2.1 (~270 lines obsolete CSS removed). Mana bar integration verified.
 - v1.47 — 2025-12-16 Session 31 — Web Components Migration Phase 2: Avatar replaced with <ehko-avatar> component v1.1 (5 Authority stages). main.js v2.5 with component integration.
