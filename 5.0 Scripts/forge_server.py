@@ -2305,8 +2305,52 @@ def recog_progression():
         conn = get_db()
         cursor = conn.cursor()
         
+        # Get base progression data
         cursor.execute("SELECT * FROM ehko_progression WHERE id = 1")
         row = cursor.fetchone()
+        
+        # Get actual personality layers from ehko_personality_layers
+        # Map layer_type to pillar names
+        pillar_mapping = {
+            "trait": "mirror",      # Self-understanding
+            "value": "compass",     # Values/beliefs  
+            "pattern": "thread",    # Behavioral patterns
+            "memory": "anchor",     # Grounded memories
+            "voice": "flame",       # Expression/passion
+        }
+        
+        pillars = {
+            "web": [],
+            "thread": [],
+            "mirror": [],
+            "compass": [],
+            "anchor": [],
+            "flame": [],
+        }
+        
+        cursor.execute("""
+            SELECT layer_type, content, weight, integrated_at
+            FROM ehko_personality_layers
+            WHERE active = 1
+            ORDER BY weight DESC
+        """)
+        
+        for layer in cursor.fetchall():
+            pillar_name = pillar_mapping.get(layer["layer_type"], "web")
+            pillars[pillar_name].append({
+                "content": layer["content"],
+                "weight": layer["weight"],
+                "integrated_at": layer["integrated_at"],
+            })
+        
+        # Calculate pillar stats
+        pillars_seeded = sum(1 for p in pillars.values() if len(p) > 0)
+        pillars_populated = sum(1 for p in pillars.values() if len(p) >= 3)  # 3+ items = populated
+        
+        # Get core memory count
+        cursor.execute("SELECT COUNT(*) FROM mirrorwell_extensions WHERE core_memory = 1")
+        core_memory_count = cursor.fetchone()[0]
+        
         conn.close()
         
         if row:
@@ -2314,22 +2358,25 @@ def recog_progression():
                 "success": True,
                 "stage": row["stage"],
                 "stage_entered_at": row["stage_entered_at"],
-                "pillars_seeded": row["pillars_seeded"],
-                "pillars_populated": row["pillars_populated"],
-                "pillars": json.loads(row["pillars_json"]) if row["pillars_json"] else {},
-                "core_memory_count": row["core_memory_count"],
-                "core_memories_curated": row["core_memories_curated"],
+                "pillars_seeded": pillars_seeded,
+                "pillars_populated": pillars_populated,
+                "pillars": pillars,
+                "core_memory_count": core_memory_count,
+                "core_memories_curated": row["core_memories_curated"] if row else 0,
                 "last_synthesis_at": row["last_synthesis_at"],
             })
         else:
             return jsonify({
                 "success": True,
                 "stage": "nascent",
-                "pillars_seeded": 0,
-                "pillars_populated": 0,
-                "core_memory_count": 0,
+                "pillars_seeded": pillars_seeded,
+                "pillars_populated": pillars_populated,
+                "pillars": pillars,
+                "core_memory_count": core_memory_count,
             })
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
 
 

@@ -531,16 +531,20 @@ class EhkoForgeAdapter(RecogAdapter):
         
         cursor.execute(query, params)
         
+        # Fetch all rows first to avoid cursor reuse bug
+        rows = cursor.fetchall()
+        
         patterns = []
-        for row in cursor:
-            # Get linked insight IDs
-            cursor.execute("""
+        for row in rows:
+            # Get linked insight IDs with separate cursor
+            cursor2 = conn.cursor()
+            cursor2.execute("""
                 SELECT i.recog_insight_id, i.id
                 FROM ingot_pattern_insights ipi
                 JOIN ingots i ON i.id = ipi.ingot_id
                 WHERE ipi.pattern_id = ?
             """, (row["id"],))
-            insight_ids = [r["recog_insight_id"] or r["id"] for r in cursor.fetchall()]
+            insight_ids = [r["recog_insight_id"] or r["id"] for r in cursor2.fetchall()]
             
             patterns.append(Pattern(
                 id=row["id"],

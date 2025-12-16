@@ -582,49 +582,91 @@
 .progression-pillars {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
     margin-top: 20px;
     text-align: left;
 }
 
+/* Pillar items - enhanced with content preview */
 .pillar-item {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
+    flex-direction: column;
+    padding: 12px;
     background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.pillar-item:hover {
+    border-color: var(--recog-border);
+    background: var(--bg-tertiary);
+}
+
+.pillar-item.empty {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.pillar-item.seeded {
+    border-left: 3px solid #6b8cce;
+}
+
+.pillar-item.populated {
+    border-left: 3px solid #4ade80;
+}
+
+.pillar-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .pillar-status {
+    font-size: 0.9rem;
     width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 0.7rem;
+    text-align: center;
 }
 
-.pillar-status.seeded {
-    background: rgba(107, 140, 206, 0.2);
-    color: #6b8cce;
-}
-
-.pillar-status.populated {
-    background: rgba(74, 222, 128, 0.2);
-    color: #4ade80;
-}
-
-.pillar-status.empty {
-    background: var(--bg-tertiary);
-    color: var(--text-muted);
-    border: 1px dashed var(--border-subtle);
-}
+.pillar-item.empty .pillar-status { color: var(--text-muted); }
+.pillar-item.seeded .pillar-status { color: #6b8cce; }
+.pillar-item.populated .pillar-status { color: #4ade80; }
 
 .pillar-name {
     font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.pillar-count {
+    font-size: 0.65rem;
+    background: var(--recog-bg);
+    color: var(--recog-primary);
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.pillar-preview {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+    line-height: 1.4;
+    max-height: 2.8em;
+    overflow: hidden;
+}
+
+.pillar-item.expanded .pillar-preview {
+    max-height: none;
+}
+
+.pillar-more {
+    font-size: 0.65rem;
+    color: var(--recog-primary);
+    margin-top: 4px;
+    font-weight: 500;
 }
 
 .progression-stats {

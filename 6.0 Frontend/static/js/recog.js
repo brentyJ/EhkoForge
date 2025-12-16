@@ -497,7 +497,7 @@ const RecogUI = {
     renderProgression(data) {
         // Stage
         if (this.elements.progressionStage) {
-            this.elements.progressionStage.textContent = data.stage || 'nascent';
+            this.elements.progressionStage.textContent = (data.stage || 'nascent').toUpperCase();
             this.elements.progressionStage.className = `progression-stage ${data.stage || 'nascent'}`;
         }
         
@@ -506,21 +506,57 @@ const RecogUI = {
             this.elements.progressionEntered.textContent = `Since ${this.formatDate(data.stage_entered_at)}`;
         }
         
-        // Pillars
+        // Pillars - now arrays of content items
         const pillars = data.pillars || {};
         const pillarNames = ['web', 'thread', 'mirror', 'compass', 'anchor', 'flame'];
         
         if (this.elements.pillarsList) {
             this.elements.pillarsList.innerHTML = pillarNames.map(name => {
-                const status = pillars[name] || 'empty';
-                const statusIcon = status === 'populated' ? '✓' : status === 'seeded' ? '◐' : '○';
+                const items = pillars[name] || [];
+                const count = items.length;
+                
+                // Determine status based on item count
+                let status, statusIcon;
+                if (count >= 3) {
+                    status = 'populated';
+                    statusIcon = '●';  // Filled
+                } else if (count > 0) {
+                    status = 'seeded';
+                    statusIcon = '◐';  // Half-filled
+                } else {
+                    status = 'empty';
+                    statusIcon = '○';  // Empty
+                }
+                
+                // Build content preview (first item truncated)
+                let contentPreview = '';
+                if (count > 0) {
+                    const firstItem = items[0].content || '';
+                    const preview = firstItem.length > 60 ? firstItem.substring(0, 60) + '...' : firstItem;
+                    contentPreview = `<div class="pillar-preview">${preview}</div>`;
+                    if (count > 1) {
+                        contentPreview += `<div class="pillar-more">+${count - 1} more</div>`;
+                    }
+                }
+                
                 return `
-                    <div class="pillar-item">
-                        <div class="pillar-status ${status}">${statusIcon}</div>
-                        <span class="pillar-name">${this.capitalize(name)}</span>
+                    <div class="pillar-item ${status}" data-pillar="${name}">
+                        <div class="pillar-header">
+                            <div class="pillar-status">${statusIcon}</div>
+                            <span class="pillar-name">${this.capitalize(name)}</span>
+                            ${count > 0 ? `<span class="pillar-count">${count}</span>` : ''}
+                        </div>
+                        ${contentPreview}
                     </div>
                 `;
             }).join('');
+            
+            // Bind click handlers for pillar expansion
+            this.elements.pillarsList.querySelectorAll('.pillar-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('expanded');
+                });
+            });
         }
         
         // Core memory count

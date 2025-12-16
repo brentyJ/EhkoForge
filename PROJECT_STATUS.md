@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-16  
-**Version:** 1.50  
+**Version:** 1.51  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
@@ -293,6 +293,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-16 Session 33:** ReCog Full Pipeline Complete — Fixed cursor reuse bug in `get_patterns()` that was only returning 1 pattern instead of all 13. Updated progression endpoint to query actual `ehko_personality_layers` table instead of empty static data. Enhanced progression UI with content previews, colored pillar borders, and expand-on-click. Full ReCog pipeline now operational: Extract (77 insights) → Correlate (12 patterns) → Synthesise (3 personality components) → Display in pillars (Mirror: 2 items, Compass: 1 item).
+
 - **2025-12-16 Session 32:** ReCog Synthesis Fix — Added emerging themes fallback when patterns are limited. synthesis_min_patterns lowered from 2 to 1. Synthesiser now generates "emerging observations" instead of returning nothing. Report summaries distinguish between full syntheses and emerging themes. Added comprehensive logging to correlator and scheduler.
 
 - **2025-12-16 Session 31:** Web Components Migration Phases 2+4 COMPLETE — All UI elements now use Web Components. Avatar (`<ehko-avatar>` v1.1), mana bar (`<ehko-mana-bar>`), chat messages (`<ehko-message>`), toast notifications (`<ehko-toast>`), tethers (`<ehko-tether-bar>`, `<ehko-tether-panel>`). main.js v2.6 with full component integration. main.css v2.1 with ~270 lines obsolete CSS removed. Mana bar integration verified (removed duplicate updateManaDisplay, fixed state.mana sync, connected mana-topup event).
@@ -375,6 +377,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.51 — 2025-12-16 Session 33 — ReCog Full Pipeline Complete: Fixed cursor reuse bug in get_patterns(), progression endpoint queries actual ehko_personality_layers, enhanced progression UI with content previews and expand-on-click. Full pipeline tested successfully.
 - v1.50 — 2025-12-16 Session 32 — ReCog Synthesis Fix: Lowered synthesis_min_patterns to 1, added emerging themes fallback, improved logging.
 - v1.49 — 2025-12-16 Session 31 — Web Components Migration Phases 2+4 complete. main.js v2.6 (full component integration), main.css v2.1 (~270 lines obsolete CSS removed). Mana bar integration verified.
 - v1.47 — 2025-12-16 Session 31 — Web Components Migration Phase 2: Avatar replaced with <ehko-avatar> component v1.1 (5 Authority stages). main.js v2.5 with component integration.
