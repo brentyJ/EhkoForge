@@ -444,7 +444,74 @@ When reading server logs:
 
 ---
 
+## 18. RECOVERY PROTOCOL (FREEZING CONTINGENCIES)
+
+### Purpose
+Prevent lost work when Claude freezes mid-operation. Ensure any session can resume from documented state.
+
+### Output Limits
+
+| Content Type | Max Lines | Action if Exceeded |
+|--------------|-----------|--------------------|
+| New file creation | 300 | Split into parts, create sequentially |
+| Code blocks | 200 | Split logically at function boundaries |
+| Documentation | 250 | Split at section boundaries |
+| Edit operations | 5 edits | Multiple edit_file calls |
+
+### Checkpointing Rules
+
+**Before starting multi-step work:**
+1. Write task manifest to PROJECT_STATUS.md "Current Operation" section
+2. Include: Goal, Steps, Current Step, Files Affected
+3. Update after each major step completes
+
+**Task Manifest Format:**
+```markdown
+## Current Operation
+**Task:** [Brief description]
+**Started:** [Timestamp]
+**Steps:**
+1. [ ] Step one
+2. [ ] Step two
+3. [ ] Step three
+**Current:** Step N
+**Files:** [List of files being modified]
+**Recovery:** [How to resume if interrupted]
+```
+
+**Clear on completion:** Remove Current Operation section when task finishes.
+
+### Large File Strategy
+
+**For files >300 lines:**
+1. Create skeleton with structure markers
+2. Fill sections in separate operations
+3. Verify each section before proceeding
+
+**For multi-file operations:**
+1. List all files to be created/modified
+2. Process one file at a time
+3. Checkpoint after each file
+
+### Recovery on Session Start
+
+**If PROJECT_STATUS.md has "Current Operation" section:**
+1. Read the task manifest
+2. Identify incomplete steps
+3. Resume from last checkpoint
+4. Do NOT restart from beginning
+
+### Freezing Indicators
+
+If response seems to be taking too long:
+- Operation is likely too large
+- User should interrupt and request smaller chunks
+- Claude should proactively split large operations
+
+---
+
 **Changelog:**
+- v2.4 — 2025-12-17 — Added Section 18: Recovery Protocol (freezing contingencies) with output limits, checkpointing rules, task manifests, and recovery procedures.
 - v2.3 — 2025-12-17 — Added Sections 13-17: Database operations (NEVER copy DB), common error patterns, known issues, pending migrations, server log interpretation, key endpoints. Created in response to recurring schema mismatch issues.
 - v2.2 — 2025-12-02 — Added Section 12 (Token Efficiency); updated Section 3.4 and Section 10 to prefer edit_file for small changes; added compressed reference files strategy
 - v2.1 — 2025-11-29 — Modified Section 2 to use vault_map.md instead of directory_tree scanning; updated Session Protocol accordingly; removed stale Current Priorities section (use PROJECT_STATUS.md instead)

@@ -4,7 +4,7 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "4.4"
+version: "4.5"
 created: 2025-11-29
 updated: 2025-12-17
 tags: [system, reference, navigation]
@@ -238,6 +238,20 @@ components/
 - **Forge:** Insite queue, detail panel, accept/reject
 - **Retro Aesthetic:** CRT scanlines, blue terminal palette (#6b8cce), JetBrains Mono font
 
+### 7.0 Website/
+**Purpose:** Website documentation and deployment guides
+
+```
+EhkoLabs-Website-Plan.md                      [planning, v1.0] — Professional site (PRIORITY)
+EhkoForge-Website-Development.md              [reference, v1.0] — Product site build docs
+EhkoForge-Website-QuickRef.md                 [guide, v1.0] — Deployment steps
+Philosophy-WhyThisExists-Section.md           [content, v1.0] — Philosophy page content
+```
+
+**Priority Order:**
+1. EhkoLabs.io - Professional presence (build first)
+2. EhkoForge.ai - Product site (ready when EhkoLabs done)
+
 ### Config/
 **Purpose:** Configuration files
 
@@ -387,6 +401,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.5 — 2025-12-17 Session 39 — Added 7.0 Website/ section with EhkoForge website docs (moved from CareerForge vault).
 - v4.4 — 2025-12-17 Session 38 — Added STACKWRIGHT_INSTRUCTIONS.md v2.3 to _data/. Added insights_columns migration. Updated db_schema_summary.md v1.6.
 - v4.2 — 2025-12-16 Session 31 — Web Components Migration complete: main.js v2.6, main.css v2.1, all UI elements using components.
 - v4.1 — 2025-12-16 Session 31 — Web Components Migration: ehko-avatar.js v1.1 with 5 Authority stages, main.js v2.5.

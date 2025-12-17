@@ -1,12 +1,61 @@
 # EhkoForge Project Status
 
 **Last Updated:** 2025-12-17  
-**Version:** 1.56  
+**Version:** 1.58  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
 ## IN PROGRESS
+
+### EhkoLabs & EhkoForge Websites (Sessions 39-40)
+
+**Priority Order:**
+1. **EhkoLabs.io** — Professional portfolio (build FIRST)
+2. **EhkoForge.ai** — Product site (ready when EhkoLabs done)
+
+**EhkoLabs.io (Professional Site):**
+- [x] Domain decided: ehkolabs.io (user doesn't own .ai)
+- [ ] Register domain
+- [ ] Provide content: bio, project descriptions, contact preferences
+- [ ] Build site (1 session when content ready)
+- [ ] Deploy to Cloudflare Pages
+
+**Pages:** Home, About, Projects/Portfolio, Contact
+**Design:** Professional MDV (amber primary, subtle scanlines, no flicker, san-serif body text)
+
+**EhkoForge.ai (Product Site) — COMPREHENSIVE PLANNING COMPLETE:**
+- [x] Full page specs: Landing, Features, Philosophy, Download, Blog, Community, Docs
+- [x] Component library designed (13 components)
+- [x] MDV Design System CSS complete
+- [x] Astro project structure defined
+- [x] Cloudflare deployment config ready
+- [x] 2 blog posts conceptualised
+- [ ] Build and deploy (after EhkoLabs)
+
+**Reusable Across Both Sites:**
+- MDV Design System (has amber/subtle variants)
+- BaseLayout, CRTScreen, TerminalButton, TerminalCard components
+- Global CSS, deployment pattern
+
+**EhkoLabs Needs New:**
+- Logo component (EhkoLabs branding)
+- Header/Footer (different nav structure)
+- Content (bio, projects, services)
+
+**Docs Location:** `EhkoForge/7.0 Website/`
+- `EhkoLabs-Website-Plan.md` — Professional site planning
+- `EhkoForge-Website-Development.md` — Product site specs (condensed)
+- `EhkoForge-Website-QuickRef.md` — Deployment steps
+- `Philosophy-WhyThisExists-Section.md` — Content piece
+
+**Tech Stack (both sites):**
+- Framework: Astro 4.x
+- Hosting: Cloudflare Pages (free tier)
+- Design: MDV aesthetic (amber for Labs, green for Forge)
+- Cost: $0/month hosting, ~$10-15/year per domain
+
+---
 
 ### Voice Pattern Extraction (PLANNED)
 - [ ] **Phase 1: Capture Schema** — Define voice signature structure
@@ -326,6 +375,10 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-17 Session 40:** Website Planning Consolidation Part 2 — Reviewed comprehensive EhkoForge.ai component library (MDV Design System, CRTScreen, TerminalButton, TerminalCard, Logo, Header, Footer, Hero + full pages: index, features, philosophy, download, blog system, deployment configs). Clarified split: EhkoLabs.io (professional portfolio, amber primary, subtle MDV) vs EhkoForge.ai (product site, green primary, full MDV treatment). Domain confirmed: ehkolabs.io. Identified reusable components and content requirements for EhkoLabs build. Ready to build when content provided.
+
+- **2025-12-17 Session 39:** Website Planning Consolidation — Added STACKWRIGHT Section 18 (Recovery Protocol with freezing contingencies). Created `7.0 Website/` folder with EhkoLabs plan and moved EhkoForge website docs from CareerForge vault. Updated vault_map.md v4.5. Created CareerForge cleanup instructions.
+
 - **2025-12-17 Session 37:** Conclusions Display Fix — Fixed [object Object] bug in synthesis report conclusions. Conclusions are objects with type/summary/significance/emerging properties, not strings. recog.js v2.1, recog.css v1.2 with conclusion styling.
 
 - **2025-12-17 Session 36:** Insights Tab Complete — Added full CSS for Insights tab (search, filters, insight cards, detail panel, patterns view, report drill-down). recog.css v1.1. Backend API and recog.js were already complete from Session 35. Full Insights browsing workflow now operational: list → detail → flag/context/reject.
@@ -419,6 +472,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.58 — 2025-12-17 Session 40 — Website Planning Part 2: Reviewed full EhkoForge.ai component library. Clarified EhkoLabs.io vs EhkoForge.ai split. Domain confirmed: ehkolabs.io. Identified reusable MDV components. Content requirements documented for EhkoLabs build.
+- v1.57 — 2025-12-17 Session 39 — Website Planning Consolidation: Added EhkoLabs & EhkoForge Websites section to IN PROGRESS. Created 7.0 Website/ folder. Moved website docs from CareerForge vault. STACKWRIGHT v2.4 with Section 18 (Recovery Protocol). vault_map.md v4.5.
 - v1.56 — 2025-12-17 Session 38 — Schema mismatch fix: Created insights_columns_v0_1.sql migration and run_insights_migration.py for missing ingots columns (flagged, reviewed, rejected, user_context). Updated STACKWRIGHT_INSTRUCTIONS.md v2.3 with database troubleshooting guide, common error patterns, and "NEVER copy database file" warning.
 - v1.55 — 2025-12-17 Session 37 — Conclusions display fix: [object Object] bug. Conclusions are objects (type/summary/significance/emerging). recog.js v2.1, recog.css v1.2.
 - v1.54 — 2025-12-17 Session 36 — Insights Tab CSS complete. recog.css v1.1 with full Insights tab styles (toolbar, cards, detail panel, report drill-down). Full browse/review workflow operational.
