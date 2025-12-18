@@ -278,7 +278,7 @@ ehko_index.db                     [SQLite, ~200KB]
 vault_map.md                      [this file]
 script_registry.md                [v1.2] — Compressed script reference
 db_schema_summary.md              [v1.6] — Compressed DB schema reference
-STACKWRIGHT_INSTRUCTIONS.md       [v2.3] — Claude project instructions (UPDATED)
+STACKWRIGHT_INSTRUCTIONS.md       [v2.5] — Claude project instructions (UPDATED)
 ```
 
 ### _private/
@@ -286,6 +286,7 @@ STACKWRIGHT_INSTRUCTIONS.md       [v2.3] — Claude project instructions (UPDATE
 
 ```
 README.md                         — Directory purpose
+TWO_LAYER_ARCHITECTURE.md         — Open-core business model (Layer 1 AGPL / Layer 2 Commercial)
 FORM_EVOLUTION_VISION.md          — Authority-driven visual progression
 MANA_ECONOMICS.md                 — Pricing psychology, monetization
 STRATEGIC_NOTES.md                — Future features, marketplace concepts
@@ -401,6 +402,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.6 — 2025-12-18 Session 40 — Added TWO_LAYER_ARCHITECTURE.md to _private/ section.
 - v4.5 — 2025-12-17 Session 39 — Added 7.0 Website/ section with EhkoForge website docs (moved from CareerForge vault).
 - v4.4 — 2025-12-17 Session 38 — Added STACKWRIGHT_INSTRUCTIONS.md v2.3 to _data/. Added insights_columns migration. Updated db_schema_summary.md v1.6.
 - v4.2 — 2025-12-16 Session 31 — Web Components Migration complete: main.js v2.6, main.css v2.1, all UI elements using components.

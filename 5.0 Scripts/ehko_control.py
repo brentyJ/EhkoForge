@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-EhkoForge Control Panel v4.3
+EhkoForge Control Panel v4.4
 Consolidated interface with dedicated server log panel.
 
 Features:
 - Server control with restart
+- Website (Astro) control
 - ReCog pipeline management  
 - Git workflows (Quick + Session)
 - Factory Reset for testing
@@ -34,6 +35,8 @@ MIRRORWELL_ROOT = Path("G:/Other computers/Ehko/Obsidian/Mirrorwell")
 SCRIPTS_PATH = EHKOFORGE_ROOT / "5.0 Scripts"
 SERVER_SCRIPT = SCRIPTS_PATH / "forge_server.py"
 SERVER_URL = "http://localhost:5000"
+WEBSITE_PATH = Path("C:/ehkolabs-website")
+WEBSITE_URL = "http://localhost:4321"
 REFRESH_SCRIPT = SCRIPTS_PATH / "ehko_refresh.py"
 QUICK_COMMIT_SCRIPT = EHKOFORGE_ROOT / "quick_commit.bat"
 GIT_PUSH_SCRIPT = EHKOFORGE_ROOT / "git_push.bat"
@@ -54,9 +57,11 @@ C = {
     "error": "#d97373",
     "recog": "#c94a4a",
     "server": "#6ecf6e",
+    "website": "#6eb3cf",
 }
 
 server_process = None
+website_process = None
 
 # =============================================================================
 # HELPERS
@@ -187,6 +192,93 @@ def open_ui(out_log):
 def open_studio(out_log):
     webbrowser.open(f"{SERVER_URL}/studio")
     log(out_log, "Opened Evolution Studio", "info")
+
+# =============================================================================
+# WEBSITE COMMANDS
+# =============================================================================
+
+def start_website(web_log, web_status_lbl, web_start_btn, web_stop_btn):
+    global website_process
+    if website_process and website_process.poll() is None:
+        log(web_log, "Website already running", "warning")
+        return
+    
+    if not WEBSITE_PATH.exists():
+        log(web_log, f"Website path not found: {WEBSITE_PATH}", "error")
+        return
+    
+    try:
+        # Use cmd /c on Windows to find npm in PATH
+        if os.name == 'nt':
+            cmd = ['cmd', '/c', 'npm', 'run', 'dev']
+        else:
+            cmd = ['npm', 'run', 'dev']
+        
+        website_process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=str(WEBSITE_PATH),
+            text=True,
+            bufsize=1,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == 'nt' else 0
+        )
+        web_status_lbl.config(text="● WEBSITE ONLINE", fg=C["success"])
+        web_start_btn.config(state=DISABLED)
+        web_stop_btn.config(state=NORMAL)
+        log(web_log, f"Website started (PID {website_process.pid})", "success")
+        
+        def stream():
+            for line in iter(website_process.stdout.readline, ''):
+                if line and website_process.poll() is None:
+                    line = line.strip()
+                    # Highlight key website messages
+                    if "error" in line.lower() or "ERROR" in line:
+                        log(web_log, line, "error")
+                    elif "ready" in line or "started" in line or "Local" in line:
+                        log(web_log, line, "success")
+                    elif "warn" in line.lower() or "WARNING" in line:
+                        log(web_log, line, "warning")
+                    else:
+                        log(web_log, line, "website")
+            web_status_lbl.config(text="○ WEBSITE OFFLINE", fg=C["error"])
+            web_start_btn.config(state=NORMAL)
+            web_stop_btn.config(state=DISABLED)
+            log(web_log, "Website stopped", "warning")
+        
+        threading.Thread(target=stream, daemon=True).start()
+    except FileNotFoundError:
+        log(web_log, "npm not found. Make sure Node.js is installed.", "error")
+    except Exception as e:
+        log(web_log, f"Failed to start: {e}", "error")
+
+def stop_website(web_log, web_status_lbl, web_start_btn, web_stop_btn):
+    global website_process
+    if not website_process or website_process.poll() is not None:
+        web_status_lbl.config(text="○ WEBSITE OFFLINE", fg=C["error"])
+        web_start_btn.config(state=NORMAL)
+        web_stop_btn.config(state=DISABLED)
+        return
+    try:
+        log(web_log, "Stopping website...", "warning")
+        if os.name == 'nt':
+            website_process.send_signal(signal.CTRL_BREAK_EVENT)
+        else:
+            website_process.terminate()
+        website_process.wait(timeout=5)
+        log(web_log, "Website stopped gracefully", "success")
+    except:
+        website_process.kill()
+        log(web_log, "Website killed", "warning")
+    finally:
+        website_process = None
+        web_status_lbl.config(text="○ WEBSITE OFFLINE", fg=C["error"])
+        web_start_btn.config(state=NORMAL)
+        web_stop_btn.config(state=DISABLED)
+
+def open_website(out_log):
+    webbrowser.open(WEBSITE_URL)
+    log(out_log, "Opened website in browser", "info")
 
 # =============================================================================
 # FACTORY RESET
@@ -500,13 +592,14 @@ def create_log_widget(parent, height=10):
     log_w.tag_config("error", foreground=C["error"])
     log_w.tag_config("recog", foreground=C["recog"])
     log_w.tag_config("server", foreground=C["server"])
+    log_w.tag_config("website", foreground=C["website"])
     return log_w
 
 def main():
     root = Tk()
     root.title("EHKOFORGE CONTROL")
-    root.geometry("850x750")
-    root.minsize(750, 550)
+    root.geometry("850x900")
+    root.minsize(750, 700)
     root.configure(bg=C["bg"])
     
     # Styles
@@ -534,7 +627,7 @@ def main():
     # === HEADER ===
     header = ttk.Frame(main_frame)
     header.pack(fill=X, pady=(0, 10))
-    ttk.Label(header, text="EHKOFORGE CONTROL v4.3", style="H.TLabel").pack(side=LEFT)
+    ttk.Label(header, text="EHKOFORGE CONTROL v4.4", style="H.TLabel").pack(side=LEFT)
     status_lbl = Label(header, text="○ SERVER OFFLINE", bg=C["bg"], fg=C["error"], font=("Consolas", 11, "bold"))
     status_lbl.pack(side=RIGHT)
     
@@ -566,13 +659,51 @@ def main():
     ttk.Button(srv_btn_frame, text="Clear", width=6,
                command=lambda: clear_log(srv_log)).pack(side=RIGHT)
     
-    srv_log = create_log_widget(srv_frame, height=12)
+    srv_log = create_log_widget(srv_frame, height=10)
     srv_log.pack(fill=BOTH, expand=True)
     
     # Wire up server buttons
     start_btn.config(command=lambda: start_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn))
     stop_btn.config(command=lambda: stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn))
     restart_btn.config(command=lambda: threading.Thread(target=lambda: restart_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn), daemon=True).start())
+    
+    # === WEBSITE SECTION ===
+    web_frame = ttk.LabelFrame(main_frame, text="WEBSITE (Astro Dev Server)", padding=5)
+    web_frame.pack(fill=BOTH, expand=True, pady=(0, 10))
+    
+    web_header = ttk.Frame(web_frame)
+    web_header.pack(fill=X, pady=(0, 5))
+    
+    web_status_lbl = Label(web_header, text="○ WEBSITE OFFLINE", bg=C["bg"], fg=C["error"], font=("Consolas", 10, "bold"))
+    web_status_lbl.pack(side=RIGHT)
+    
+    web_btn_frame = ttk.Frame(web_frame)
+    web_btn_frame.pack(fill=X, pady=(0, 5))
+    
+    web_start_btn = ttk.Button(web_btn_frame, text="Start", style="G.TButton", width=10)
+    web_start_btn.pack(side=LEFT, padx=(0, 5))
+    
+    web_stop_btn = ttk.Button(web_btn_frame, text="Stop", style="R.TButton", width=8, state=DISABLED)
+    web_stop_btn.pack(side=LEFT, padx=(0, 5))
+    
+    ttk.Button(web_btn_frame, text="Open Site", width=10,
+               command=lambda: open_website(out_log)).pack(side=LEFT, padx=(0, 5))
+    
+    ttk.Button(web_btn_frame, text="Website Folder", width=14,
+               command=lambda: open_folder(WEBSITE_PATH, out_log)).pack(side=LEFT, padx=(0, 5))
+    
+    ttk.Button(web_btn_frame, text="Copy", width=6,
+               command=lambda: copy_log(root, web_log)).pack(side=RIGHT, padx=(0, 5))
+    
+    ttk.Button(web_btn_frame, text="Clear", width=6,
+               command=lambda: clear_log(web_log)).pack(side=RIGHT)
+    
+    web_log = create_log_widget(web_frame, height=8)
+    web_log.pack(fill=BOTH, expand=True)
+    
+    # Wire up website buttons
+    web_start_btn.config(command=lambda: start_website(web_log, web_status_lbl, web_start_btn, web_stop_btn))
+    web_stop_btn.config(command=lambda: stop_website(web_log, web_status_lbl, web_start_btn, web_stop_btn))
     
     # === TOOLS SECTION ===
     tools_frame = ttk.Frame(main_frame)
@@ -664,15 +795,25 @@ def main():
                command=lambda: open_folder(SCRIPTS_PATH, out_log)).pack(side=LEFT)
     
     # Initial log
-    log(out_log, "EhkoForge Control v4.3 ready", "success")
-    log(out_log, "Start server to begin", "info")
+    log(out_log, "EhkoForge Control v4.4 ready", "success")
+    log(out_log, "Start server or website to begin", "info")
     
     # Close handler
     def on_close():
-        global server_process
+        global server_process, website_process
+        stop_needed = []
         if server_process and server_process.poll() is None:
-            if messagebox.askyesno("Server Running", "Stop server before closing?"):
-                stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn)
+            stop_needed.append("Server")
+        if website_process and website_process.poll() is None:
+            stop_needed.append("Website")
+        
+        if stop_needed:
+            services = " and ".join(stop_needed)
+            if messagebox.askyesno("Services Running", f"Stop {services} before closing?"):
+                if server_process and server_process.poll() is None:
+                    stop_server(srv_log, status_lbl, start_btn, stop_btn, restart_btn)
+                if website_process and website_process.poll() is None:
+                    stop_website(web_log, web_status_lbl, web_start_btn, web_stop_btn)
         root.destroy()
     
     root.protocol("WM_DELETE_WINDOW", on_close)

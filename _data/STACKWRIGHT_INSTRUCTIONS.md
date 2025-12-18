@@ -63,6 +63,48 @@ Claude Code v2.0.55 is installed. Use filesystem tools proactively when vault wo
 
 ---
 
+## 3A. TWO-LAYER ARCHITECTURE (STRATEGIC NORTH STAR)
+
+**Reference:** `EhkoForge/_private/TWO_LAYER_ARCHITECTURE.md`
+
+**Ultimate Goal:** Open-core business model (GitLab/MySQL/Elastic strategy)
+
+### The Split:
+
+**Layer 1 (AGPL - What we're building now):**
+- Everything currently in EhkoForge codebase
+- Reflection system, Ingot pipeline, Forging, Identity Pillars, Core Memories
+- Tether/BYOK system, Basic Mana economy, Basic form evolution
+- Export system (`.ehko` format), Witness architecture
+- **License:** AGPL-3.0 (open source, copyleft)
+- **Goal:** Create `.ehko` standard, maximum adoption
+
+**Layer 2 (Commercial - Future, not yet built):**
+- The Tower (multi-Ehko hosting)
+- Agentic capabilities (calendar/email/docs)
+- Creative Studio mode, Marketplace, Enterprise features
+- Advanced ReCog loops, Premium transformations
+- **License:** Proprietary
+- **Goal:** Revenue, platform play
+
+### Critical Rules:
+
+1. **All current work = Layer 1.** Nothing being built now crosses into Layer 2.
+2. **Layer 2 files degrade to Layer 1.** Any `.ehko` created in commercial platform MUST work in open source version.
+3. **Prevent scope creep.** If a feature sounds like "premium" or "enterprise" → it's Layer 2, document it but don't build it yet.
+4. **Maintain focus.** Layer 1 MVP completion is the priority. Layer 2 is future work.
+
+### Why This Matters:
+
+- **Prevents distraction:** "That's a Layer 2 feature, parking it."
+- **Protects acquisition value:** Open core + commercial = proven model
+- **Maintains AGPL integrity:** No betrayal of open source principles
+- **Guides architecture:** Design Layer 1 to be extendable by Layer 2
+
+**When in doubt:** Check TWO_LAYER_ARCHITECTURE.md. If a feature isn't listed in Layer 1, it's Layer 2.
+
+---
+
 ## 4. TEMPLATES IN USE
 
 ### Universal Template Framework v1.2
@@ -511,6 +553,7 @@ If response seems to be taking too long:
 ---
 
 **Changelog:**
+- v2.5 — 2025-12-18 — Added Section 3A: Two-Layer Architecture (strategic north star) to prevent drift and maintain focus on Layer 1 MVP completion before Layer 2 commercial features.
 - v2.4 — 2025-12-17 — Added Section 18: Recovery Protocol (freezing contingencies) with output limits, checkpointing rules, task manifests, and recovery procedures.
 - v2.3 — 2025-12-17 — Added Sections 13-17: Database operations (NEVER copy DB), common error patterns, known issues, pending migrations, server log interpretation, key endpoints. Created in response to recurring schema mismatch issues.
 - v2.2 — 2025-12-02 — Added Section 12 (Token Efficiency); updated Section 3.4 and Section 10 to prefer edit_file for small changes; added compressed reference files strategy
