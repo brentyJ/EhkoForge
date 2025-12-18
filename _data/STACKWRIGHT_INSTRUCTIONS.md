@@ -1,4 +1,4 @@
-# EHKOFORGE STACKWRIGHT INSTRUCTIONS v2.3
+# EHKOFORGE STACKWRIGHT INSTRUCTIONS v2.6
 
 ---
 
@@ -30,6 +30,9 @@ Default to action.
 - `EhkoForge/` — System framework
 - `Mirrorwell/` — Personal content
 
+**External Projects:**
+- `C:\ehkolabs-website\` — EhkoLabs.io professional portfolio (Astro site)
+
 **Dormant Vaults (scoped out):**
 - `MonsterGarden/` — Future plant-tracking project
 - `ManaCore/` — Fiction worldbuilding, dormant
@@ -49,6 +52,7 @@ Claude Code v2.0.55 is installed. Use filesystem tools proactively when vault wo
 | `Mirrorwell/2_Reflection Library/2.1 Journals/` | Processed journal entries |
 | `Mirrorwell/2_Reflection Library/2.2 Transcripts/` | Raw + processed transcripts |
 | `Mirrorwell/Templates/reflection_template.md` | Reflection template |
+| `C:\ehkolabs-website\` | EhkoLabs.io website (Astro) |
 
 ---
 
@@ -553,6 +557,7 @@ If response seems to be taking too long:
 ---
 
 **Changelog:**
+- v2.6 — 2025-12-18 — Added external projects to filesystem awareness: `C:\ehkolabs-website\` (EhkoLabs.io Astro site). Updated key locations table.
 - v2.5 — 2025-12-18 — Added Section 3A: Two-Layer Architecture (strategic north star) to prevent drift and maintain focus on Layer 1 MVP completion before Layer 2 commercial features.
 - v2.4 — 2025-12-17 — Added Section 18: Recovery Protocol (freezing contingencies) with output limits, checkpointing rules, task manifests, and recovery procedures.
 - v2.3 — 2025-12-17 — Added Sections 13-17: Database operations (NEVER copy DB), common error patterns, known issues, pending migrations, server log interpretation, key endpoints. Created in response to recurring schema mismatch issues.

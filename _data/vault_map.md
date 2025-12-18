@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "4.5"
+version: "4.7"
 created: 2025-11-29
-updated: 2025-12-17
+updated: 2025-12-18
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-16 (Session 31 - Web Components Complete)
+**Generated:** 2025-12-18 (Session 41 - Website Documentation Integration)
 
 ---
 
@@ -27,6 +27,57 @@ G:\Other computers\Ehko\Obsidian\
 ├── MonsterGarden/      [DORMANT - Future plant tracking]
 └── ManaCore/           [DORMANT - Fiction worldbuilding]
 ```
+
+### External Projects
+
+```
+C:\ehkolabs-website\    [EhkoLabs.io professional portfolio - Astro site]
+```
+
+---
+
+## EHKOLABS WEBSITE (External)
+
+**Location:** `C:\ehkolabs-website\`
+**Framework:** Astro 4.x
+**Deployment:** Cloudflare Pages
+**Design:** MDV Amber variant (professional, subtle scanlines)
+
+### Structure
+```
+ehkolabs-website/
+├── src/
+│   ├── pages/
+│   │   ├── index.astro       [Home]
+│   │   ├── about.astro       [About]
+│   │   ├── projects.astro    [Portfolio]
+│   │   └── contact.astro     [Contact]
+│   ├── layouts/
+│   │   └── BaseLayout.astro  [Base template]
+│   ├── components/           [Reusable components]
+│   └── styles/
+│       └── global.css        [MDV Design System]
+├── public/                   [Static assets]
+├── README.md
+├── START_HERE.md             [Quick start guide]
+├── DEPLOYMENT.md             [Deployment instructions]
+└── package.json
+```
+
+### Commands
+```bash
+cd "C:\ehkolabs-website"
+npm install                 # First time setup
+npm run dev                 # Development (localhost:4321)
+npm run build               # Production build (→ dist/)
+npm run preview             # Preview production build
+```
+
+### Deployment Status
+- [ ] Domain registered (ehkolabs.io)
+- [ ] GitHub repo created
+- [ ] Cloudflare Pages connected
+- [ ] Custom domain configured
 
 ---
 
@@ -249,8 +300,8 @@ Philosophy-WhyThisExists-Section.md           [content, v1.0] — Philosophy pag
 ```
 
 **Priority Order:**
-1. EhkoLabs.io - Professional presence (build first)
-2. EhkoForge.ai - Product site (ready when EhkoLabs done)
+1. EhkoLabs.io - Professional presence (**BUILT** at `C:\ehkolabs-website`)
+2. EhkoForge.ai - Product site (ready when EhkoLabs deployed)
 
 ### Config/
 **Purpose:** Configuration files
@@ -402,6 +453,7 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.7 — 2025-12-18 Session 41 — Added EHKOLABS WEBSITE section with external project at `C:\ehkolabs-website\`. Site is BUILT and ready for deployment. Updated 7.0 Website priority status.
 - v4.6 — 2025-12-18 Session 40 — Added TWO_LAYER_ARCHITECTURE.md to _private/ section.
 - v4.5 — 2025-12-17 Session 39 — Added 7.0 Website/ section with EhkoForge website docs (moved from CareerForge vault).
 - v4.4 — 2025-12-17 Session 38 — Added STACKWRIGHT_INSTRUCTIONS.md v2.3 to _data/. Added insights_columns migration. Updated db_schema_summary.md v1.6.

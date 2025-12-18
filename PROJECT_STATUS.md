@@ -1,28 +1,33 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-17  
-**Version:** 1.58  
+**Last Updated:** 2025-12-18  
+**Version:** 1.59  
 **Repository:** https://github.com/brentyJ/EhkoForge
 
 ---
 
 ## IN PROGRESS
 
-### EhkoLabs & EhkoForge Websites (Sessions 39-40)
+### EhkoLabs & EhkoForge Websites (Sessions 39-41)
 
 **Priority Order:**
-1. **EhkoLabs.io** — Professional portfolio (build FIRST)
-2. **EhkoForge.ai** — Product site (ready when EhkoLabs done)
+1. **EhkoLabs.io** — Professional portfolio (**BUILT** — ready for deployment)
+2. **EhkoForge.ai** — Product site (ready when EhkoLabs deployed)
 
 **EhkoLabs.io (Professional Site):**
-- [x] Domain decided: ehkolabs.io (user doesn't own .ai)
+- [x] Domain decided: ehkolabs.io
+- [x] Site built at `C:\ehkolabs-website\`
+- [x] All pages complete (Home, About, Projects, Contact)
+- [x] MDV Amber design system implemented
 - [ ] Register domain
-- [ ] Provide content: bio, project descriptions, contact preferences
-- [ ] Build site (1 session when content ready)
+- [ ] Push to GitHub
 - [ ] Deploy to Cloudflare Pages
+- [ ] Configure custom domain
 
+**Location:** `C:\ehkolabs-website\`
+**Tech Stack:** Astro 4.x, MDV CSS, Cloudflare Pages
 **Pages:** Home, About, Projects/Portfolio, Contact
-**Design:** Professional MDV (amber primary, subtle scanlines, no flicker, san-serif body text)
+**Design:** Professional MDV (amber primary, subtle scanlines, no flicker, sans-serif body text)
 
 **EhkoForge.ai (Product Site) — COMPREHENSIVE PLANNING COMPLETE:**
 - [x] Full page specs: Landing, Features, Philosophy, Download, Blog, Community, Docs
@@ -375,6 +380,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-18 Session 41:** Website Documentation Integration — Updated all documentation to reflect that ehkolabs-website is BUILT at `C:\ehkolabs-website\` (not just planned). Astro 4.x site with MDV Amber design, 4 pages complete. Deployment checklist added. vault_map.md v4.7 with new EHKOLABS WEBSITE section. STACKWRIGHT v2.6 with external projects in filesystem awareness. PROJECT_STATUS updated with accurate website status.
+
 - **2025-12-17 Session 40:** Website Planning Consolidation Part 2 — Reviewed comprehensive EhkoForge.ai component library (MDV Design System, CRTScreen, TerminalButton, TerminalCard, Logo, Header, Footer, Hero + full pages: index, features, philosophy, download, blog system, deployment configs). Clarified split: EhkoLabs.io (professional portfolio, amber primary, subtle MDV) vs EhkoForge.ai (product site, green primary, full MDV treatment). Domain confirmed: ehkolabs.io. Identified reusable components and content requirements for EhkoLabs build. Ready to build when content provided.
 
 - **2025-12-17 Session 39:** Website Planning Consolidation — Added STACKWRIGHT Section 18 (Recovery Protocol with freezing contingencies). Created `7.0 Website/` folder with EhkoLabs plan and moved EhkoForge website docs from CareerForge vault. Updated vault_map.md v4.5. Created CareerForge cleanup instructions.
@@ -472,6 +479,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.59 — 2025-12-18 Session 41 — Website Documentation Integration: Updated all docs to reflect ehkolabs-website is BUILT at `C:\ehkolabs-website\` (Astro 4.x, MDV Amber). Ready for domain registration and Cloudflare deployment. Updated vault_map.md v4.7, STACKWRIGHT v2.6.
 - v1.58 — 2025-12-17 Session 40 — Website Planning Part 2: Reviewed full EhkoForge.ai component library. Clarified EhkoLabs.io vs EhkoForge.ai split. Domain confirmed: ehkolabs.io. Identified reusable MDV components. Content requirements documented for EhkoLabs build.
 - v1.57 — 2025-12-17 Session 39 — Website Planning Consolidation: Added EhkoLabs & EhkoForge Websites section to IN PROGRESS. Created 7.0 Website/ folder. Moved website docs from CareerForge vault. STACKWRIGHT v2.4 with Section 18 (Recovery Protocol). vault_map.md v4.5.
 - v1.56 — 2025-12-17 Session 38 — Schema mismatch fix: Created insights_columns_v0_1.sql migration and run_insights_migration.py for missing ingots columns (flagged, reviewed, rejected, user_context). Updated STACKWRIGHT_INSTRUCTIONS.md v2.3 with database troubleshooting guide, common error patterns, and "NEVER copy database file" warning.
