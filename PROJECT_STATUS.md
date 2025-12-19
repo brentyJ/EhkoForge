@@ -1,8 +1,9 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-18  
-**Version:** 1.59  
-**Repository:** https://github.com/brentyJ/EhkoForge
+**Last Updated:** 2025-12-19  
+**Version:** 1.61  
+**Repository:** https://github.com/brentyJ/EhkoForge  
+**Project Tracking:** [EhkoForge Roadmap](https://github.com/users/brentyJ/projects/3) (GitHub Project #3)
 
 ---
 
@@ -380,6 +381,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-19 Session 42:** GitHub Projects Integration Complete — Configured Arclio github-projects MCP server. Created 16 issues in Project #3 from PROJECT_STATUS.md tasks. Assigned Phase field to all items (MVP Core, Ingot Pipeline, Website, Voice & Context, Infrastructure). Discovered API limitation: date fields cannot be set programmatically (must use Table view manually). Created `_data/github_projects_reference.md` documenting full API capabilities, limitations, and field IDs. Updated STACKWRIGHT_INSTRUCTIONS.md v2.8 with limitations reference.
+
 - **2025-12-18 Session 41:** Website Documentation Integration — Updated all documentation to reflect that ehkolabs-website is BUILT at `C:\ehkolabs-website\` (not just planned). Astro 4.x site with MDV Amber design, 4 pages complete. Deployment checklist added. vault_map.md v4.7 with new EHKOLABS WEBSITE section. STACKWRIGHT v2.6 with external projects in filesystem awareness. PROJECT_STATUS updated with accurate website status.
 
 - **2025-12-17 Session 40:** Website Planning Consolidation Part 2 — Reviewed comprehensive EhkoForge.ai component library (MDV Design System, CRTScreen, TerminalButton, TerminalCard, Logo, Header, Footer, Hero + full pages: index, features, philosophy, download, blog system, deployment configs). Clarified split: EhkoLabs.io (professional portfolio, amber primary, subtle MDV) vs EhkoForge.ai (product site, green primary, full MDV treatment). Domain confirmed: ehkolabs.io. Identified reusable components and content requirements for EhkoLabs build. Ready to build when content provided.
@@ -479,6 +482,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.61 — 2025-12-19 Session 42 — GitHub Projects Integration Complete: 16 issues created, Phase assigned to all. Date field API limitation documented. Created _data/github_projects_reference.md. STACKWRIGHT v2.8.
+- v1.60 — 2025-12-19 Session 42 — GitHub Projects Integration: Added project tracking link to header. Updated STACKWRIGHT v2.7, vault_map.md v4.8. Documented MCP server setup and milestone structure.
 - v1.59 — 2025-12-18 Session 41 — Website Documentation Integration: Updated all docs to reflect ehkolabs-website is BUILT at `C:\ehkolabs-website\` (Astro 4.x, MDV Amber). Ready for domain registration and Cloudflare deployment. Updated vault_map.md v4.7, STACKWRIGHT v2.6.
 - v1.58 — 2025-12-17 Session 40 — Website Planning Part 2: Reviewed full EhkoForge.ai component library. Clarified EhkoLabs.io vs EhkoForge.ai split. Domain confirmed: ehkolabs.io. Identified reusable MDV components. Content requirements documented for EhkoLabs build.
 - v1.57 — 2025-12-17 Session 39 — Website Planning Consolidation: Added EhkoLabs & EhkoForge Websites section to IN PROGRESS. Created 7.0 Website/ folder. Moved website docs from CareerForge vault. STACKWRIGHT v2.4 with Section 18 (Recovery Protocol). vault_map.md v4.5.

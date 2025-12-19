@@ -69,6 +69,7 @@ ingestion/
 |--------|---------|
 | `run_process_transcriptions.bat` | Batch runner for refresh + transcription processing |
 | `EhkoForge Control Panel.vbs` | Silent launcher for ehko_control.py |
+| `populate_roadmap.py` | GitHub Projects automation — reads PROJECT_STATUS.md, creates issues, populates Project #3 |
 
 ## Archived Scripts (5.0 Scripts/_archive/)
 
@@ -192,6 +193,7 @@ ingestion/
 ---
 
 **Changelog:**
+- v2.0 — 2025-12-19 — Added populate_roadmap.py for GitHub Project automation.
 - v1.9 — 2025-12-06 — Document Ingestion System: ingestion/ module, ingest.py CLI, run_ingestion_migration.py.
 - v1.8 — 2025-12-06 — ehko_control.py v3.0: Aligned theme, streamlined panels (Server/ReCog/Index/Folders).
 - v1.7 — 2025-12-06 — Added scheduler.py, ReCog API endpoints, updated forge_server to v2.4.

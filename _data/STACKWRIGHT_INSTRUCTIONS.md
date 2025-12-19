@@ -556,7 +556,81 @@ If response seems to be taking too long:
 
 ---
 
+## 19. GITHUB PROJECTS INTEGRATION
+
+EhkoForge development is tracked publicly via GitHub Projects.
+
+**GitHub Context:**
+- Username: brentyJ
+- Repository: https://github.com/brentyJ/EhkoForge
+- Project #2: "The Ehko Project" (PRIVATE - strategic vision, monetization, Layer 2 commercial features)
+- Project #3: "EhkoForge Roadmap" (PUBLIC - open source MVP, .ehko standard, Layer 1 AGPL features)
+
+**MCP Integration:**
+
+Claude has access to the Arclio github-projects MCP server with these tools:
+- `list_projects` - List all projects
+- `get_project_fields` - Get available fields (Status, Milestone, etc.)
+- `get_project_items` - List issues in project with filtering
+- `create_issue` - Create GitHub issues in repository
+- `add_issue_to_project` - Add existing issues to project board
+- `create_draft_issue` - Create draft issues directly in project
+- `update_project_item_field` - Update Status/Milestone/etc.
+- `delete_project_item` - Remove items
+
+**Project #3 Fields:**
+- **Status:** Todo / In Progress / Done (single-select)
+- **Milestone:** Free text field
+- **Labels, Assignees, Repository** (standard GitHub fields)
+
+**Milestone Structure:**
+
+When populating Project #3 from PROJECT_STATUS.md, use these milestones:
+1. **MVP Core Features** - Essential functionality for v1.0
+2. **Ingot Pipeline** - Frontend completion (backend exists)
+3. **Website Deployment** - EhkoLabs.io and EhkoForge.ai launch
+4. **Voice & Context Systems** - Voice extraction, Preflight processing
+5. **Infrastructure & Polish** - Testing, export, scheduling, documentation
+
+**Reference:** `_data/github_projects_reference.md` — Full API capabilities, limitations, and field IDs
+
+**Key Limitations:**
+- ❌ Cannot set Date fields via API (must be done manually in Table/Roadmap view)
+- ❌ Cannot create custom fields, views, or milestones (one-time manual setup)
+- ✅ CAN update single-select fields (Status, Phase) — use option IDs, not names
+
+**When to Update Projects:**
+
+**Project #3 (Public MVP):**
+- At session end when implementation status changes
+- When PROJECT_STATUS.md is updated with new priorities
+- When marking items complete in "Recently Completed" section
+- When Brent explicitly asks for project sync
+
+**Project #2 (Private Strategic):**
+- Brent manages this directly
+- Contains vision from `_private/` folder
+- Do NOT auto-populate from documentation
+
+**Protocol:**
+
+1. Read PROJECT_STATUS.md to identify tasks
+2. Check current state of Project #3 with `get_project_items`
+3. Create issues with appropriate milestone and status
+4. Update status as work progresses (Todo → In Progress → Done)
+5. Keep PROJECT_STATUS.md and GitHub Project aligned
+
+**Don't:**
+- Auto-sync without being asked
+- Create duplicate issues
+- Modify Project #2 (private planning)
+- Use Project #1 (untitled)
+
+---
+
 **Changelog:**
+- v2.8 — 2025-12-19 — Added github_projects_reference.md with full API capabilities/limitations. Updated Section 19 with reference and key limitations summary. Date fields cannot be set via API.
+- v2.7 — 2025-12-19 — Added Section 19 (GitHub Projects Integration) documenting MCP tools, milestone structure, and sync protocol for public project tracking.
 - v2.6 — 2025-12-18 — Added external projects to filesystem awareness: `C:\ehkolabs-website\` (EhkoLabs.io Astro site). Updated key locations table.
 - v2.5 — 2025-12-18 — Added Section 3A: Two-Layer Architecture (strategic north star) to prevent drift and maintain focus on Layer 1 MVP completion before Layer 2 commercial features.
 - v2.4 — 2025-12-17 — Added Section 18: Recovery Protocol (freezing contingencies) with output limits, checkpointing rules, task manifests, and recovery procedures.

@@ -4,9 +4,9 @@ vault: "EhkoForge"
 type: "system"
 category: "_data"
 status: "active"
-version: "4.7"
+version: "4.9"
 created: 2025-11-29
-updated: 2025-12-18
+updated: 2025-12-19
 tags: [system, reference, navigation]
 ---
 
@@ -14,7 +14,7 @@ tags: [system, reference, navigation]
 
 **Purpose:** Lightweight reference for vault structure. Loaded at session start instead of filesystem scanning.
 **Update frequency:** After major structural changes or weekly.
-**Generated:** 2025-12-18 (Session 41 - Website Documentation Integration)
+**Generated:** 2025-12-19 (Session 42 - GitHub Projects Integration)
 
 ---
 
@@ -33,6 +33,22 @@ G:\Other computers\Ehko\Obsidian\
 ```
 C:\ehkolabs-website\    [EhkoLabs.io professional portfolio - Astro site]
 ```
+
+### GitHub Project Tracking
+
+**Repository:** https://github.com/brentyJ/EhkoForge  
+**Project #2:** "The Ehko Project" (PRIVATE - strategic vision, monetization, Layer 2)  
+**Project #3:** "EhkoForge Roadmap" (PUBLIC - open source MVP tracking)  
+**MCP Server:** Arclio github-projects (configured in Claude Desktop)
+
+**Public Milestones (Project #3):**
+1. MVP Core Features
+2. Ingot Pipeline
+3. Website Deployment
+4. Voice & Context Systems
+5. Infrastructure & Polish
+
+See STACKWRIGHT_INSTRUCTIONS.md Section 19 for full integration details.
 
 ---
 
@@ -329,7 +345,8 @@ ehko_index.db                     [SQLite, ~200KB]
 vault_map.md                      [this file]
 script_registry.md                [v1.2] — Compressed script reference
 db_schema_summary.md              [v1.6] — Compressed DB schema reference
-STACKWRIGHT_INSTRUCTIONS.md       [v2.5] — Claude project instructions (UPDATED)
+github_projects_reference.md      [v1.0] — GitHub Projects API capabilities/limitations
+STACKWRIGHT_INSTRUCTIONS.md       [v2.8] — Claude project instructions
 ```
 
 ### _private/
@@ -453,6 +470,8 @@ python ehko_control.py
 ---
 
 **Changelog:**
+- v4.9 — 2025-12-19 Session 42 — Added github_projects_reference.md to _data/ section. Updated STACKWRIGHT_INSTRUCTIONS to v2.8.
+- v4.8 — 2025-12-19 Session 42 — Added GitHub Project Tracking section documenting repository, Project #3, milestones, and MCP server integration.
 - v4.7 — 2025-12-18 Session 41 — Added EHKOLABS WEBSITE section with external project at `C:\ehkolabs-website\`. Site is BUILT and ready for deployment. Updated 7.0 Website priority status.
 - v4.6 — 2025-12-18 Session 40 — Added TWO_LAYER_ARCHITECTURE.md to _private/ section.
 - v4.5 — 2025-12-17 Session 39 — Added 7.0 Website/ section with EhkoForge website docs (moved from CareerForge vault).
