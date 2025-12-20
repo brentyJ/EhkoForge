@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-19  
-**Version:** 1.61  
+**Last Updated:** 2025-12-20  
+**Version:** 1.62  
 **Repository:** https://github.com/brentyJ/EhkoForge  
 **Project Tracking:** [EhkoForge Roadmap](https://github.com/users/brentyJ/projects/3) (GitHub Project #3)
 
@@ -381,6 +381,8 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 
 ## RECENTLY COMPLETED
 
+- **2025-12-20 Session 43:** Ehko Control Panel v5.0 Major Overhaul — Complete rewrite with tabbed interface (EhkoForge, Website, GlyphWorks). CSS redesigned from ground up to match EhkoLabs terminal aesthetic (blue palette, JetBrains Mono). Touch-optimised for Surface Pro (2196×1464). Added GlyphWorks tab for advanced SVG art creation using programmatic rendering techniques (feTurbulence, feSpecularLighting, Phong model). 8 material presets (Brushed Aluminum, Forged Carbon, Weathered Stone, Neon Glow, Holographic, Glass, Gold Foil, Cyberpunk Chrome). Full parameter controls for noise, lighting, and glow effects. Export to SVG with live preview.
+
 - **2025-12-19 Session 42:** GitHub Projects Integration Complete — Configured Arclio github-projects MCP server. Created 16 issues in Project #3 from PROJECT_STATUS.md tasks. Assigned Phase field to all items (MVP Core, Ingot Pipeline, Website, Voice & Context, Infrastructure). Discovered API limitation: date fields cannot be set programmatically (must use Table view manually). Created `_data/github_projects_reference.md` documenting full API capabilities, limitations, and field IDs. Updated STACKWRIGHT_INSTRUCTIONS.md v2.8 with limitations reference.
 
 - **2025-12-18 Session 41:** Website Documentation Integration — Updated all documentation to reflect that ehkolabs-website is BUILT at `C:\ehkolabs-website\` (not just planned). Astro 4.x site with MDV Amber design, 4 pages complete. Deployment checklist added. vault_map.md v4.7 with new EHKOLABS WEBSITE section. STACKWRIGHT v2.6 with external projects in filesystem awareness. PROJECT_STATUS updated with accurate website status.
@@ -431,7 +433,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 |--------|---------|--------|
 | ehko_refresh.py | v2.0 | ✅ Working |
 | forge_server.py | v2.9 | ✅ Working |
-| ehko_control.py | v4.3 | ✅ Working |
+| ehko_control.py | v5.0 | ✅ Working |
 | run_ingot_migration.py | v1.0 | ✅ Applied |
 | run_reorientation_migration.py | v1.0 | ✅ Applied |
 | run_mana_migration.py | v1.0 | ✅ Applied |
@@ -482,6 +484,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.62 — 2025-12-20 Session 43 — Ehko Control Panel v5.0: Complete rewrite with tabbed interface (EhkoForge/Website/GlyphWorks). Terminal aesthetic CSS matching website. Touch-optimised. GlyphWorks SVG engine with 8 material presets and full parameter controls.
 - v1.61 — 2025-12-19 Session 42 — GitHub Projects Integration Complete: 16 issues created, Phase assigned to all. Date field API limitation documented. Created _data/github_projects_reference.md. STACKWRIGHT v2.8.
 - v1.60 — 2025-12-19 Session 42 — GitHub Projects Integration: Added project tracking link to header. Updated STACKWRIGHT v2.7, vault_map.md v4.8. Documented MCP server setup and milestone structure.
 - v1.59 — 2025-12-18 Session 41 — Website Documentation Integration: Updated all docs to reflect ehkolabs-website is BUILT at `C:\ehkolabs-website\` (Astro 4.x, MDV Amber). Ready for domain registration and Cloudflare deployment. Updated vault_map.md v4.7, STACKWRIGHT v2.6.

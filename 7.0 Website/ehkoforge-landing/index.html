@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EhkoLabs — Coming Soon</title>
+    <meta name="description" content="Memory and identity capture and preservation. Custom AI integration and cognitive scaffolding solutions. Coming Q1 2026.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --blue-400: #6b8cce;
+            --blue-500: #4a6fa5;
+            --blue-600: #3d5a80;
+            --blue-700: #2c4159;
+            --blue-800: #1c2a3a;
+            
+            --accent-primary: var(--blue-400);
+            --accent-glow: rgba(107, 140, 206, 0.4);
+            
+            --bg-primary: #080a0e;
+            --bg-secondary: #0c1018;
+            --bg-tertiary: #111620;
+            
+            --text-primary: #e8eef8;
+            --text-secondary: #8aa4d6;
+            --text-muted: #4a6fa5;
+            --text-dim: #3d5a80;
+            
+            --border-primary: rgba(107, 140, 206, 0.3);
+            --border-subtle: rgba(107, 140, 206, 0.15);
+            
+            --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+            --font-retro: 'VT323', monospace;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            background-image:
+                radial-gradient(circle at 50% -10%, rgba(107, 140, 206, 0.2), transparent 55%),
+                radial-gradient(circle at 10% 120%, rgba(15, 22, 32, 0.9), transparent 70%),
+                radial-gradient(circle at 90% 120%, rgba(7, 10, 18, 0.9), transparent 70%);
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* CRT Overlay */
+        .crt-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(107, 140, 206, 0.02) 2px,
+                    rgba(107, 140, 206, 0.02) 4px
+                );
+            mix-blend-mode: soft-light;
+            opacity: 0.5;
+        }
+
+        .crt-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at center,
+                    rgba(255, 255, 255, 0.03) 0%,
+                    transparent 45%,
+                    rgba(0, 0, 0, 0.4) 100%);
+            mix-blend-mode: soft-light;
+        }
+
+        /* Container */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Terminal Box */
+        .terminal-box {
+            max-width: 700px;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(12, 16, 24, 0.95) 0%, rgba(8, 10, 14, 0.98) 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow:
+                0 0 40px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(107, 140, 206, 0.15);
+        }
+
+        /* Brand Header */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .brand-frame {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 6px;
+            box-shadow: 
+                0 0 12px var(--accent-glow),
+                inset 0 0 12px rgba(107, 140, 206, 0.1);
+        }
+
+        .brand-icon {
+            font-size: 1.3rem;
+            color: var(--accent-primary);
+            text-shadow: 0 0 8px var(--accent-glow);
+            animation: rotate 12s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .brand-name {
+            font-family: var(--font-retro);
+            font-size: 1.6rem;
+            color: var(--accent-primary);
+            letter-spacing: 4px;
+            text-shadow: 
+                0 0 4px var(--accent-primary),
+                0 0 10px var(--accent-glow);
+            line-height: 1;
+        }
+
+        .brand-tagline {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* ASCII Logo Section */
+        .ascii-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            background: rgba(107, 140, 206, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+        }
+
+        /* EHKO + LABS + Acronym row */
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ehko-ascii {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            line-height: 1.2;
+            color: var(--accent-primary);
+            text-shadow: 0 0 6px var(--accent-glow);
+            margin: 0;
+            white-space: pre;
+        }
+
+        /* LABS neon sign container */
+        .labs-neon-sign {
+            width: 140px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .neon-labs {
+            width: 100%;
+            height: auto;
+        }
+
+        /* LABS flicker animations */
+        @keyframes nixie-flicker {
+            0%, 45% { opacity: 1; }
+            45.5%, 46% { opacity: 0.7; }
+            46.5%, 70% { opacity: 1; }
+            70.5%, 72% { opacity: 0.3; }
+            72.5%, 73% { opacity: 1; }
+            73.5%, 74% { opacity: 0.5; }
+            74.5%, 100% { opacity: 1; }
+        }
+
+        @keyframes crt-phosphor {
+            0%, 100% { opacity: 1; }
+            15% { opacity: 0.95; }
+            30% { opacity: 1; }
+            45% { opacity: 0.92; }
+            60% { opacity: 1; }
+            75% { opacity: 0.97; }
+            90% { opacity: 0.94; }
+        }
+
+        @keyframes crt-flicker-die {
+            0%, 20% { opacity: 1; }
+            22% { opacity: 0.3; }
+            24% { opacity: 0.8; }
+            26% { opacity: 0.1; }
+            28% { opacity: 0; }
+            35% { opacity: 0; }
+            37% { opacity: 0.4; }
+            39% { opacity: 0.1; }
+            42% { opacity: 0.7; }
+            45% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes led-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        @keyframes led-segment-on {
+            0%, 30% { opacity: 0; }
+            35% { opacity: 1; }
+            85% { opacity: 1; }
+            90% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes led-segment-off {
+            0%, 30% { opacity: 0.3; }
+            35% { opacity: 0; }
+            85% { opacity: 0; }
+            90% { opacity: 0.3; }
+            100% { opacity: 0.3; }
+        }
+
+        /* Acronym display */
+        .acronym-display {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            line-height: 1.4;
+            color: var(--text-secondary);
+            white-space: pre;
+            text-align: left;
+        }
+
+        /* Nixie light effects for acronyms */
+        .blink-dot {
+            animation: blink-cursor 1s step-end infinite;
+            color: var(--accent-primary);
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .glow-letter {
+            color: #fff;
+            text-shadow: 
+                0 0 4px var(--accent-primary),
+                0 0 8px var(--accent-primary),
+                0 0 12px var(--accent-primary);
+        }
+
+        /* Content */
+        .content {
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .headline {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .services {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-tag {
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 3px;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            background: rgba(107, 140, 206, 0.08);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+        }
+
+        .status-label {
+            font-family: var(--font-retro);
+            font-size: 0.95rem;
+            color: var(--accent-primary);
+            letter-spacing: 2px;
+            text-shadow: 0 0 6px var(--accent-glow);
+        }
+
+        .status-date {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+
+        /* Links */
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .link {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.35rem 0.65rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.65rem;
+            transition: all 0.2s ease;
+        }
+
+        .link:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--text-secondary);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .link-icon {
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            position: relative;
+            z-index: 10;
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .terminal-box {
+                padding: 1rem;
+            }
+            
+            .brand-name {
+                font-size: 1.3rem;
+                letter-spacing: 2px;
+            }
+            
+            .logo-row {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .acronym-display {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .ehko-ascii {
+                font-size: 0.4rem;
+            }
+            
+            .labs-neon-sign {
+                width: 120px;
+            }
+            
+            .links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .link {
+                width: 100%;
+                max-width: 180px;
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .brand-icon { animation: none; }
+            .blink-dot { animation: none; opacity: 1; }
+            .letter { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    
+    <div class="container">
+        <div class="terminal-box">
+            <!-- Brand Header -->
+            <div class="brand">
+                <div class="brand-frame">
+                    <span class="brand-icon">◈</span>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">EHKOLABS</span>
+                    <span class="brand-tagline">Memory & Integration Solutions</span>
+                </div>
+            </div>
+            
+            <!-- ASCII Logo Section: EHKO + LABS + Acronym -->
+            <div class="ascii-section">
+                <div class="logo-row">
+                    <pre class="ehko-ascii">███████╗██╗  ██╗██╗  ██╗ ██████╗ 
+██╔════╝██║  ██║██║ ██╔╝██╔═══██╗
+█████╗  ███████║█████╔╝ ██║   ██║
+██╔══╝  ██╔══██║██╔═██╗ ██║   ██║
+███████╗██║  ██║██║  ██╗╚██████╔╝
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝</pre>
+                    <div class="labs-neon-sign" id="labs-container"></div>
+                    <pre class="acronym-display" id="acronym-display"></pre>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="content">
+                <p class="headline">
+                    Custom AI integration and cognitive scaffolding solutions.<br>
+                    Memory and identity capture and preservation.
+                </p>
+                
+                <div class="services">
+                    <span class="service-tag">Identity Preservation</span>
+                    <span class="service-tag">AI Integration</span>
+                    <span class="service-tag">Custom Solutions</span>
+                    <span class="service-tag">Open Source</span>
+                </div>
+                
+                <div class="status">
+                    <span class="status-label">COMING SOON</span>
+                    <span class="status-date">Full details & roadmap — Q1 2026</span>
+                </div>
+            </div>
+            
+            <!-- Links -->
+            <div class="links">
+                <a href="https://github.com/brentyJ/EhkoForge" class="link" target="_blank" rel="noopener">
+                    <span class="link-icon">⟨/⟩</span>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://www.linkedin.com/in/brent-lefebure-38a09029b/" class="link" target="_blank" rel="noopener">
+                    <span class="link-icon">▣</span>
+                    <span>LinkedIn</span>
+                </a>
+                <a href="mailto:brent@ehkolabs.io" class="link">
+                    <span class="link-icon">✉</span>
+                    <span>brent@ehkolabs.io</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>EhkoForge is <a href="https://github.com/brentyJ/EhkoForge/blob/main/LICENSE" target="_blank" rel="noopener">AGPLv3 licensed</a></p>
+    </footer>
+
+    <script>
+        // =============================================================================
+        // LABS DISPLAY STYLES (from ehkolabs-website)
+        // =============================================================================
+        const labsStyles = {
+            'nixie-red': {
+                name: 'Nixie Tubes',
+                animation: 'nixie-flicker 4s infinite',
+                svg: `<svg class="neon-labs" viewBox="0 0 220 60" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <filter id="nixieGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                            <feColorMatrix in="blur" type="matrix" values="
+                                2 0 0 0 0
+                                0 0.3 0 0 0
+                                0 0 0.3 0 0
+                                0 0 0 1.5 0" />
+                        </filter>
+                        <linearGradient id="glassShine" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2" />
+                            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.03" />
+                            <stop offset="100%" stop-color="#000000" stop-opacity="0.1" />
+                        </linearGradient>
+                    </defs>
+                    <g transform="translate(5, 0)" class="letter">
+                        <rect x="0" y="5" width="45" height="50" rx="6" fill="none" stroke="#333" stroke-width="1" opacity="0.3" />
+                        <rect x="2" y="7" width="16" height="42" rx="5" fill="url(#glassShine)" opacity="0.2" />
+                        <g filter="url(#nixieGlow)">
+                            <path d="M 15,18 L 15,45 L 32,45" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 15,18 L 15,45 L 32,45" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 15,18 L 15,45 L 32,45" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+                        </g>
+                    </g>
+                    <g transform="translate(58, 0)" class="letter" style="animation-delay: 0.5s">
+                        <rect x="0" y="5" width="45" height="50" rx="6" fill="none" stroke="#333" stroke-width="1" opacity="0.3" />
+                        <rect x="2" y="7" width="16" height="42" rx="5" fill="url(#glassShine)" opacity="0.2" />
+                        <g filter="url(#nixieGlow)">
+                            <path d="M 12,45 L 18,18" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 12,45 L 18,18" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 12,45 L 18,18" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 27,18 L 33,45" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 27,18 L 33,45" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 27,18 L 33,45" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 16,35 L 29,35" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 16,35 L 29,35" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 16,35 L 29,35" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                        </g>
+                    </g>
+                    <g transform="translate(111, 0)" class="letter" style="animation-delay: 1s">
+                        <rect x="0" y="5" width="45" height="50" rx="6" fill="none" stroke="#333" stroke-width="1" opacity="0.3" />
+                        <rect x="2" y="7" width="16" height="42" rx="5" fill="url(#glassShine)" opacity="0.2" />
+                        <g filter="url(#nixieGlow)">
+                            <path d="M 15,18 L 15,45" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 15,18 L 15,45" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 15,18 L 15,45" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 15,18 L 27,18 L 27,30 L 15,30" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 15,18 L 27,18 L 27,30 L 15,30" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 15,18 L 27,18 L 27,30 L 15,30" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+                            <path d="M 15,33 L 29,33 L 29,45 L 15,45" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 15,33 L 29,33 L 29,45 L 15,45" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M 15,33 L 29,33 L 29,45 L 15,45" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+                        </g>
+                    </g>
+                    <g transform="translate(164, 0)" class="letter" style="animation-delay: 1.5s">
+                        <rect x="0" y="5" width="45" height="50" rx="6" fill="none" stroke="#333" stroke-width="1" opacity="0.3" />
+                        <rect x="2" y="7" width="16" height="42" rx="5" fill="url(#glassShine)" opacity="0.2" />
+                        <g filter="url(#nixieGlow)">
+                            <path d="M 29,18 L 15,18" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 29,18 L 15,18" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 29,18 L 15,18" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 15,18 L 15,30" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 15,18 L 15,30" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 15,18 L 15,30" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 15,31.5 L 29,31.5" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 15,31.5 L 29,31.5" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 15,31.5 L 29,31.5" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 29,33 L 29,45" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 29,33 L 29,45" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 29,33 L 29,45" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                            <path d="M 29,45 L 15,45" fill="none" stroke="#cc0000" stroke-width="3.5" stroke-linecap="round" opacity="0.9" />
+                            <path d="M 29,45 L 15,45" fill="none" stroke="#ff6666" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M 29,45 L 15,45" fill="none" stroke="#ffcccc" stroke-width="0.7" stroke-linecap="round" opacity="0.6" />
+                        </g>
+                    </g>
+                </svg>`
+            },
+
+            'vector-crt': {
+                name: 'Vector CRT',
+                animation: 'crt-phosphor 3s infinite',
+                svg: `<svg class="neon-labs" viewBox="0 0 220 60" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <filter id="phosphorGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur1" />
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur2" />
+                            <feMerge>
+                                <feMergeNode in="blur2" />
+                                <feMergeNode in="blur1" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <radialGradient id="crtVignette" cx="50%" cy="50%" r="60%" fx="50%" fy="50%">
+                            <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+                            <stop offset="70%" stop-color="#000000" stop-opacity="0" />
+                            <stop offset="100%" stop-color="#000000" stop-opacity="0.6" />
+                        </radialGradient>
+                        <radialGradient id="screenGlow" cx="50%" cy="50%" r="70%" fx="50%" fy="40%">
+                            <stop offset="0%" stop-color="#1a0505" stop-opacity="1" />
+                            <stop offset="100%" stop-color="#0a0202" stop-opacity="1" />
+                        </radialGradient>
+                        <pattern id="crtScanlines" patternUnits="userSpaceOnUse" width="100" height="2">
+                            <rect width="100" height="1" fill="#000000" opacity="0.3" />
+                            <rect y="1" width="100" height="1" fill="transparent" />
+                        </pattern>
+                    </defs>
+                    <g transform="translate(0, 2)">
+                        <rect x="0" y="0" width="120" height="56" rx="6" ry="6" fill="#1a1a1a" />
+                        <rect x="1" y="1" width="118" height="54" rx="5" ry="5" fill="#0d0d0d" />
+                        <rect x="3" y="3" width="114" height="50" rx="3" ry="3" fill="#050505" stroke="#2a2a2a" stroke-width="1" />
+                        <rect x="5" y="5" width="110" height="46" rx="2" ry="2" fill="url(#screenGlow)" />
+                        <rect x="5" y="5" width="110" height="46" rx="2" ry="2" fill="url(#crtScanlines)" opacity="0.5" />
+                        <g class="letter" filter="url(#phosphorGlow)">
+                            <path d="M 14,12 L 14,44 L 26,44" fill="none" stroke="#aa2200" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+                            <path d="M 14,12 L 14,44 L 26,44" fill="none" stroke="#dd4422" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 14,12 L 14,44 L 26,44" fill="none" stroke="#ff8866" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </g>
+                        <g class="letter" filter="url(#phosphorGlow)" style="animation-delay: 0.1s">
+                            <path d="M 34,44 L 45,12 L 56,44 M 38,35 L 52,35" fill="none" stroke="#aa2200" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+                            <path d="M 34,44 L 45,12 L 56,44 M 38,35 L 52,35" fill="none" stroke="#dd4422" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 34,44 L 45,12 L 56,44 M 38,35 L 52,35" fill="none" stroke="#ff8866" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </g>
+                        <g class="letter letter-b" filter="url(#phosphorGlow)" style="animation-delay: 0.2s">
+                            <path d="M 64,12 L 64,44 M 64,12 L 76,12 Q 82,12 82,19 Q 82,26 76,26 L 64,28 M 64,28 L 78,28 Q 84,28 84,36 Q 84,44 78,44 L 64,44" fill="none" stroke="#aa2200" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+                            <path d="M 64,12 L 64,44 M 64,12 L 76,12 Q 82,12 82,19 Q 82,26 76,26 L 64,28 M 64,28 L 78,28 Q 84,28 84,36 Q 84,44 78,44 L 64,44" fill="none" stroke="#dd4422" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 64,12 L 64,44 M 64,12 L 76,12 Q 82,12 82,19 Q 82,26 76,26 L 64,28 M 64,28 L 78,28 Q 84,28 84,36 Q 84,44 78,44 L 64,44" fill="none" stroke="#ff8866" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </g>
+                        <g class="letter" filter="url(#phosphorGlow)" style="animation-delay: 0.3s">
+                            <path d="M 106,16 Q 106,12 99,12 L 93,12 Q 87,12 87,19 Q 87,26 93,26 L 100,26 Q 106,26 106,35 Q 106,44 99,44 L 93,44 Q 87,44 87,40" fill="none" stroke="#aa2200" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+                            <path d="M 106,16 Q 106,12 99,12 L 93,12 Q 87,12 87,19 Q 87,26 93,26 L 100,26 Q 106,26 106,35 Q 106,44 99,44 L 93,44 Q 87,44 87,40" fill="none" stroke="#dd4422" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                            <path d="M 106,16 Q 106,12 99,12 L 93,12 Q 87,12 87,19 Q 87,26 93,26 L 100,26 Q 106,26 106,35 Q 106,44 99,44 L 93,44 Q 87,44 87,40" fill="none" stroke="#ff8866" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </g>
+                        <rect x="5" y="5" width="110" height="46" rx="2" ry="2" fill="url(#crtVignette)" />
+                    </g>
+                </svg>`
+            },
+
+            'seven-segment': {
+                name: '7-Segment LED',
+                animation: 'led-pulse 2s infinite',
+                svg: `<svg class="neon-labs" viewBox="0 0 220 60" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <filter id="ledGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+                            <feColorMatrix in="blur" type="matrix" values="
+                                1.5 0 0 0 0
+                                0 0.2 0 0 0
+                                0 0 0.1 0 0
+                                0 0 0 1.2 0" />
+                        </filter>
+                        <linearGradient id="digitBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#1a1a1a" />
+                            <stop offset="50%" stop-color="#0d0d0d" />
+                            <stop offset="100%" stop-color="#1a1a1a" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="220" height="60" rx="4" fill="#0a0a0a" />
+                    <rect x="2" y="2" width="216" height="56" rx="3" fill="#111" />
+                    <g transform="translate(10, 5)" class="letter">
+                        <rect x="0" y="0" width="42" height="50" rx="2" fill="url(#digitBg)" />
+                        <polygon points="6,4 36,4 34,6 8,6" fill="#1a0505" opacity="0.3" />
+                        <polygon points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#1a0505" opacity="0.3" />
+                        <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#1a0505" opacity="0.3" />
+                        <g filter="url(#ledGlow)">
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#cc0000" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#ff4444" opacity="0.7" />
+                            <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#cc0000" />
+                            <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#ff4444" opacity="0.7" />
+                            <polygon points="6,46 36,46 34,44 8,44" fill="#cc0000" />
+                            <polygon points="6,46 36,46 34,44 8,44" fill="#ff4444" opacity="0.7" />
+                        </g>
+                    </g>
+                    <g transform="translate(62, 5)" class="letter" style="animation-delay: 0.15s">
+                        <rect x="0" y="0" width="42" height="50" rx="2" fill="url(#digitBg)" />
+                        <polygon points="6,46 36,46 34,44 8,44" fill="#1a0505" opacity="0.3" />
+                        <g filter="url(#ledGlow)">
+                            <polygon points="6,4 36,4 34,6 8,6" fill="#cc0000" />
+                            <polygon points="6,4 36,4 34,6 8,6" fill="#ff4444" opacity="0.7" />
+                            <polygon points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#cc0000" />
+                            <polygon points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#ff4444" opacity="0.7" />
+                            <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#cc0000" />
+                            <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#ff4444" opacity="0.7" />
+                            <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#cc0000" />
+                            <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#ff4444" opacity="0.7" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#cc0000" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#ff4444" opacity="0.7" />
+                            <polygon points="6,24 8,22 34,22 36,24 34,26 8,26" fill="#cc0000" />
+                            <polygon points="6,24 8,22 34,22 36,24 34,26 8,26" fill="#ff4444" opacity="0.7" />
+                        </g>
+                    </g>
+                    <g transform="translate(114, 5)" class="letter" style="animation-delay: 0.3s">
+                        <rect x="0" y="0" width="42" height="50" rx="2" fill="url(#digitBg)" />
+                        <polygon class="b-off-top" points="6,4 36,4 34,6 8,6" fill="#1a0505" opacity="0.3" />
+                        <polygon class="b-off-right-top" points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#1a0505" opacity="0.3" />
+                        <g class="b-lit-top" filter="url(#ledGlow)" style="opacity: 0;">
+                            <polygon points="6,4 36,4 34,6 8,6" fill="#cc0000" />
+                            <polygon points="6,4 36,4 34,6 8,6" fill="#ff4444" opacity="0.7" />
+                        </g>
+                        <g class="b-lit-right-top" filter="url(#ledGlow)" style="opacity: 0;">
+                            <polygon points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#cc0000" />
+                            <polygon points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#ff4444" opacity="0.7" />
+                        </g>
+                        <g filter="url(#ledGlow)">
+                            <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#cc0000" />
+                            <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#ff4444" opacity="0.7" />
+                            <polygon points="6,46 36,46 34,44 8,44" fill="#cc0000" />
+                            <polygon points="6,46 36,46 34,44 8,44" fill="#ff4444" opacity="0.7" />
+                            <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#cc0000" />
+                            <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#ff4444" opacity="0.7" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#cc0000" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#ff4444" opacity="0.7" />
+                            <polygon points="6,24 8,22 34,22 36,24 34,26 8,26" fill="#cc0000" />
+                            <polygon points="6,24 8,22 34,22 36,24 34,26 8,26" fill="#ff4444" opacity="0.7" />
+                        </g>
+                    </g>
+                    <g transform="translate(166, 5)" class="letter" style="animation-delay: 0.45s">
+                        <rect x="0" y="0" width="42" height="50" rx="2" fill="url(#digitBg)" />
+                        <polygon points="35,6 37,8 37,22 35,24 33,22 33,8" fill="#1a0505" opacity="0.3" />
+                        <polygon points="5,26 7,28 7,42 5,44 3,42 3,28" fill="#1a0505" opacity="0.3" />
+                        <g filter="url(#ledGlow)">
+                            <polygon points="6,4 36,4 34,6 8,6" fill="#cc0000" />
+                            <polygon points="6,4 36,4 34,6 8,6" fill="#ff4444" opacity="0.7" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#cc0000" />
+                            <polygon points="5,6 7,8 7,22 5,24 3,22 3,8" fill="#ff4444" opacity="0.7" />
+                            <polygon points="6,24 8,22 34,22 36,24 34,26 8,26" fill="#cc0000" />
+                            <polygon points="6,24 8,22 34,22 36,24 34,26 8,26" fill="#ff4444" opacity="0.7" />
+                            <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#cc0000" />
+                            <polygon points="35,26 37,28 37,42 35,44 33,42 33,28" fill="#ff4444" opacity="0.7" />
+                            <polygon points="6,46 36,46 34,44 8,44" fill="#cc0000" />
+                            <polygon points="6,46 36,46 34,44 8,44" fill="#ff4444" opacity="0.7" />
+                        </g>
+                    </g>
+                </svg>`
+            }
+        };
+
+        function loadRandomLabsStyle() {
+            const styleKeys = Object.keys(labsStyles);
+            const randomKey = styleKeys[Math.floor(Math.random() * styleKeys.length)];
+            const selectedStyle = labsStyles[randomKey];
+            
+            const container = document.getElementById('labs-container');
+            if (container) {
+                container.innerHTML = selectedStyle.svg;
+                
+                const letters = container.querySelectorAll('.letter');
+                letters.forEach(letter => {
+                    letter.style.animation = selectedStyle.animation;
+                });
+                
+                // Special flicker for CRT B letter
+                if (randomKey === 'vector-crt') {
+                    const letterB = container.querySelector('.letter-b');
+                    if (letterB) {
+                        letterB.style.animation = 'crt-flicker-die 6s infinite';
+                    }
+                }
+                
+                // Special b-to-8 flip for 7-segment
+                if (randomKey === 'seven-segment') {
+                    const litSegments = container.querySelectorAll('.b-lit-top, .b-lit-right-top');
+                    litSegments.forEach(seg => {
+                        seg.style.animation = 'led-segment-on 4s infinite';
+                    });
+                    const offSegments = container.querySelectorAll('.b-off-top, .b-off-right-top');
+                    offSegments.forEach(seg => {
+                        seg.style.animation = 'led-segment-off 4s infinite';
+                    });
+                }
+            }
+        }
+
+        // =============================================================================
+        // EHKO ACRONYM ROTATOR
+        // =============================================================================
+        const EHKO_ACRONYMS = [
+            ['Evolving', 'Human', 'Knowledge', 'Observer'],
+            ['Eternal', 'Human', 'Knowledge', 'Origin'],
+            ['Ethical', 'Heritage', 'Knowledge', 'Oracle'],
+            ['Emergent', 'Human', 'Knowledge', 'Organizer'],
+            ['Enduring', 'Human', 'Knowledge', 'Opus'],
+            ['Experiential', 'Human', 'Knowledge', 'Object'],
+            ['Essential', 'Human', 'Knowledge', 'Origin'],
+            ['Existential', 'Human', 'Knowledge', 'Observer'],
+            ['Encoded', 'Human', 'Knowledge', 'Output'],
+            ['Everlasting', 'Human', 'Knowledge', 'Orchestrator']
+        ];
+
+        function getRandomAcronym() {
+            return EHKO_ACRONYMS[Math.floor(Math.random() * EHKO_ACRONYMS.length)];
+        }
+
+        function updateAcronymDisplay() {
+            const display = document.getElementById('acronym-display');
+            if (!display) return;
+            
+            const acronym = getRandomAcronym();
+            
+            const formatWord = (word) => 
+                `<span class="blink-dot">•</span> <span class="glow-letter">${word[0]}</span>${word.slice(1)}`;
+            
+            display.innerHTML = 
+`${formatWord(acronym[0])}
+${formatWord(acronym[1])}
+${formatWord(acronym[2])}
+${formatWord(acronym[3])}`;
+        }
+
+        // =============================================================================
+        // INITIALIZE
+        // =============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRandomLabsStyle();
+            updateAcronymDisplay();
+        });
+        
+        // Rotate acronym every 10 seconds
+        setInterval(updateAcronymDisplay, 10000);
+    </script>
+</body>
+</html>
