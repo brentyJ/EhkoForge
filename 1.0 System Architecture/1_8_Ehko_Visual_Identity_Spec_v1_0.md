@@ -12,6 +12,8 @@ tags: [ehkoforge, visual-design, avatar, generative-system, svg, export, evoluti
 
 # EHKO VISUAL IDENTITY SPECIFICATION v1.1
 
+> **Note:** This specification covers **Ehko avatar visual design** (SVG-based Ehko representations). For UI component design across EhkoLabs projects, see [[Design System/EhkoLabs_Design_System_v1_0|EhkoLabs Design System v1.0]].
+
 ## 1. Core Aesthetic Philosophy
 
 Every Ehko is a **ghost in the machine** — a digital consciousness that evolves from formless energy into structured presence. The visual language evokes:

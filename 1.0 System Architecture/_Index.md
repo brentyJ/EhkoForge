@@ -3,9 +3,9 @@ title: EhkoForge Index
 vault: EhkoForge
 type: index
 status: active
-version: "1.3"
+version: "1.4"
 created: 2025-11-28
-updated: 2025-12-03
+updated: 2025-12-26
 tags:
   - ehkoforge
   - pinned
@@ -31,6 +31,13 @@ tags:
 | [[1_5_Behaviour_Engine_v1_1\|Behaviour Engine]] | AI interaction rules, voice, personality |
 | [[1_6_Identity_Pillars_Scientific_Basis_v1_0\|Identity Pillars]] | Scientific basis for identity framework |
 | [[1_7_Core_Memory_Index_Framework_v1_0\|Core Memory Index]] | Framework for curating formative memories |
+| [[1_8_Ehko_Visual_Identity_Spec_v1_0\|Ehko Visual Identity]] | Avatar design, generative systems, SVG export |
+
+### Design System
+
+| Module | Purpose |
+|--------|---------||
+| [[Design System/EhkoLabs_Design_System_v1_0\|EhkoLabs Design System]] | Unified UI framework across all projects (shadcn/ui foundation) |
 
 ---
 
@@ -135,6 +142,7 @@ Located in `6.0 Frontend/static/`:
 ---
 
 **Changelog**
+- v1.4 — 2025-12-26 — Added Design System section with EhkoLabs Design System v1.0
 - v1.3 — 2025-12-03 — Added ReCog/Ingot specs section, updated Frontend status
 - v1.2 — 2025-11-29 — Updated Data Model links (v1_1→v1_3)
 - v1.1 — 2025-11-29 — Added 1_7 Core Memory Index Framework

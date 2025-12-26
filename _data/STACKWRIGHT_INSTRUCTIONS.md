@@ -1,4 +1,4 @@
-# EHKOFORGE STACKWRIGHT INSTRUCTIONS v2.6
+# EHKOFORGE STACKWRIGHT INSTRUCTIONS v2.9
 
 ---
 
@@ -24,7 +24,43 @@ Default to action.
 1. Check if key documents are already attached to the conversation (Brent uploads current versions to save tokens)
 2. If not attached, read `EhkoForge/_data/vault_map.md` for structure reference
 3. Use attached docs as authoritative — only read from filesystem for changes or missing files
-4. Do NOT run `directory_tree()` unless explicitly asked to update the map
+4. Follow filesystem navigation rules below
+
+**Filesystem Navigation Rules:**
+
+**NEVER run `directory_tree()` on:**
+- Project root directories (`C:\ehkolabs-website\`, vault roots)
+- Any directory containing `node_modules/`
+- Any directory containing `.git/`
+- Windows system directories
+
+**Problem:** These directories contain tens of thousands of files. `directory_tree()` will exceed the 1MB tool result limit and hang the session.
+
+**Instead:**
+- ✅ Use `list_directory()` for targeted exploration (non-recursive, one level)
+- ✅ Use `directory_tree()` ONLY on specific subdirectories you need to map
+- ✅ Navigate directly to known paths from `vault_map.md`
+- ✅ Use `search_files()` when looking for specific content
+
+**Safe Patterns:**
+```python
+# ✅ GOOD: Targeted directory listing
+Filesystem:list_directory("C:\\ehkolabs-website\\src\\pages")
+
+# ✅ GOOD: Specific subdirectory tree
+Filesystem:directory_tree("G:\\Other computers\\Ehko\\Obsidian\\EhkoForge\\1.0 System Architecture")
+
+# ✅ GOOD: Search for specific files
+Filesystem:search_files("C:\\ehkolabs-website\\src", "about.astro")
+
+# ❌ BAD: Root-level tree (will fail)
+Filesystem:directory_tree("C:\\ehkolabs-website")
+
+# ❌ BAD: Vault root tree (will fail)
+Filesystem:directory_tree("G:\\Other computers\\Ehko\\Obsidian\\EhkoForge")
+```
+
+**When you need full structure:** Request that Brent update `vault_map.md` manually rather than attempting to generate it programmatically.
 
 **Active Vaults:**
 - `EhkoForge/` — System framework
@@ -629,6 +665,7 @@ When populating Project #3 from PROJECT_STATUS.md, use these milestones:
 ---
 
 **Changelog:**
+- v2.9 — 2025-12-23 — Expanded Section 2 (Filesystem Navigation Rules) with comprehensive guidance on directory_tree() limits, safe patterns, and alternative approaches. Prevents 1MB tool result errors from node_modules/.git traversal.
 - v2.8 — 2025-12-19 — Added github_projects_reference.md with full API capabilities/limitations. Updated Section 19 with reference and key limitations summary. Date fields cannot be set via API.
 - v2.7 — 2025-12-19 — Added Section 19 (GitHub Projects Integration) documenting MCP tools, milestone structure, and sync protocol for public project tracking.
 - v2.6 — 2025-12-18 — Added external projects to filesystem awareness: `C:\ehkolabs-website\` (EhkoLabs.io Astro site). Updated key locations table.

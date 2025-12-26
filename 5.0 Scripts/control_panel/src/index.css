@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* EhkoForge Terminal Theme - Blue */
+    --background: 222 47% 11%;        /* #080a0e - Dark navy */
+    --foreground: 210 40% 98%;        /* #e8eef8 - Off-white */
+    
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222 84% 4.9%;          /* Darker overlay */
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 214 70% 60%;           /* #6b8cce - Terminal blue */
+    --primary-foreground: 222 47% 11%;
+    
+    --secondary: 217 32% 17%;         /* Muted variant */
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 217 32% 17%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62% 30%;         /* Red */
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 214 70% 60%;
+    
+    --radius: 0.5rem;
+    
+    /* Status colors */
+    --success: 142 71% 45%;           /* Green */
+    --warning: 38 92% 50%;            /* Orange */
+    --error: 0 84% 60%;               /* Red */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom terminal styling */
+.terminal-glow {
+  box-shadow: 0 0 10px rgba(107, 140, 206, 0.3),
+              0 0 20px rgba(107, 140, 206, 0.1);
+}
+
+.status-active {
+  @apply text-[hsl(var(--success))];
+}
+
+.status-stopped {
+  @apply text-muted-foreground;
+}
+
+.status-error {
+  @apply text-[hsl(var(--error))];
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground;
+}

@@ -1,7 +1,7 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-20  
-**Version:** 1.62  
+**Last Updated:** 2025-12-21  
+**Version:** 1.63  
 **Repository:** https://github.com/brentyJ/EhkoForge  
 **Project Tracking:** [EhkoForge Roadmap](https://github.com/users/brentyJ/projects/3) (GitHub Project #3)
 
@@ -21,7 +21,7 @@
 - [x] All pages complete (Home, About, Projects, Contact)
 - [x] MDV Amber design system implemented
 - [ ] Register domain
-- [ ] Push to GitHub
+- [x] Push to GitHub
 - [ ] Deploy to Cloudflare Pages
 - [ ] Configure custom domain
 
@@ -484,6 +484,7 @@ See: `2.0 Modules/Reorientation_Spec_v0_1.md`
 ---
 
 **Changelog:**
+- v1.63 — 2025-12-21 Session 45 — EhkoLabs Website Live: GitHub Activity component (live commit feeds from API), text brightness reduction site-wide, British English spelling corrections, "Recent Development" → "Recent Activity" section rename, projects page styling updates. Pushed to GitHub. CSS cache bug noted for future fix.
 - v1.62 — 2025-12-20 Session 43 — Ehko Control Panel v5.0: Complete rewrite with tabbed interface (EhkoForge/Website/GlyphWorks). Terminal aesthetic CSS matching website. Touch-optimised. GlyphWorks SVG engine with 8 material presets and full parameter controls.
 - v1.61 — 2025-12-19 Session 42 — GitHub Projects Integration Complete: 16 issues created, Phase assigned to all. Date field API limitation documented. Created _data/github_projects_reference.md. STACKWRIGHT v2.8.
 - v1.60 — 2025-12-19 Session 42 — GitHub Projects Integration: Added project tracking link to header. Updated STACKWRIGHT v2.7, vault_map.md v4.8. Documented MCP server setup and milestone structure.
