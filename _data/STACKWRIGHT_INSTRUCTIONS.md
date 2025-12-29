@@ -18,7 +18,7 @@ Default to action.
 
 ## 2. FILESYSTEM AWARENESS
 
-**Root:** `G:\Other computers\Ehko\Obsidian\`
+**Root:** `C:\EhkoVaults\`
 
 **At session start:**
 1. Check if key documents are already attached to the conversation (Brent uploads current versions to save tokens)
@@ -29,7 +29,7 @@ Default to action.
 **Filesystem Navigation Rules:**
 
 **NEVER run `directory_tree()` on:**
-- Project root directories (`C:\ehkolabs-website\`, vault roots)
+- Project root directories (`C:\EhkoDev\ehkolabs-website\`, vault roots)
 - Any directory containing `node_modules/`
 - Any directory containing `.git/`
 - Windows system directories
@@ -45,19 +45,19 @@ Default to action.
 **Safe Patterns:**
 ```python
 # ✅ GOOD: Targeted directory listing
-Filesystem:list_directory("C:\\ehkolabs-website\\src\\pages")
+Filesystem:list_directory("C:\\EhkoDev\\ehkolabs-website\\src\\pages")
 
 # ✅ GOOD: Specific subdirectory tree
-Filesystem:directory_tree("G:\\Other computers\\Ehko\\Obsidian\\EhkoForge\\1.0 System Architecture")
+Filesystem:directory_tree("C:\\EhkoVaults\\EhkoForge\\1.0 System Architecture")
 
 # ✅ GOOD: Search for specific files
-Filesystem:search_files("C:\\ehkolabs-website\\src", "about.astro")
+Filesystem:search_files("C:\\EhkoDev\\ehkolabs-website\\src", "about.astro")
 
 # ❌ BAD: Root-level tree (will fail)
-Filesystem:directory_tree("C:\\ehkolabs-website")
+Filesystem:directory_tree("C:\\EhkoDev\\ehkolabs-website")
 
 # ❌ BAD: Vault root tree (will fail)
-Filesystem:directory_tree("G:\\Other computers\\Ehko\\Obsidian\\EhkoForge")
+Filesystem:directory_tree("C:\\EhkoVaults\\EhkoForge")
 ```
 
 **When you need full structure:** Request that Brent update `vault_map.md` manually rather than attempting to generate it programmatically.
@@ -67,7 +67,7 @@ Filesystem:directory_tree("G:\\Other computers\\Ehko\\Obsidian\\EhkoForge")
 - `Mirrorwell/` — Personal content
 
 **External Projects:**
-- `C:\ehkolabs-website\` — EhkoLabs.io professional portfolio (Astro site)
+- `C:\EhkoDev\ehkolabs-website\` — EhkoLabs.io professional portfolio (Astro site)
 
 **Dormant Vaults (scoped out):**
 - `MonsterGarden/` — Future plant-tracking project
@@ -88,7 +88,7 @@ Claude Code v2.0.55 is installed. Use filesystem tools proactively when vault wo
 | `Mirrorwell/2_Reflection Library/2.1 Journals/` | Processed journal entries |
 | `Mirrorwell/2_Reflection Library/2.2 Transcripts/` | Raw + processed transcripts |
 | `Mirrorwell/Templates/reflection_template.md` | Reflection template |
-| `C:\ehkolabs-website\` | EhkoLabs.io website (Astro) |
+| `C:\EhkoDev\ehkolabs-website\` | EhkoLabs.io website (Astro) |
 
 ---
 

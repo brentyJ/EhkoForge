@@ -1,9 +1,70 @@
 # EhkoForge Project Status
 
-**Last Updated:** 2025-12-21  
-**Version:** 1.63  
+**Last Updated:** 2025-12-29  
+**Version:** 1.64  
 **Repository:** https://github.com/brentyJ/EhkoForge  
 **Project Tracking:** [EhkoForge Roadmap](https://github.com/users/brentyJ/projects/3) (GitHub Project #3)
+
+---
+
+## RECENT UPDATES
+
+### EhkoLabs Website — Infrastructure Upgrade (Session 42 - 2025-12-29)
+
+**shadcn/ui Integration Complete:**
+- [x] Added React integration to Astro
+- [x] Installed shadcn/ui component library
+- [x] Configured Tailwind CSS with terminal theme
+- [x] Created Button component with terminal aesthetic
+- [x] Built test page with working demos
+- [x] Added to gitignore (won't deploy)
+
+**CSS Architecture Refactor:**
+- [x] Identified CSS conflicts between global.css and Tailwind
+- [x] Created global-v2.css (utilities removed, design system only)
+- [x] Renamed conflicting classes (.container → .terminal-container, .btn → .terminal-btn)
+- [x] Removed utility classes (spacing, colors) - now use Tailwind
+- [x] Created migration scripts (migrate.py, rollback.py, .bat files)
+- [x] Successfully migrated all pages automatically
+- [x] Updated 2 files (404.astro, services.astro)
+- [x] Renamed global-v2.css → global.css (final switchover)
+
+**Feature Planning & Demos:**
+- [x] Created feature-demos.astro page
+- [x] Mockups for 6 major features:
+  1. Interactive Project Showcase (filterable cards, GitHub stats)
+  2. Smart Multi-Step Contact Form (wizard with progress tracker)
+  3. ReCog Live Demo (text input → tiered analysis)
+  4. Case Study Viewer (before/after metrics, testimonials)
+  5. GlyphWorks Gallery (parameter controls, live preview)
+  6. Testimonial Carousel (rotating social proof)
+- [x] Added priority ranking matrix
+- [x] All demos styled with terminal aesthetic
+- [ ] Add button to ehko_control.py (manual step)
+
+**Documentation Created:**
+- `CSS_CONFLICT_GUIDE.md` — Avoiding utility class conflicts
+- `MIGRATION_MAP.md` — Class name changes reference
+- `MIGRATION_README.md` — Automated script usage
+- `GLOBAL_CSS_REFACTOR_PLAN.md` — Technical planning doc
+- `ADD_BUTTON_INSTRUCTIONS.md` — Manual control panel update
+
+**Benefits Achieved:**
+- ✅ Zero CSS conflicts going forward
+- ✅ Can use shadcn/ui components without issues
+- ✅ Clear separation: Design system (global.css) vs Utilities (Tailwind)
+- ✅ Future features can be built faster
+- ✅ Professional component library available
+
+**Next Steps:**
+1. Add Feature Demos button to ehko_control.py (see ADD_BUTTON_INSTRUCTIONS.md)
+2. Choose which feature to build first (recommended: Project Showcase or Case Studies)
+3. Set up blog infrastructure (MDX support, hidden for now)
+
+**Location:** `C:\EhkoDev\ehkolabs-website\`  
+**Test URLs:** 
+- http://localhost:4321/test (shadcn/ui components)
+- http://localhost:4321/feature-demos (feature mockups)
 
 ---
 
