@@ -786,10 +786,7 @@ class ReCogTab(ttk.Frame):
         
         ttk.Label(header, text="RECOG ENGINE", style="H.TLabel").pack(side=LEFT)
         ttk.Label(header, text="v0.6.0 MVP • Standalone Document Intelligence", style="Sub.TLabel").pack(side=LEFT, padx=10)
-        
-        self.status = StatusIndicator(btn_row, "BACKEND OFFLINE")
-        self.status.pack(side=RIGHT)
-        
+
         # === SERVER CONTROLS ===
         srv_frame = ttk.LabelFrame(container, text="BACKEND (Port 5100)", padding=10)
         srv_frame.pack(fill=X, pady=(0, 10))
