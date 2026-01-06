@@ -71,9 +71,31 @@ Filesystem:directory_tree("C:\\EhkoVaults\\EhkoForge")
 
 **Dormant Vaults (scoped out):**
 - `MonsterGarden/` — Future plant-tracking project
-- `ManaCore/` — Fiction worldbuilding, dormant
 
-Claude Code v2.0.55 is installed. Use filesystem tools proactively when vault work is requested. All path references and file operations should use the known vault structure from `vault_map.md`.
+### Claude Interfaces
+
+**Two options for working with Claude on EhkoForge:**
+
+| Interface | Best For | Access |
+|-----------|----------|--------|
+| **Claude Code CLI** | Execution-heavy tasks: running tests, build-test-fix cycles, git operations, multi-file refactoring | Terminal: `claude` command |
+| **Desktop Claude + Filesystem MCP** | Architecture discussions, planning, debugging conversations, document review | Claude Desktop app |
+
+**Same Claude brain, different interfaces.** Claude Code CLI can directly execute commands, run scripts, and iterate on code. Desktop Claude requires Brent to run commands manually but excels at longer planning conversations.
+
+**When to use Claude Code CLI:**
+- Running pytest, npm, or other test suites
+- Iterative bug fixing (run → fail → fix → run)
+- Git operations (commit, push, branch management)
+- Multi-file refactoring with immediate verification
+
+**When to use Desktop Claude:**
+- Architecture planning and design discussions
+- Reviewing and discussing existing code
+- Creating specifications and documentation
+- Conversations that benefit from Brent's real-time input
+
+Use filesystem tools proactively when vault work is requested. All path references and file operations should use the known vault structure from `vault_map.md`.
 
 **Key Locations:**
 | Path | Purpose |
