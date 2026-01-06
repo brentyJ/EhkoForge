@@ -1005,16 +1005,43 @@ class ReCogTab(ttk.Frame):
         threading.Thread(target=restart, daemon=True).start()
     
     # === UI DEV SERVER ===
+    def _kill_port_3100(self):
+        """Kill any process using port 3100 (orphaned node processes)."""
+        if os.name != 'nt':
+            return
+        try:
+            # Find PID using port 3100
+            result = subprocess.run(
+                ['powershell', '-Command',
+                 'Get-NetTCPConnection -LocalPort 3100 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess'],
+                capture_output=True, text=True, timeout=5
+            )
+            pids = set(result.stdout.strip().split('\n'))
+            pids.discard('')
+            pids.discard('0')  # Filter out invalid PIDs
+            for pid in pids:
+                if pid.isdigit() and int(pid) > 0:
+                    try:
+                        subprocess.run(['taskkill', '/F', '/PID', pid], capture_output=True, timeout=5)
+                        log(self.recog_log, f"Killed orphaned process on port 3100 (PID {pid})", "warning")
+                    except:
+                        pass
+        except:
+            pass  # Silently ignore errors - port might just be free
+
     def _start_ui(self):
         global recog_ui_process
         if recog_ui_process and recog_ui_process.poll() is None:
             log(self.recog_log, "UI already running", "warning")
             return
-        
+
         if not RECOG_UI_PATH.exists():
             log(self.recog_log, f"UI path not found: {RECOG_UI_PATH}", "error")
             return
-        
+
+        # Clean up any orphaned processes on port 3100
+        self._kill_port_3100()
+
         try:
             cmd = ['cmd', '/c', 'npm', 'run', 'dev'] if os.name == 'nt' else ['npm', 'run', 'dev']
             recog_ui_process = subprocess.Popen(
@@ -1057,23 +1084,34 @@ class ReCogTab(ttk.Frame):
     def _stop_ui(self):
         global recog_ui_process
         if not recog_ui_process or recog_ui_process.poll() is not None:
+            # Even if our tracked process is gone, clean up any orphaned processes
+            self._kill_port_3100()
             self.ui_status.set_offline("UI OFFLINE")
             self.ui_start_btn.config(state=NORMAL)
             self.ui_stop_btn.config(state=DISABLED)
             return
-        
+
         try:
             log(self.recog_log, "Stopping UI...", "warning")
             if os.name == 'nt':
-                recog_ui_process.send_signal(signal.CTRL_BREAK_EVENT)
+                # Kill the process tree (cmd -> npm -> node)
+                subprocess.run(
+                    ['taskkill', '/F', '/T', '/PID', str(recog_ui_process.pid)],
+                    capture_output=True, timeout=5
+                )
             else:
                 recog_ui_process.terminate()
             recog_ui_process.wait(timeout=5)
             log(self.recog_log, "UI stopped", "success")
         except:
-            recog_ui_process.kill()
+            try:
+                recog_ui_process.kill()
+            except:
+                pass
             log(self.recog_log, "UI killed", "warning")
         finally:
+            # Clean up any remaining processes on port 3100
+            self._kill_port_3100()
             recog_ui_process = None
             self.ui_status.set_offline("UI OFFLINE")
             self.ui_start_btn.config(state=NORMAL)
