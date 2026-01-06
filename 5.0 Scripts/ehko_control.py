@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Ehko Control Panel v5.1
+Ehko Control Panel v5.2
 Unified interface with tabbed navigation for EhkoForge, ReCog, Website, and GlyphWorks.
 
 Optimised for Surface Pro touch screen (2196 x 1464).
 Terminal aesthetic matching EhkoLabs website.
 
 Tabs:
-- EhkoForge: Server control, ReCog integration, Git, System tools
-- ReCog: Standalone ReCog server control, testing, Git
+- EhkoForge: Server control, integrated ReCog, Git, System tools
+- ReCog: Standalone ReCog server \+ React UI dev server
 - Website: Astro dev server for local testing
 - GlyphWorks: Advanced SVG art creation and rendering
 """
@@ -45,6 +45,8 @@ RECOG_ROOT = Path("C:/EhkoVaults/ReCog")
 RECOG_SCRIPTS = RECOG_ROOT / "_scripts"
 RECOG_SERVER_SCRIPT = RECOG_SCRIPTS / "server.py"
 RECOG_URL = "http://localhost:5100"
+RECOG_UI_PATH = RECOG_ROOT / "_ui"
+RECOG_UI_URL = "http://localhost:3100"
 
 # Website Configuration
 WEBSITE_PATH = Path("C:/EhkoDev/ehkolabs-website")
@@ -98,6 +100,7 @@ C = {
 # Process handles
 server_process = None
 recog_process = None
+recog_ui_process = None
 website_process = None
 
 # =============================================================================
@@ -782,19 +785,19 @@ class ReCogTab(ttk.Frame):
         header.pack(fill=X, pady=(0, 10))
         
         ttk.Label(header, text="RECOG ENGINE", style="H.TLabel").pack(side=LEFT)
-        ttk.Label(header, text="v0.6.0 MVP • Recursive Cognition Engine", style="Sub.TLabel").pack(side=LEFT, padx=10)
+        ttk.Label(header, text="v0.6.0 MVP • Standalone Document Intelligence", style="Sub.TLabel").pack(side=LEFT, padx=10)
         
-        self.status = StatusIndicator(header, "RECOG OFFLINE")
+        self.status = StatusIndicator(btn_row, "BACKEND OFFLINE")
         self.status.pack(side=RIGHT)
         
         # === SERVER CONTROLS ===
-        srv_frame = ttk.LabelFrame(container, text="SERVER (Port 5100)", padding=10)
+        srv_frame = ttk.LabelFrame(container, text="BACKEND (Port 5100)", padding=10)
         srv_frame.pack(fill=X, pady=(0, 10))
         
         btn_row = ttk.Frame(srv_frame)
         btn_row.pack(fill=X)
         
-        self.start_btn = ttk.Button(btn_row, text="▶ Start Server", style="G.TButton", width=14,
+        self.start_btn = ttk.Button(btn_row, text="▶ Start", style="G.TButton", width=12,
                                      command=self._start_recog)
         self.start_btn.pack(side=LEFT, padx=2)
         
@@ -815,11 +818,39 @@ class ReCogTab(ttk.Frame):
         ttk.Button(btn_row, text="Stats", width=8,
                    command=self._show_stats).pack(side=LEFT, padx=2)
         
-        # Path display
-        path_frame = ttk.Frame(srv_frame)
-        path_frame.pack(fill=X, pady=(10, 0))
-        ttk.Label(path_frame, text="Path:", style="Dim.TLabel").pack(side=LEFT)
-        ttk.Label(path_frame, text=str(RECOG_ROOT), style="Path.TLabel").pack(side=LEFT, padx=5)
+        self.status = StatusIndicator(btn_row, "BACKEND OFFLINE")
+        self.status.pack(side=RIGHT, padx=10)
+        
+        # === UI DEV SERVER ===
+        ui_frame = ttk.LabelFrame(container, text="UI DEV SERVER (Port 3100)", padding=10)
+        ui_frame.pack(fill=X, pady=(0, 10))
+        
+        ui_btn_row = ttk.Frame(ui_frame)
+        ui_btn_row.pack(fill=X)
+        
+        self.ui_start_btn = ttk.Button(ui_btn_row, text="▶ Start UI", style="G.TButton", width=12,
+                                        command=self._start_ui)
+        self.ui_start_btn.pack(side=LEFT, padx=2)
+        
+        self.ui_stop_btn = ttk.Button(ui_btn_row, text="■ Stop", style="R.TButton", width=10,
+                                       state=DISABLED, command=self._stop_ui)
+        self.ui_stop_btn.pack(side=LEFT, padx=2)
+        
+        ttk.Separator(ui_btn_row, orient=VERTICAL).pack(side=LEFT, fill=Y, padx=10)
+        
+        ttk.Button(ui_btn_row, text="🌐 Open UI", style="B.TButton", width=10,
+                   command=self._open_recog_ui).pack(side=LEFT, padx=2)
+        
+        self.ui_status = StatusIndicator(ui_btn_row, "UI OFFLINE")
+        self.ui_status.pack(side=RIGHT, padx=10)
+        
+        # Path info
+        path_frame = ttk.Frame(ui_frame)
+        path_frame.pack(fill=X, pady=(8, 0))
+        ttk.Label(path_frame, text="Backend:", style="Dim.TLabel").pack(side=LEFT)
+        ttk.Label(path_frame, text=RECOG_URL, style="Path.TLabel").pack(side=LEFT, padx=5)
+        ttk.Label(path_frame, text="UI:", style="Dim.TLabel").pack(side=LEFT, padx=(15, 0))
+        ttk.Label(path_frame, text=RECOG_UI_URL, style="Path.TLabel").pack(side=LEFT, padx=5)
         
         # === API ACTIONS ===
         api_frame = ttk.LabelFrame(container, text="API ACTIONS", padding=10)
@@ -886,16 +917,16 @@ class ReCogTab(ttk.Frame):
                    command=lambda: self.recog_log.copy_contents(self.root)).pack(side=RIGHT, padx=2)
         
         # Initial message
-        log(self.recog_log, f"ReCog v0.6.0 MVP", "recog")
-        log(self.recog_log, f"Path: {RECOG_ROOT}", "info")
-        log(self.recog_log, f"URL: {RECOG_URL}", "info")
-        log(self.recog_log, "Start server to begin testing.", "dim")
+        log(self.recog_log, "ReCog v0.6.0 • Standalone Mode", "recog")
+        log(self.recog_log, "1. Start Backend (Flask API on 5100)", "dim")
+        log(self.recog_log, "2. Start UI (Vite dev server on 3100)", "dim")
+        log(self.recog_log, "3. Click 'Open UI' to access the React interface", "dim")
     
     # === SERVER METHODS ===
     def _start_recog(self):
         global recog_process
         if recog_process and recog_process.poll() is None:
-            log(self.recog_log, "ReCog already running", "warning")
+            log(self.recog_log, "Backend already running", "warning")
             return
         
         if not RECOG_SERVER_SCRIPT.exists():
@@ -912,11 +943,11 @@ class ReCogTab(ttk.Frame):
                 bufsize=1,
                 creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == 'nt' else 0
             )
-            self.status.set_online("RECOG ONLINE")
+            self.status.set_online("BACKEND ONLINE")
             self.start_btn.config(state=DISABLED)
             self.stop_btn.config(state=NORMAL)
             self.restart_btn.config(state=NORMAL)
-            log(self.recog_log, f"ReCog started (PID {recog_process.pid})", "success")
+            log(self.recog_log, f"Backend started (PID {recog_process.pid})", "success")
             
             def stream():
                 for line in iter(recog_process.stdout.readline, ''):
@@ -930,11 +961,11 @@ class ReCogTab(ttk.Frame):
                             log(self.recog_log, line, "success")
                         else:
                             log(self.recog_log, line, "recog")
-                self.status.set_offline("RECOG OFFLINE")
+                self.status.set_offline("BACKEND OFFLINE")
                 self.start_btn.config(state=NORMAL)
                 self.stop_btn.config(state=DISABLED)
                 self.restart_btn.config(state=DISABLED)
-                log(self.recog_log, "ReCog stopped", "warning")
+                log(self.recog_log, "Backend stopped", "warning")
             
             threading.Thread(target=stream, daemon=True).start()
         except Exception as e:
@@ -943,42 +974,122 @@ class ReCogTab(ttk.Frame):
     def _stop_recog(self):
         global recog_process
         if not recog_process or recog_process.poll() is not None:
-            self.status.set_offline("RECOG OFFLINE")
+            self.status.set_offline("BACKEND OFFLINE")
             self.start_btn.config(state=NORMAL)
             self.stop_btn.config(state=DISABLED)
             self.restart_btn.config(state=DISABLED)
             return
         
         try:
-            log(self.recog_log, "Stopping ReCog...", "warning")
+            log(self.recog_log, "Stopping backend...", "warning")
             if os.name == 'nt':
                 recog_process.send_signal(signal.CTRL_BREAK_EVENT)
             else:
                 recog_process.terminate()
             recog_process.wait(timeout=5)
-            log(self.recog_log, "ReCog stopped gracefully", "success")
+            log(self.recog_log, "Backend stopped gracefully", "success")
         except:
             recog_process.kill()
-            log(self.recog_log, "ReCog killed", "warning")
+            log(self.recog_log, "Backend killed", "warning")
         finally:
             recog_process = None
-            self.status.set_offline("RECOG OFFLINE")
+            self.status.set_offline("BACKEND OFFLINE")
             self.start_btn.config(state=NORMAL)
             self.stop_btn.config(state=DISABLED)
             self.restart_btn.config(state=DISABLED)
     
     def _restart_recog(self):
         def restart():
-            log(self.recog_log, "Restarting ReCog...", "warning")
+            log(self.recog_log, "Restarting backend...", "warning")
             self._stop_recog()
             import time
             time.sleep(1)
             self._start_recog()
         threading.Thread(target=restart, daemon=True).start()
     
+    # === UI DEV SERVER ===
+    def _start_ui(self):
+        global recog_ui_process
+        if recog_ui_process and recog_ui_process.poll() is None:
+            log(self.recog_log, "UI already running", "warning")
+            return
+        
+        if not RECOG_UI_PATH.exists():
+            log(self.recog_log, f"UI path not found: {RECOG_UI_PATH}", "error")
+            return
+        
+        try:
+            cmd = ['cmd', '/c', 'npm', 'run', 'dev'] if os.name == 'nt' else ['npm', 'run', 'dev']
+            recog_ui_process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=str(RECOG_UI_PATH),
+                text=True,
+                bufsize=1,
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == 'nt' else 0
+            )
+            self.ui_status.set_online("UI ONLINE")
+            self.ui_start_btn.config(state=DISABLED)
+            self.ui_stop_btn.config(state=NORMAL)
+            log(self.recog_log, f"UI dev server started (PID {recog_ui_process.pid})", "success")
+            
+            def stream():
+                for line in iter(recog_ui_process.stdout.readline, ''):
+                    if line and recog_ui_process.poll() is None:
+                        line = line.strip()
+                        if "error" in line.lower():
+                            log(self.recog_log, line, "error")
+                        elif "Local:" in line or "ready" in line.lower():
+                            log(self.recog_log, line, "success")
+                        elif "warn" in line.lower():
+                            log(self.recog_log, line, "warning")
+                        else:
+                            log(self.recog_log, line, "info")
+                self.ui_status.set_offline("UI OFFLINE")
+                self.ui_start_btn.config(state=NORMAL)
+                self.ui_stop_btn.config(state=DISABLED)
+                log(self.recog_log, "UI dev server stopped", "warning")
+            
+            threading.Thread(target=stream, daemon=True).start()
+        except FileNotFoundError:
+            log(self.recog_log, "npm not found - install Node.js", "error")
+        except Exception as e:
+            log(self.recog_log, f"UI start failed: {e}", "error")
+    
+    def _stop_ui(self):
+        global recog_ui_process
+        if not recog_ui_process or recog_ui_process.poll() is not None:
+            self.ui_status.set_offline("UI OFFLINE")
+            self.ui_start_btn.config(state=NORMAL)
+            self.ui_stop_btn.config(state=DISABLED)
+            return
+        
+        try:
+            log(self.recog_log, "Stopping UI...", "warning")
+            if os.name == 'nt':
+                recog_ui_process.send_signal(signal.CTRL_BREAK_EVENT)
+            else:
+                recog_ui_process.terminate()
+            recog_ui_process.wait(timeout=5)
+            log(self.recog_log, "UI stopped", "success")
+        except:
+            recog_ui_process.kill()
+            log(self.recog_log, "UI killed", "warning")
+        finally:
+            recog_ui_process = None
+            self.ui_status.set_offline("UI OFFLINE")
+            self.ui_start_btn.config(state=NORMAL)
+            self.ui_stop_btn.config(state=DISABLED)
+    
     def _open_recog_ui(self):
-        webbrowser.open(RECOG_URL)
-        log(self.recog_log, "Opened ReCog UI in browser", "info")
+        global recog_ui_process
+        if recog_ui_process and recog_ui_process.poll() is None:
+            webbrowser.open(RECOG_UI_URL)
+            log(self.recog_log, f"Opened {RECOG_UI_URL}", "info")
+        else:
+            webbrowser.open(RECOG_URL)
+            log(self.recog_log, f"UI not running - opened {RECOG_URL} (start UI for full features)", "warning")
     
     def _health_check(self):
         log(self.recog_log, "Checking health...", "info")
@@ -2234,7 +2345,7 @@ class EhkoControlPanel:
     
     def __init__(self):
         self.root = Tk()
-        self.root.title("EHKO CONTROL PANEL v5.1")
+        self.root.title("Ehko Control Panel v5.2")
         self.root.geometry("1400x900")
         self.root.minsize(1200, 700)
         self.root.configure(bg=C["bg_primary"])
