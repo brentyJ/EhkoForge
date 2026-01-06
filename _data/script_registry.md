@@ -1,7 +1,7 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2025-12-06 (Session 26 - Document Ingestion)
+**Updated:** 2026-01-06 (ehko_control.py v5.2 - Port cleanup)
 
 ### ingestion/ Module (NEW)
 ```
@@ -34,7 +34,7 @@ ingestion/
 |--------|---------|---------|
 | `ehko_refresh.py` | 2.0 | Vault indexing, transcription processing, DB sync |
 | `forge_server.py` | 2.4 | Flask API, LLM routing, mana system, chat sessions, ReCog scheduler |
-| `ehko_control.py` | 3.0 | Tkinter GUI — Server, ReCog, Index, Folders |
+| `ehko_control.py` | 5.2 | Tkinter GUI — Server, ReCog (backend + UI), Index, Folders |
 | `ingest.py` | 1.0 | Document ingestion CLI — inbox processing, stats |
 
 ## Migration Scripts
@@ -69,6 +69,8 @@ ingestion/
 |--------|---------|
 | `run_process_transcriptions.bat` | Batch runner for refresh + transcription processing |
 | `EhkoForge Control Panel.vbs` | Silent launcher for ehko_control.py |
+| `CREATE_DESKTOP_SHORTCUT.vbs` | Generates desktop shortcut with custom icon (one-click setup) |
+| `generate_desktop_icon.py` | Creates multi-size .ico file (16-256px) with red remote control design |
 | `populate_roadmap.py` | GitHub Projects automation — reads PROJECT_STATUS.md, creates issues, populates Project #3 |
 
 ## Archived Scripts (5.0 Scripts/_archive/)
@@ -193,6 +195,7 @@ ingestion/
 ---
 
 **Changelog:**
+- v2.1 — 2026-01-06 — ehko_control.py v5.2: Port 3100 cleanup before UI start, proper process tree killing on stop.
 - v2.0 — 2025-12-19 — Added populate_roadmap.py for GitHub Project automation.
 - v1.9 — 2025-12-06 — Document Ingestion System: ingestion/ module, ingest.py CLI, run_ingestion_migration.py.
 - v1.8 — 2025-12-06 — ehko_control.py v3.0: Aligned theme, streamlined panels (Server/ReCog/Index/Folders).
