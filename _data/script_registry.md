@@ -1,9 +1,39 @@
 # SCRIPT REGISTRY
 
 **Purpose:** Quick reference for script capabilities. Read this instead of full source files.
-**Updated:** 2026-01-06 (ehko_control.py v5.2 - Port cleanup)
+**Updated:** 2026-01-10 (control_panel v2.0 - shadcn/ui modernization)
 
-### ingestion/ Module (NEW)
+### control_panel/ Frontend (UPDATED)
+```
+control_panel/
+├── src/
+│   ├── components/
+│   │   ├── ui/                    [v1.0] — shadcn/ui components
+│   │   │   ├── button.jsx         — 6 variants, 4 sizes
+│   │   │   ├── card.jsx           — Card, Header, Title, Content, Footer
+│   │   │   ├── input.jsx          — Text input
+│   │   │   ├── label.jsx          — Form label (Radix UI)
+│   │   │   ├── textarea.jsx       — Multi-line input
+│   │   │   ├── select.jsx         — Dropdown (Radix UI)
+│   │   │   ├── dialog.jsx         — Modal dialog (Radix UI)
+│   │   │   ├── tabs.jsx           — Tabbed interface (Radix UI)
+│   │   │   └── badge.jsx          — Status badges
+│   │   └── pages/
+│   │       └── ComponentTest.jsx  [v1.0] — Component showcase page
+│   ├── lib/
+│   │   ├── utils.js               [v1.0] — cn() utility for classNames
+│   │   └── api.js                 [v1.0] — ForgeAPI client class
+│   ├── hooks/                     — (ready for custom hooks)
+│   ├── contexts/                  — (ready for React contexts)
+│   ├── App.jsx                    [v2.0] — Main app with component integration
+│   └── index.css                  [v2.0] — EhkoForge terminal theme
+├── components.json                [v1.0] — shadcn/ui CLI configuration
+├── COMPONENTS.md                  [v1.0] — Component library documentation
+├── tailwind.config.js             [v2.0] — With animations, extended theme
+└── package.json                   [v2.0] — Radix UI + tailwindcss-animate deps
+```
+
+### ingestion/ Module
 ```
 ingestion/
 ├── __init__.py           [v1.0] — Package exports
