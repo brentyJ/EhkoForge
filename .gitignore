@@ -67,3 +67,6 @@ _private/
 
 # Archived deprecated scripts
 5.0 Scripts/_archive/
+
+# Claude Code temp files
+tmpclaude-*
