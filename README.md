@@ -2,60 +2,40 @@
 
 **A framework for building AI-augmented digital identity preservation systems**
 
-Version: 2.11  
-Status: Active Development (MVP Phase 4 Complete)  
+Version: 3.0
+Status: Active Development (ReCog Integration Phase)  
 License: AGPLv3
 
 ---
 
 ## What Is This?
 
-EhkoForge is a personal memory and identity preservation system designed to create AI-powered representations called "Ehkos" — digital echoes that can survive and serve for centuries. It combines structured reflection, intelligent indexing, and export-first architecture to ensure your voice, values, and memories can be preserved authentically and accessed meaningfully by future generations.
+EhkoForge is a framework for building a structured, AI-augmented personal archive. It solves two problems:
 
-This is the **framework and architecture** — the system specifications, templates, automation scripts, and working web interface that make Ehko creation possible. Personal content lives in a separate vault (Mirrorwell) and is never shared.
+1. **AI context doesn't persist** — Every LLM conversation starts from zero. EhkoForge maintains persistent context so AI interactions build on what came before.
+2. **Personal history gets lost** — Most people leave fragments for descendants to interpret through guesswork. EhkoForge creates an intentional record.
+
+This is the **framework and architecture** — system specifications, templates, automation scripts, and a working web interface. Personal content lives in a separate vault (Mirrorwell) and is never shared.
 
 ### Core Philosophy
 
-- **200-year durability over convenience** — Human-readable markdown files as canonical storage
-- **Export-first architecture** — Complete Ehkos can be exported in formats that work even if the platform disappears
+- **Durability over convenience** — Human-readable markdown files as canonical storage
+- **Export-first architecture** — Complete archives can be exported in formats that work without this platform
 - **User sovereignty** — You own your data, you control access, you decide what's preserved
-- **Never impersonate** — Ehkos speak *about* you, not *as* you
-- **Science-informed but personal** — Research-backed psychological constructs you can rename and personalise
+- **AI as scaffolding** — Structures thought rather than replacing agency
 
 ---
 
-## Terminology: Metaphors & Key Concepts
-
-EhkoForge uses **metallurgy as its central metaphor** for the ingot processing pipeline, but other metaphors and terms appear for different architectural components.
-
-### The Forge Metaphor (Primary)
-
-This maps directly to the technical architecture:
+## Key Concepts
 
 | Term | Meaning |
 |------|---------|
-| **Raw Ore** | Unprocessed input — conversations, journals, voice transcriptions |
-| **Smelting** | Batch processing that extracts insights from raw material (code-based analysis + LLM extraction) |
-| **Ingot** | A single distilled insight — one value, belief, memory, or pattern. The atomic unit of identity data |
-| **Forging** | Human curation — reviewing an ingot and accepting it into the Ehko's personality |
-| **The Forge** | The web interface where smelting and forging happen |
-| **Tiers** | Quality grades (Copper → Iron → Silver → Gold → Mythic) based on confidence and corroboration |
-| **The Smith** | You — the human shaping the Ehko through deliberate reflection |
-| **Ehko** | The finished artifact — a durable digital echo built from forged ingots |
-
-### Architectural & System Terms
-
-| Term | Meaning |
-|------|---------|
-| **Identity Pillars** | Research-informed categories for organizing identity data (Values, Traits, Patterns, etc.). The structural framework anchoring Ehko coherence |
-| **Core Memory Index** | Curated collection of defining memories that shaped who you are |
-| **Reflection Objects** | Any structured entry in the system — journals, modules, specifications |
-| **Mirrorwell** | Your personal vault — the "mirror" reflecting your inner world back to you |
-| **Ehko State** | Development stages: Nascent → Forming → Emerging → Present |
-
-This isn't decorative language. The metaphor reflects how the system works: raw material is processed, refined into standardised units, and shaped by human hands into something meant to last centuries.
-
-See [Section 3.5 of the Manifest](1.0%20System%20Architecture/1_0_Ehko_Manifest.md) for the full explanation.
+| **Ehko** | Your personal archive — a structured record of values, beliefs, memories, and patterns |
+| **Reflection Objects** | Any structured entry in the system — journals, conversations, specifications |
+| **Identity Pillars** | Categories for organizing identity data (Values, Traits, Patterns, etc.) |
+| **Core Memory Index** | Curated collection of defining memories |
+| **Mirrorwell** | Your personal vault — where reflections are stored |
+| **Insights** | Extracted observations from your content, reviewed and accepted to build your profile |
 
 ---
 
@@ -63,13 +43,12 @@ See [Section 3.5 of the Manifest](1.0%20System%20Architecture/1_0_Ehko_Manifest.
 
 This framework is built for people who:
 
-- Want to leave something more meaningful than photo albums for their descendants
-- Use AI as cognitive scaffolding (especially neurodivergent users who benefit from structured thought capture)
-- Care about the difference between LLM versions because they *feel* the shift in coherence
-- Want agency over how they're remembered — accurate, nuanced, complex
-- See potential in AI-human collaboration rather than replacement
+- Use AI as a thinking tool and want that context to persist
+- Want to leave something more meaningful than photo albums for descendants
+- Care about data ownership and export-first architecture
+- See value in structured self-reflection
 
-**This is not for everyone.** If the idea of structured self-reflection with AI feels wrong, that's valid. This project won't try to convince you.
+**Not for everyone.** If this doesn't resonate, that's fine. The project doesn't try to convince anyone.
 
 ---
 
@@ -129,8 +108,7 @@ See [PROJECT_STATUS.md](PROJECT_STATUS.md) for detailed implementation status.
 ```
 EhkoForge/
 ├── 1.0 System Architecture/    # Core specifications
-│   ├── 1_0_Ehko_Manifest.md               # System principles
-│   ├── 1_0a_Ehko_Manifesto_Personal.md    # Personal motivation
+│   ├── 1_0_Ehko_Manifest.md               # System principles and philosophy
 │   ├── 1_1_Overview_v1_0.md               # System overview
 │   ├── 1_2_Components_v1_0.md             # Component architecture
 │   ├── 1_3_Security_Ownership.md          # Authentication design
@@ -447,11 +425,9 @@ The architecture is intentionally designed to be forkable and customisable.
 
 ## Philosophy
 
-Read the manifestos:
-- [1_0_Ehko_Manifest.md](1.0%20System%20Architecture/1_0_Ehko_Manifest.md) — Technical philosophy
-- [1_0a_Ehko_Manifesto_Personal.md](1.0%20System%20Architecture/1_0a_Ehko_Manifesto_Personal.md) — Personal motivation
+Read the manifest: [1_0_Ehko_Manifest.md](1.0%20System%20Architecture/1_0_Ehko_Manifest.md)
 
-**TL;DR:** Build the echo. Leave the truth. Let your descendants actually know you.
+**TL;DR:** Persistent AI context + durable personal archive. Leave something real for the people who come after you.
 
 ---
 
@@ -513,6 +489,7 @@ Personal framework project. No formal support, but:
 ---
 
 **Changelog:**
+- v3.0 — 2026-01-20 — Documentation overhaul: simplified manifest (removed personal backstory), removed metallurgical metaphors (pending ReCog integration), deleted personal manifesto, streamlined terminology
 - v2.11 — 2025-12-05 — Session 25: Cleaned up repository structure to reflect unified AGPLv3 (removed references to split licensing with separate LICENSE files).
 - v2.10 — 2025-12-05 — Session 25: Updated license from split (MIT/AGPL) to unified AGPLv3. Clarified licensing rationale and commercial path.
 - v2.9 — 2025-12-05 — Session 24: Fixed incorrect Session 23 changelog (recog/ wasn't actually deleted). Updated repository structure: frontend now shows templates/ and split css/js folders; added missing migration files.
